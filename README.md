@@ -31,10 +31,18 @@
 
 - 部署源是本私有仓库，但 Cloudflare Pages 只发布构建产生的 `dist/`：一份 `index.html`、日期清单和 JSON 数据，不会发布 README、构建脚本或仓库根目录；
 - Pages 的高级模式 Function 位于所有网页和静态资源之前；GitHub OAuth 只读取公开账号身份，不申请 `read:org` 或其他组织权限；
+- OAuth App 在 GitHub 中使用中性名称 `Member Portal`；成员首次授权后，它会出现在个人设置的 **Authorized OAuth Apps** 列表中，后续访问不需要重复同意同一组公开身份权限；
 - `dsh-external` 成员 ID 每日同步到 Cloudflare D1 私有白名单。登录和后续每次访问都按 GitHub ID 查询白名单，未通过认证时不会读取或返回档案资源；
 - GitHub OAuth 临时令牌只用于当次读取账号 ID，不写入页面、Cookie、D1 或仓库；首次授权后 GitHub 会记住该 OAuth App，网站签名会话保持 30 天，成员离开白名单后旧会话会立即失效；
 - 站点响应禁止搜索引擎索引、禁止第三方页面嵌入，并关闭浏览器与边缘缓存；
 - `npm run check` 先校验档案完整性和常见敏感路径/凭据，`npm run build` 再生成可部署目录；
+
+### 成员名单更新
+
+- GitHub 组织的 `organization` webhook 会把成员加入、移除事件即时写入 D1；成员接受邀请后无需等到 05:00，即可通过白名单门控。
+- 每天北京时间 05:00 仍会重新读取 `dsh-external` 的完整成员列表并同步到 D1，用于修复偶发漏投或重试失败的 webhook 事件。
+- 需要立即更新时，直接在 Codex 中说“同步 DSH 成员名单”即可；执行入口是 `npm run sync:members`，同步失败时不会用空名单覆盖现有白名单。
+- 不在网站中提供同步按钮；实时事件只使用签名 webhook，避免把具备 `read:org` 的 GitHub 凭据放进网页服务。
 - `latest.txt` 明确指定首页对应的当日快照，所有历史 JSON 都受同一权限门禁保护。
 
 ## 每日基本纪要

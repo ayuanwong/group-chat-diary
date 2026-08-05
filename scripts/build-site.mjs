@@ -88,6 +88,12 @@ assertPublishable(guideText, "content/newcomer-guide.json");
 if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide"') || !siteHtml.includes("/data/manifest.json")) {
   throw new Error("站点外壳缺少日期切换或新人导引入口");
 }
+if (!siteHtml.includes('fetch("/data/newcomer-guide.json"') || !siteHtml.includes("固定内容 · 不随日期切换")) {
+  throw new Error("新人导引必须使用独立的全局内容源，并明确不随日期切换");
+}
+if (siteHtml.includes('date === SITE_MANIFEST.latest ? " · 最新"')) {
+  throw new Error("日期选择器不得把“最新”拼进日期文本，避免窄屏截断");
+}
 let guide;
 try {
   guide = JSON.parse(guideText);

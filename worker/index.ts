@@ -1,5 +1,5 @@
-const SESSION_COOKIE = "__Host-dsh_session";
-const STATE_COOKIE = "__Host-dsh_oauth_state";
+const SESSION_COOKIE = "__Host-portal_session";
+const STATE_COOKIE = "__Host-portal_oauth_state";
 const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
 const STATE_TTL_SECONDS = 10 * 60;
 const GITHUB_API_VERSION = "2026-03-10";
@@ -10,6 +10,7 @@ export interface WorkerEnv extends Env {
   ASSETS: Fetcher;
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
+  GITHUB_WEBHOOK_SECRET: string;
   GITHUB_ORG: string;
   SESSION_SECRET: string;
   SITE_ORIGIN: string;
@@ -32,6 +33,14 @@ interface GitHubUser {
   login?: string;
 }
 
+interface OrganizationWebhookPayload {
+  action?: string;
+  organization?: { login?: string };
+  membership?: {
+    user?: { id?: number; login?: string };
+  };
+}
+
 function encodeBase64Url(bytes: Uint8Array): string {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
@@ -49,6 +58,15 @@ function decodeBase64Url(value: string): Uint8Array | null {
   }
 }
 
+function decodeHex(value: string): Uint8Array | null {
+  if (!/^[0-9a-f]{64}$/iu.test(value)) return null;
+  const bytes = new Uint8Array(value.length / 2);
+  for (let index = 0; index < value.length; index += 2) {
+    bytes[index / 2] = Number.parseInt(value.slice(index, index + 2), 16);
+  }
+  return bytes;
+}
+
 async function importHmacKey(secret: string): Promise<CryptoKey> {
   return crypto.subtle.importKey(
     "raw",
@@ -56,6 +74,22 @@ async function importHmacKey(secret: string): Promise<CryptoKey> {
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign", "verify"],
+  );
+}
+
+export async function verifyGitHubWebhookSignature(
+  secret: string,
+  payload: string,
+  signatureHeader: string | null,
+): Promise<boolean> {
+  if (!secret || !signatureHeader?.startsWith("sha256=")) return false;
+  const signature = decodeHex(signatureHeader.slice("sha256=".length));
+  if (!signature) return false;
+  return crypto.subtle.verify(
+    "HMAC",
+    await importHmacKey(secret),
+    new Uint8Array(signature),
+    new TextEncoder().encode(payload),
   );
 }
 
@@ -150,8 +184,7 @@ function redirect(location: string, status = 302, cookies: string[] = []): Respo
   return new Response(null, { status, headers });
 }
 
-function loginPage(org: string, error?: string, cookies: string[] = []): Response {
-  const safeOrg = escapeHtml(org);
+function loginPage(error?: string, cookies: string[] = []): Response {
   const errorBlock = error ? `<p class="error">${escapeHtml(error)}</p>` : "";
   const headers = new Headers();
   for (const value of cookies) headers.append("Set-Cookie", value);
@@ -161,12 +194,12 @@ function loginPage(org: string, error?: string, cookies: string[] = []): Respons
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <title>DSH 内测群每日档案 · 成员登录</title>
+  <title>成员入口</title>
   <style>
     :root{color-scheme:dark}*{box-sizing:border-box}body{min-height:100vh;margin:0;display:grid;place-items:center;padding:24px;background:#030703;color:#d6ffe0;font:15px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}.card{width:min(100%,520px);padding:32px;border:1px solid #225c2f;border-radius:18px;background:#071008;box-shadow:0 24px 80px #0008}h1{margin:0 0 12px;font-size:22px;color:#56ff7b}p{margin:10px 0;color:#a8caae}.error{padding:10px 12px;border:1px solid #8a442f;border-radius:8px;color:#ffd2c3;background:#2a110b}a{display:inline-block;margin-top:14px;padding:11px 18px;border-radius:9px;background:#2ee65a;color:#001806;text-decoration:none;font-weight:700}small{display:block;margin-top:20px;color:#6f8e76}
   </style>
 </head>
-<body><main class="card"><h1>DSH 内测群每日档案</h1><p>此页面包含内部群聊摘要，仅向 <strong>${safeOrg}</strong> 的有效 GitHub 组织成员开放。</p>${errorBlock}<a href="/auth/login">使用 GitHub 登录</a><small>首次登录只读取公开 GitHub 身份，不申请组织权限；授权完成后会保持登录，站点不会保存 GitHub 访问令牌。</small></main></body>
+<body><main class="card"><h1>成员入口</h1><p>此页面仅向获准的 GitHub 账户开放。</p>${errorBlock}<a href="/auth/login">使用 GitHub 登录</a><small>首次登录只读取公开 GitHub 身份；授权完成后会保持登录，本站不会保存 GitHub 访问令牌。</small></main></body>
 </html>`, 200, headers);
 }
 
@@ -214,6 +247,53 @@ export async function isAllowlisted(env: WorkerEnv, githubId: number): Promise<b
   return row?.allowed === 1;
 }
 
+async function handleOrganizationWebhook(request: Request, env: WorkerEnv): Promise<Response> {
+  if (request.method !== "POST") {
+    return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+  }
+  if (request.headers.get("X-GitHub-Event") !== "organization") {
+    return new Response("Ignored", { status: 202, headers: securityHeaders() });
+  }
+
+  const body = await request.text();
+  const validSignature = await verifyGitHubWebhookSignature(
+    env.GITHUB_WEBHOOK_SECRET,
+    body,
+    request.headers.get("X-Hub-Signature-256"),
+  );
+  if (!validSignature) return new Response("Unauthorized", { status: 401, headers: securityHeaders() });
+
+  let payload: OrganizationWebhookPayload;
+  try {
+    payload = JSON.parse(body) as OrganizationWebhookPayload;
+  } catch {
+    return new Response("Bad Request", { status: 400, headers: securityHeaders() });
+  }
+
+  const organization = payload.organization?.login ?? "";
+  if (organization.toLowerCase() !== env.GITHUB_ORG.toLowerCase()) {
+    return new Response("Ignored", { status: 202, headers: securityHeaders() });
+  }
+  const active = payload.action === "member_added" ? 1 : payload.action === "member_removed" ? 0 : null;
+  if (active === null) return new Response("Ignored", { status: 202, headers: securityHeaders() });
+
+  const githubId = Number(payload.membership?.user?.id);
+  const login = String(payload.membership?.user?.login ?? "");
+  if (!Number.isSafeInteger(githubId) || githubId <= 0 || !login) {
+    return new Response("Bad Request", { status: 400, headers: securityHeaders() });
+  }
+
+  await env.ACCESS_DB.prepare(`
+    INSERT INTO access_allowlist (github_id, login, active, updated_at)
+    VALUES (?1, ?2, ?3, CURRENT_TIMESTAMP)
+    ON CONFLICT(github_id) DO UPDATE SET
+      login = excluded.login,
+      active = excluded.active,
+      updated_at = CURRENT_TIMESTAMP
+  `).bind(githubId, login, active).run();
+  return new Response("Accepted", { status: 202, headers: securityHeaders() });
+}
+
 async function handleOAuthCallback(request: Request, env: WorkerEnv, githubFetch: GitHubFetch): Promise<Response> {
   const origin = siteOrigin(env);
   if (!origin) return htmlResponse("<h1>网站配置错误</h1><p>请联系管理员。</p>", 500);
@@ -224,7 +304,7 @@ async function handleOAuthCallback(request: Request, env: WorkerEnv, githubFetch
   const expectedState = parseCookies(request).get(STATE_COOKIE) ?? "";
   const clearState = cookie(STATE_COOKIE, "", 0);
   if (!state || !code || !expectedState || state !== expectedState) {
-    return loginPage(env.GITHUB_ORG, "登录请求已失效，请重新登录。", [clearState]);
+    return loginPage("登录请求已失效，请重新登录。", [clearState]);
   }
 
   const callbackUrl = `${origin}/auth/callback`;
@@ -299,7 +379,8 @@ export function createHandler(githubFetch: GitHubFetch = fetch): (request: Reque
       });
     }
     if (url.pathname === "/favicon.ico") return new Response(null, { status: 204, headers: securityHeaders() });
-    if (url.pathname === "/login") return loginPage(env.GITHUB_ORG);
+    if (url.pathname === "/internal/github-membership") return handleOrganizationWebhook(request, env);
+    if (url.pathname === "/login") return loginPage();
 
     if (url.pathname === "/auth/login") {
       if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
@@ -336,7 +417,7 @@ export function createHandler(githubFetch: GitHubFetch = fetch): (request: Reque
       return htmlResponse("<h1>权限核验暂时失败</h1><p>请稍后刷新页面。</p>", 503);
     }
     if (!allowed) {
-      return loginPage(env.GITHUB_ORG, "当前 GitHub 账户已不在获准成员名单中。", [cookie(SESSION_COOKIE, "", 0)]);
+      return loginPage("当前 GitHub 账户已不在获准成员名单中。", [cookie(SESSION_COOKIE, "", 0)]);
     }
 
     const assetResponse = await env.ASSETS.fetch(request);

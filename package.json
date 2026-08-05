@@ -1,0 +1,13 @@
+{
+  "name": "dsh-group-chat-diary-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Protected static site build for the DSH group chat diary.",
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "check": "node scripts/build-site.mjs --check"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -14,6 +14,9 @@
     "GITHUB_ORG": "dsh-external",
     "SITE_ORIGIN": "https://square-shadow-f6fa.lesliewong0923.workers.dev"
   },
+  "secrets": {
+    "required": ["GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET", "SESSION_SECRET"]
+  },
   "observability": {
     "enabled": true
   }

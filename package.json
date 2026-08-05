@@ -9,13 +9,16 @@
     "types": "wrangler types",
     "typecheck": "npm run types && tsc --noEmit",
     "test": "npm run types && vitest run",
+    "build:pages": "npm run build && esbuild worker/index.ts --bundle --format=esm --target=es2022 --outfile=dist/_worker.js",
     "deploy:closed": "npm run build && wrangler deploy",
-    "deploy:public": "npm run build && wrangler deploy --config wrangler.public.jsonc"
+    "deploy:public": "npm run build && wrangler deploy --config wrangler.public.jsonc",
+    "deploy:pages": "npm run build:pages && wrangler pages deploy dist --project-name=dsh-group-chat-diary --branch=main --commit-dirty=true"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "esbuild": "^0.28.1",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10",
     "wrangler": "^4.119.0"

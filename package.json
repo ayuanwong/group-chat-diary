@@ -7,14 +7,14 @@
     "build": "node scripts/build-site.mjs",
     "migrate:legacy": "node scripts/migrate-legacy-site.mjs",
     "refresh:snapshot": "bash scripts/refresh_site_snapshot.sh",
+    "sync:members": "node scripts/sync_members_allowlist.mjs",
+    "migrate:access": "wrangler d1 migrations apply ACCESS_DB --remote",
     "check": "node scripts/build-site.mjs --check",
     "types": "wrangler types",
     "typecheck": "npm run types && tsc --noEmit",
     "test": "npm run types && vitest run",
     "build:pages": "npm run build && esbuild worker/index.ts --bundle --format=esm --target=es2022 --outfile=dist/_worker.js",
-    "deploy:closed": "npm run build && wrangler deploy",
-    "deploy:public": "npm run build && wrangler deploy --config wrangler.public.jsonc",
-    "deploy:pages": "npm run build:pages && wrangler pages deploy dist --project-name=dsh-group-chat-diary --branch=main --commit-dirty=true"
+    "deploy:pages": "npm run build:pages && wrangler pages deploy dist --branch=main --commit-dirty=true"
   },
   "engines": {
     "node": ">=20"

@@ -1,12 +1,23 @@
 const SESSION_COOKIE = "__Host-dsh_session";
 const STATE_COOKIE = "__Host-dsh_oauth_state";
-const SESSION_TTL_SECONDS = 2 * 60 * 60;
+const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
 const STATE_TTL_SECONDS = 10 * 60;
 const GITHUB_API_VERSION = "2026-03-10";
 
 type GitHubFetch = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
+export interface WorkerEnv extends Env {
+  ASSETS: Fetcher;
+  GITHUB_CLIENT_ID: string;
+  GITHUB_CLIENT_SECRET: string;
+  GITHUB_ORG: string;
+  SESSION_SECRET: string;
+  SITE_ORIGIN: string;
+}
+
 interface SessionPayload {
+  version: 2;
+  githubId: number;
   login: string;
   exp: number;
 }
@@ -17,11 +28,8 @@ interface GitHubTokenResponse {
 }
 
 interface GitHubUser {
+  id?: number;
   login?: string;
-}
-
-interface GitHubMembership {
-  state?: string;
 }
 
 function encodeBase64Url(bytes: Uint8Array): string {
@@ -78,9 +86,16 @@ export async function verifySession(
 
   try {
     const payload = JSON.parse(new TextDecoder().decode(bodyBytes)) as Partial<SessionPayload>;
-    if (typeof payload.login !== "string" || !payload.login || typeof payload.exp !== "number") return null;
+    if (
+      payload.version !== 2
+      || !Number.isSafeInteger(payload.githubId)
+      || Number(payload.githubId) <= 0
+      || typeof payload.login !== "string"
+      || !payload.login
+      || typeof payload.exp !== "number"
+    ) return null;
     if (!Number.isSafeInteger(payload.exp) || payload.exp <= nowSeconds) return null;
-    return { login: payload.login, exp: payload.exp };
+    return { version: 2, githubId: Number(payload.githubId), login: payload.login, exp: payload.exp };
   } catch {
     return null;
   }
@@ -151,7 +166,7 @@ function loginPage(org: string, error?: string, cookies: string[] = []): Respons
     :root{color-scheme:dark}*{box-sizing:border-box}body{min-height:100vh;margin:0;display:grid;place-items:center;padding:24px;background:#030703;color:#d6ffe0;font:15px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}.card{width:min(100%,520px);padding:32px;border:1px solid #225c2f;border-radius:18px;background:#071008;box-shadow:0 24px 80px #0008}h1{margin:0 0 12px;font-size:22px;color:#56ff7b}p{margin:10px 0;color:#a8caae}.error{padding:10px 12px;border:1px solid #8a442f;border-radius:8px;color:#ffd2c3;background:#2a110b}a{display:inline-block;margin-top:14px;padding:11px 18px;border-radius:9px;background:#2ee65a;color:#001806;text-decoration:none;font-weight:700}small{display:block;margin-top:20px;color:#6f8e76}
   </style>
 </head>
-<body><main class="card"><h1>DSH 内测群每日档案</h1><p>此页面包含内部群聊摘要，仅向 <strong>${safeOrg}</strong> 的有效 GitHub 组织成员开放。</p>${errorBlock}<a href="/auth/login">使用 GitHub 登录</a><small>登录只用于核验组织成员资格；站点不会保存你的 GitHub 访问令牌。</small></main></body>
+<body><main class="card"><h1>DSH 内测群每日档案</h1><p>此页面包含内部群聊摘要，仅向 <strong>${safeOrg}</strong> 的有效 GitHub 组织成员开放。</p>${errorBlock}<a href="/auth/login">使用 GitHub 登录</a><small>首次登录只读取公开 GitHub 身份，不申请组织权限；授权完成后会保持登录，站点不会保存 GitHub 访问令牌。</small></main></body>
 </html>`, 200, headers);
 }
 
@@ -164,7 +179,7 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#039;");
 }
 
-function siteOrigin(env: Env): string | null {
+function siteOrigin(env: WorkerEnv): string | null {
   try {
     const url = new URL(env.SITE_ORIGIN);
     return url.protocol === "https:" && url.pathname === "/" ? url.origin : null;
@@ -191,7 +206,15 @@ async function githubJson<T>(githubFetch: GitHubFetch, url: string, token: strin
   return { response, data };
 }
 
-async function handleOAuthCallback(request: Request, env: Env, githubFetch: GitHubFetch): Promise<Response> {
+export async function isAllowlisted(env: WorkerEnv, githubId: number): Promise<boolean> {
+  const row = await env.ACCESS_DB
+    .prepare("SELECT 1 AS allowed FROM access_allowlist WHERE github_id = ?1 AND active = 1 LIMIT 1")
+    .bind(githubId)
+    .first<{ allowed: number }>();
+  return row?.allowed === 1;
+}
+
+async function handleOAuthCallback(request: Request, env: WorkerEnv, githubFetch: GitHubFetch): Promise<Response> {
   const origin = siteOrigin(env);
   if (!origin) return htmlResponse("<h1>网站配置错误</h1><p>请联系管理员。</p>", 500);
 
@@ -232,34 +255,40 @@ async function handleOAuthCallback(request: Request, env: Env, githubFetch: GitH
 
   const token = tokenData.access_token;
   let userResult: Awaited<ReturnType<typeof githubJson<GitHubUser>>>;
-  let membershipResult: Awaited<ReturnType<typeof githubJson<GitHubMembership>>>;
   try {
-    [userResult, membershipResult] = await Promise.all([
-      githubJson<GitHubUser>(githubFetch, "https://api.github.com/user", token),
-      githubJson<GitHubMembership>(githubFetch, `https://api.github.com/user/memberships/orgs/${encodeURIComponent(env.GITHUB_ORG)}`, token),
-    ]);
+    userResult = await githubJson<GitHubUser>(githubFetch, "https://api.github.com/user", token);
   } catch {
-    return htmlResponse("<h1>权限核验暂时失败</h1><p><a href=\"/login\">返回后重试</a></p>", 502, { "Set-Cookie": clearState });
+    return htmlResponse("<h1>身份核验暂时失败</h1><p><a href=\"/login\">返回后重试</a></p>", 502, { "Set-Cookie": clearState });
   }
 
   const { response: userResponse, data: user } = userResult;
-  const { response: membershipResponse, data: membership } = membershipResult;
+  const githubId = Number(user?.id);
+  if (!userResponse.ok || !user?.login || !Number.isSafeInteger(githubId) || githubId <= 0) {
+    return htmlResponse("<h1>身份核验暂时失败</h1><p><a href=\"/login\">返回后重试</a></p>", 502, { "Set-Cookie": clearState });
+  }
 
-  if (!userResponse.ok || !user?.login || !membershipResponse.ok || membership?.state !== "active") {
+  let allowed: boolean;
+  try {
+    allowed = await isAllowlisted(env, githubId);
+  } catch {
+    return htmlResponse("<h1>权限核验暂时失败</h1><p><a href=\"/login\">返回后重试</a></p>", 503, { "Set-Cookie": clearState });
+  }
+
+  if (!allowed) {
     return htmlResponse(
-      "<h1>没有访问权限</h1><p>当前 GitHub 账户不是获准组织的有效成员，或该组织尚未批准此 OAuth 应用。</p><p><a href=\"/login\">返回登录页</a></p>",
+      "<h1>没有访问权限</h1><p>当前 GitHub 账户不在获准成员名单中。成员名单每天自动同步。</p><p><a href=\"/login\">返回登录页</a></p>",
       403,
       { "Set-Cookie": clearState },
     );
   }
 
   const exp = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS;
-  const session = await signSession({ login: user.login, exp }, env.SESSION_SECRET);
+  const session = await signSession({ version: 2, githubId, login: user.login, exp }, env.SESSION_SECRET);
   return redirect(`${origin}/`, 303, [clearState, cookie(SESSION_COOKIE, session, SESSION_TTL_SECONDS)]);
 }
 
-export function createHandler(githubFetch: GitHubFetch = fetch): (request: Request, env: Env) => Promise<Response> {
-  return async (request: Request, env: Env): Promise<Response> => {
+export function createHandler(githubFetch: GitHubFetch = fetch): (request: Request, env: WorkerEnv) => Promise<Response> {
+  return async (request: Request, env: WorkerEnv): Promise<Response> => {
     const url = new URL(request.url);
     const origin = siteOrigin(env);
     if (!origin) return htmlResponse("<h1>网站配置错误</h1><p>请联系管理员。</p>", 500);
@@ -278,8 +307,8 @@ export function createHandler(githubFetch: GitHubFetch = fetch): (request: Reque
       const authorize = new URL("https://github.com/login/oauth/authorize");
       authorize.searchParams.set("client_id", env.GITHUB_CLIENT_ID);
       authorize.searchParams.set("redirect_uri", `${origin}/auth/callback`);
-      authorize.searchParams.set("scope", "read:org");
       authorize.searchParams.set("state", state);
+      authorize.searchParams.set("allow_signup", "false");
       return redirect(authorize.toString(), 302, [cookie(STATE_COOKIE, state, STATE_TTL_SECONDS)]);
     }
 
@@ -300,6 +329,16 @@ export function createHandler(githubFetch: GitHubFetch = fetch): (request: Reque
     const session = sessionToken ? await verifySession(sessionToken, env.SESSION_SECRET) : null;
     if (!session) return redirect(`${origin}/login`);
 
+    let allowed: boolean;
+    try {
+      allowed = await isAllowlisted(env, session.githubId);
+    } catch {
+      return htmlResponse("<h1>权限核验暂时失败</h1><p>请稍后刷新页面。</p>", 503);
+    }
+    if (!allowed) {
+      return loginPage(env.GITHUB_ORG, "当前 GitHub 账户已不在获准成员名单中。", [cookie(SESSION_COOKIE, "", 0)]);
+    }
+
     const assetResponse = await env.ASSETS.fetch(request);
     const headers = securityHeaders(new Headers(assetResponse.headers));
     return new Response(assetResponse.body, { status: assetResponse.status, statusText: assetResponse.statusText, headers });
@@ -312,4 +351,4 @@ export default {
   fetch(request, env) {
     return handler(request, env);
   },
-} satisfies ExportedHandler<Env>;
+} satisfies ExportedHandler<WorkerEnv>;

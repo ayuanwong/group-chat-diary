@@ -30,11 +30,12 @@
 ## 受保护网站
 
 - 部署源是本私有仓库，但 Cloudflare Pages 只发布构建产生的 `dist/`：一份 `index.html`、日期清单和 JSON 数据，不会发布 README、构建脚本或仓库根目录；
-- Pages 的高级模式 Function 位于所有网页和静态资源之前，使用 GitHub OAuth 登录，并在每次登录时核验 `dsh-external` 组织成员资格；未通过认证时不会读取或返回档案资源；
-- GitHub OAuth 临时令牌只用于当次成员资格核验，不写入页面、Cookie 或仓库；登录会话使用 Cloudflare Secret 中的密钥签名，并在两小时后失效；
+- Pages 的高级模式 Function 位于所有网页和静态资源之前；GitHub OAuth 只读取公开账号身份，不申请 `read:org` 或其他组织权限；
+- `dsh-external` 成员 ID 每日同步到 Cloudflare D1 私有白名单。登录和后续每次访问都按 GitHub ID 查询白名单，未通过认证时不会读取或返回档案资源；
+- GitHub OAuth 临时令牌只用于当次读取账号 ID，不写入页面、Cookie、D1 或仓库；首次授权后 GitHub 会记住该 OAuth App，网站签名会话保持 30 天，成员离开白名单后旧会话会立即失效；
 - 站点响应禁止搜索引擎索引、禁止第三方页面嵌入，并关闭浏览器与边缘缓存；
 - `npm run check` 先校验档案完整性和常见敏感路径/凭据，`npm run build` 再生成可部署目录；
-- `latest.txt` 明确指定首页对应的当日档案，历史档案发布在受同一权限门禁保护的 `/archive/` 下。
+- `latest.txt` 明确指定首页对应的当日快照，所有历史 JSON 都受同一权限门禁保护。
 
 ## 每日基本纪要
 
@@ -91,6 +92,7 @@
 ## 自动更新方式
 
 - 每天北京时间 05:00 从授权数据源生成当天 `snapshots/YYYY-MM-DD.json`，不再生成新的按日 HTML；
+- 每次发布前同步一次 `dsh-external` 成员 ID 白名单；同步失败或成员列表异常为空时停止发布，并保留上一版白名单；
 - 校验通过后，同步更新当天 JSON、`latest.txt` 与 README 的每日纪要、讨论重点和文件更新记录；
 - 构建阶段只生成一份 `dist/index.html`，并生成 `dist/data/manifest.json` 供页面默认选择最新日期、切换历史日期；
 - 只在专用仓库工作区干净且可快进同步时，直接提交并推送到 `main`；

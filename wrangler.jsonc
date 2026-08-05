@@ -1,23 +1,14 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "square-shadow-f6fa",
-  "main": "worker/index.ts",
+  "name": "dsh-group-chat-diary",
+  "pages_build_output_dir": "./dist",
   "compatibility_date": "2026-08-05",
-  "workers_dev": false,
-  "preview_urls": false,
-  "assets": {
-    "directory": "./dist",
-    "binding": "ASSETS",
-    "run_worker_first": true
-  },
-  "vars": {
-    "GITHUB_ORG": "dsh-external",
-    "SITE_ORIGIN": "https://square-shadow-f6fa.lesliewong0923.workers.dev"
-  },
-  "secrets": {
-    "required": ["GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET", "SESSION_SECRET"]
-  },
-  "observability": {
-    "enabled": true
-  }
+  "d1_databases": [
+    {
+      "binding": "ACCESS_DB",
+      "database_name": "dsh-group-chat-diary-access",
+      "database_id": "75dffda0-f09b-4d07-9ef8-23629dcdab52",
+      "migrations_dir": "migrations"
+    }
+  ]
 }

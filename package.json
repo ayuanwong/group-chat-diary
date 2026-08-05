@@ -5,6 +5,8 @@
   "description": "Protected static site build for the DSH group chat diary.",
   "scripts": {
     "build": "node scripts/build-site.mjs",
+    "migrate:legacy": "node scripts/migrate-legacy-site.mjs",
+    "refresh:snapshot": "bash scripts/refresh_site_snapshot.sh",
     "check": "node scripts/build-site.mjs --check",
     "types": "wrangler types",
     "typecheck": "npm run types && tsc --noEmit",

@@ -30,7 +30,7 @@ describe("signed sessions", () => {
 describe("archive gate", () => {
   it("never invokes the asset binding for an anonymous request", async () => {
     const env = makeEnv();
-    const response = await createHandler()(new Request(`${env.SITE_ORIGIN}/archive/DSH.html`), env);
+    const response = await createHandler()(new Request(`${env.SITE_ORIGIN}/data/2026-08-05.json`), env);
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe(`${env.SITE_ORIGIN}/login`);
     expect(env.ASSETS.fetch).not.toHaveBeenCalled();

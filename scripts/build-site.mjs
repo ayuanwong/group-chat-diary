@@ -5,22 +5,17 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const output = path.join(root, "dist");
-const archiveOutput = path.join(output, "archive");
-const diaryPattern = /^DSH内测群每日档案-(\d{4})\.html$/;
+const dataOutput = path.join(output, "data");
+const snapshotsDir = path.join(root, "snapshots");
+const siteDir = path.join(root, "site");
+const contentDir = path.join(root, "content");
+const snapshotPattern = /^(\d{4}-\d{2}-\d{2})\.json$/;
 const blockedContent = [
   { pattern: /file:\/\/\//i, label: "本机 file URL" },
   { pattern: /\/Users\/[^/]+\//, label: "macOS 本机绝对路径" },
   { pattern: /github_pat_[A-Za-z0-9_]+/, label: "GitHub token" },
   { pattern: /gho_[A-Za-z0-9]+/, label: "GitHub OAuth token" },
 ];
-
-function escapeHtml(value) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
 
 async function assertReadable(filePath, message) {
   try {
@@ -30,70 +25,94 @@ async function assertReadable(filePath, message) {
   }
 }
 
-const latestName = (await readFile(path.join(root, "latest.txt"), "utf8")).trim();
-if (!diaryPattern.test(latestName) || path.basename(latestName) !== latestName) {
-  throw new Error("latest.txt 必须只包含一个合法的档案文件名");
-}
-
-const latestPath = path.join(root, latestName);
-await assertReadable(latestPath, `latest.txt 指向的文件不存在：${latestName}`);
-
-const diaryFiles = (await readdir(root))
-  .filter((name) => diaryPattern.test(name))
-  .sort((a, b) => b.localeCompare(a, "zh-CN", { numeric: true }));
-if (!diaryFiles.includes(latestName)) {
-  throw new Error(`最新档案未进入归档列表：${latestName}`);
-}
-
-for (const name of diaryFiles) {
-  const html = await readFile(path.join(root, name), "utf8");
-  if (!html.includes("globalThis.__DSH_SNAPSHOT__")) {
-    throw new Error(`${name} 不是可独立打开的内嵌快照`);
-  }
+function assertPublishable(text, name) {
   for (const rule of blockedContent) {
-    if (rule.pattern.test(html)) {
-      throw new Error(`${name} 包含不应发布的${rule.label}`);
-    }
+    if (rule.pattern.test(text)) throw new Error(`${name} 包含不应发布的${rule.label}`);
   }
 }
+
+function validateSnapshot(snapshot, name, expectedDate) {
+  if (!snapshot || snapshot.group?.version !== 3 || snapshot.group?.source?.group !== "【官方】DSH内测群") {
+    throw new Error(`${name} 不是合法的 DSH 内测群快照`);
+  }
+  if (!Number.isInteger(snapshot.group?.stats?.accepted_messages) || !Array.isArray(snapshot.group?.signals)) {
+    throw new Error(`${name} 的群聊统计或信号数据不完整`);
+  }
+  if (snapshot.issues?.version !== 2 || !Array.isArray(snapshot.issues?.issues) || !Array.isArray(snapshot.issues?.issue_groups)) {
+    throw new Error(`${name} 的 Issue 数据不完整`);
+  }
+  if (snapshot.snapshotDate !== expectedDate) throw new Error(`${name} 的 snapshotDate 与文件日期不一致`);
+}
+
+const latestName = (await readFile(path.join(root, "latest.txt"), "utf8")).trim();
+const latestMatch = latestName.match(snapshotPattern);
+if (!latestMatch || path.basename(latestName) !== latestName) {
+  throw new Error("latest.txt 必须只包含一个 YYYY-MM-DD.json 快照文件名");
+}
+
+const snapshotNames = (await readdir(snapshotsDir))
+  .filter((name) => snapshotPattern.test(name))
+  .sort((a, b) => b.localeCompare(a));
+if (!snapshotNames.includes(latestName)) throw new Error(`最新快照不存在：${latestName}`);
+
+const entries = [];
+for (const name of snapshotNames) {
+  const filePath = path.join(snapshotsDir, name);
+  const text = await readFile(filePath, "utf8");
+  assertPublishable(text, name);
+  let snapshot;
+  try {
+    snapshot = JSON.parse(text);
+  } catch {
+    throw new Error(`${name} 不是合法 JSON`);
+  }
+  const date = name.match(snapshotPattern)?.[1];
+  validateSnapshot(snapshot, name, date);
+  entries.push({
+    date,
+    generatedAt: snapshot.generatedAt ?? null,
+    cutoff: snapshot.group.stats.date_end,
+    messages: snapshot.group.stats.accepted_messages,
+    issues: snapshot.issues.issues.length,
+  });
+}
+
+const sitePath = path.join(siteDir, "index.html");
+const guidePath = path.join(contentDir, "newcomer-guide.json");
+await assertReadable(sitePath, "缺少唯一站点外壳 site/index.html");
+await assertReadable(guidePath, "缺少新人导引数据 content/newcomer-guide.json");
+const siteHtml = await readFile(sitePath, "utf8");
+const guideText = await readFile(guidePath, "utf8");
+assertPublishable(siteHtml, "site/index.html");
+assertPublishable(guideText, "content/newcomer-guide.json");
+if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide"') || !siteHtml.includes("/data/manifest.json")) {
+  throw new Error("站点外壳缺少日期切换或新人导引入口");
+}
+let guide;
+try {
+  guide = JSON.parse(guideText);
+} catch {
+  throw new Error("newcomer-guide.json 不是合法 JSON");
+}
+if (guide?.version !== 1 || !Array.isArray(guide.sections)) throw new Error("newcomer-guide.json 格式不合法");
 
 if (process.argv.includes("--check")) {
-  console.log(`校验通过：${diaryFiles.length} 份档案，首页为 ${latestName}`);
+  console.log(`校验通过：${snapshotNames.length} 份 JSON 快照，首页默认 ${latestMatch[1]}，站点 HTML 仅 1 份`);
   process.exit(0);
 }
 
 await rm(output, { recursive: true, force: true });
-await mkdir(archiveOutput, { recursive: true });
+await mkdir(dataOutput, { recursive: true });
+await copyFile(sitePath, path.join(output, "index.html"));
+for (const name of snapshotNames) await copyFile(path.join(snapshotsDir, name), path.join(dataOutput, name));
+await copyFile(guidePath, path.join(dataOutput, "newcomer-guide.json"));
 
-await copyFile(latestPath, path.join(output, "index.html"));
-for (const name of diaryFiles) {
-  await copyFile(path.join(root, name), path.join(archiveOutput, name));
-}
-
-const archiveLinks = diaryFiles.map((name) => {
-  const label = name.match(diaryPattern)?.[1] ?? name;
-  return `<li><a href="./${encodeURIComponent(name)}">${escapeHtml(label)}</a>${name === latestName ? " <strong>最新</strong>" : ""}</li>`;
-}).join("\n");
-
-await writeFile(path.join(archiveOutput, "index.html"), `<!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="noindex,nofollow,noarchive">
-  <title>DSH 内测群每日档案</title>
-  <style>
-    :root{color-scheme:dark}body{max-width:760px;margin:64px auto;padding:0 24px;background:#030703;color:#c8ffd6;font:16px/1.8 ui-monospace,SFMono-Regular,Menlo,monospace}a{color:#33ff66}strong{font-size:12px;color:#ffb347}li{margin:12px 0}
-  </style>
-</head>
-<body>
-  <h1>DSH 内测群每日档案</h1>
-  <p>仅限通过 GitHub 组织权限验证的成员查看。</p>
-  <ol>${archiveLinks}</ol>
-  <p><a href="/">返回最新档案</a></p>
-</body>
-</html>
-`, "utf8");
+await writeFile(path.join(dataOutput, "manifest.json"), `${JSON.stringify({
+  version: 1,
+  latest: latestMatch[1],
+  dates: entries.map((entry) => entry.date),
+  entries,
+})}\n`, "utf8");
 
 await writeFile(path.join(output, "robots.txt"), "User-agent: *\nDisallow: /\n", "utf8");
 await writeFile(path.join(output, "_headers"), `/*
@@ -105,4 +124,4 @@ await writeFile(path.join(output, "_headers"), `/*
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
 `, "utf8");
 
-console.log(`构建完成：${diaryFiles.length} 份档案，首页为 ${latestName}`);
+console.log(`构建完成：1 个站点 HTML，${snapshotNames.length} 份日期快照，默认 ${latestMatch[1]}`);

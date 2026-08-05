@@ -35,8 +35,6 @@ header{position:sticky;top:0;z-index:50;background:rgba(2,6,3,.92);border-bottom
 .nav .tabs button:hover{color:var(--ink);border-color:var(--dim)}
 .nav .tabs button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
 .nav .meta{font-size:10.5px;color:var(--faint);letter-spacing:.12em;white-space:nowrap}
-#refreshBtn{font:inherit;font-size:12px;color:var(--gr);background:none;border:1px solid var(--dim);padding:4px 12px;cursor:pointer;letter-spacing:.1em;margin-right:10px}
-#refreshBtn:hover{border-color:var(--gr)}
 @media(max-width:700px){.nav .meta{display:none}.nav .logo{margin-right:8px}.nav .tabs button{padding:6px 8px;font-size:12px}}
 main{position:relative;z-index:2;min-height:80vh}
 .panel{padding:46px 0 80px;animation:panelIn .35s ease both}
@@ -243,8 +241,13 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 .guide-section p{color:var(--mut);font-size:12px;line-height:1.8;margin-top:8px}
 .guide-section ul{margin:12px 0 0 18px;color:var(--mut);font-size:11.5px;line-height:1.8}
 .guide-scope{display:inline-flex;align-items:center;gap:6px;margin-top:10px;border:1px solid rgba(255,179,71,.28);padding:4px 8px;color:var(--amber);font-size:9px;letter-spacing:.12em}
+.account-menu{display:flex;align-items:center;gap:6px;margin-left:4px;white-space:nowrap}
+.account-login{max-width:116px;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-size:10.5px;letter-spacing:.03em}
+.account-menu form{margin:0}
+.account-logout{font:inherit;font-size:10px;color:var(--faint);background:none;border:1px solid var(--dim);padding:4px 8px;cursor:pointer;letter-spacing:.06em}
+.account-logout:hover,.account-logout:focus-visible{color:var(--gr);border-color:var(--gr);outline:none}
 @media(max-width:860px){.nav{height:auto;min-height:50px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}.nav .tabs{order:3;flex-basis:100%}.date-switch{margin-left:auto}.nav .meta{display:none}}
-@media(max-width:520px){.date-switch .label{display:none}.date-switch select{width:116px}#refreshBtn{padding:4px 8px;margin-right:0}.guide-empty{min-height:340px}}
+@media(max-width:520px){.date-switch .label{display:none}.date-switch select{width:116px}.account-login{max-width:92px}.guide-empty{min-height:340px}}
 </style>
 </head>
 <body class="flicker">
@@ -254,7 +257,11 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
     <div class="logo">DSH <em>//</em> 档案馆</div>
     <div class="tabs" id="tabs"></div>
     <label class="date-switch" for="datePicker"><span class="label">日期</span><select id="datePicker" aria-label="切换档案日期"></select></label>
-    <button id="refreshBtn" title="检查当前日期的最新数据">↻ 检查更新</button><div class="meta" id="snapshotMeta">读取快照…</div>
+    <div class="meta" id="snapshotMeta">读取快照…</div>
+    <div class="account-menu" aria-label="当前登录账户">
+      <span class="account-login" id="accountLogin">GitHub 账户</span>
+      <form method="post" action="/auth/logout"><button class="account-logout" type="submit">退出</button></form>
+    </div>
   </div>
 </header>
 
@@ -395,7 +402,7 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 <div id="refreshBar"><div class="line" id="refreshLine"></div><div class="bar"><i id="refreshFill"></i></div></div>
 <footer>
   <div class="wrap f-in">
-    <div class="closing" id="footerClosing">旧群聊档案已撤下；等待 <b>【官方】DSH内测群</b> 的新证据数据。</div>
+    <div class="closing" id="footerClosing">旧群聊档案已撤下；等待 <b>【官方】DSH内测群</b> 的新证据数据。有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>。</div>
     <div class="mono" id="footerMeta">&gt; 群消息 0 条 · Issue 0 条 · EOF</div>
   </div>
 </footer>
@@ -422,7 +429,7 @@ const DATA_URLS = {
   issues: "issues.json",
 };
 
-const state = { group: null, issues: null, comparison: null, busy: false, lastRefresh: 0 };
+const state = { group: null, issues: null, comparison: null, busy: false };
 const $ = (id) => document.getElementById(id);
 const escapeHtml = (value) => String(value ?? "")
   .replaceAll("&", "&amp;")
@@ -479,7 +486,21 @@ function initDatePicker() {
     location.href = next.toString();
   });
   const entry = SITE_MANIFEST.entries?.find((item) => item.date === SELECTED_DATE);
-  $("snapshotMeta").textContent = `${formatDateLabel(SELECTED_DATE)} · ${entry?.messages ?? 0} 条消息 · EOF`;
+  $("snapshotMeta").textContent = `${entry?.messages ?? 0} 条消息 · EOF`;
+}
+
+async function initAccount() {
+  try {
+    const response = await fetch("/api/me", { cache: "no-store" });
+    if (!response.ok) return;
+    const account = await response.json();
+    if (typeof account?.login === "string" && account.login) {
+      $("accountLogin").textContent = `@${account.login}`;
+      $("accountLogin").title = `GitHub 账户：${account.login}`;
+    }
+  } catch {
+    // 账户标签不影响档案主体读取。
+  }
 }
 
 function renderGuide() {
@@ -1034,7 +1055,7 @@ function renderData() {
   if ($("dataNote")) {
     const stats = state.group?.stats;
     $("dataNote").textContent = state.group?.status === "ready"
-      ? `本地源记录 ${stats.source_messages} 条；确认发言 ${stats.accepted_messages} 条；排除系统通知或无效记录 ${stats.excluded_messages} 条。Issue 快照计划每日更新；群聊快照必须由本机任务采集后发布，网页按钮只检查 GitHub 上已经发布的文件。`
+      ? `本地源记录 ${stats.source_messages} 条；确认发言 ${stats.accepted_messages} 条；排除系统通知或无效记录 ${stats.excluded_messages} 条。Issue 与群聊快照由后台任务采集并发布，网站直接展示已发布的最新版本。`
       : "旧群聊数据已撤下；没有本机证据时页面保持空白。";
   }
 }
@@ -1043,8 +1064,8 @@ function renderFooter() {
   const messageCount = state.group?.stats?.accepted_messages ?? 0;
   const issueCount = state.issues?.issues?.length ?? 0;
   if ($("footerClosing")) $("footerClosing").innerHTML = messageCount
-    ? `本页只展示来自 <b>【官方】DSH内测群</b>、且发言归属可由本机微信数据库验证的聚合与精选记录。`
-    : `旧群聊档案已撤下；等待 <b>【官方】DSH内测群</b> 的新证据数据。`;
+    ? `本页只展示来自 <b>【官方】DSH内测群</b>、且发言归属可由本机微信数据库验证的聚合与精选记录。有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>。`
+    : `旧群聊档案已撤下；等待 <b>【官方】DSH内测群</b> 的新证据数据。有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>。`;
   if ($("footerMeta")) $("footerMeta").textContent = `> 群消息 ${messageCount} 条 · Issue ${issueCount} 条 · EOF`;
 }
 
@@ -1064,20 +1085,7 @@ function refreshStatus(message) {
 
 async function refreshAll({ initial = false } = {}) {
   if (state.busy) return;
-  const now = Date.now();
-  if (!initial && now - state.lastRefresh < 10000) {
-    $("refreshBar").classList.add("on");
-    $("refreshFill").style.width = "100%";
-    refreshStatus("10 秒内已检查过；没有重复请求。");
-    setTimeout(() => {
-      $("refreshBar").classList.remove("on");
-      $("refreshFill").style.width = "0";
-    }, 2200);
-    return;
-  }
   state.busy = true;
-  state.lastRefresh = now;
-  $("refreshBtn").disabled = true;
   $("refreshBar").classList.add("on");
   $("refreshFill").style.width = "20%";
   refreshStatus(EMBEDDED_SNAPSHOT
@@ -1101,7 +1109,6 @@ async function refreshAll({ initial = false } = {}) {
     refreshStatus(`更新失败：${String(error.message || error).slice(0, 100)}`);
   } finally {
     state.busy = false;
-    $("refreshBtn").disabled = false;
     setTimeout(() => {
       $("refreshBar").classList.remove("on");
       $("refreshFill").style.width = "0";
@@ -1109,11 +1116,11 @@ async function refreshAll({ initial = false } = {}) {
   }
 }
 
+initAccount();
 initDatePicker();
 renderGuide();
 initTabs();
 initWarp();
-$("refreshBtn").addEventListener("click", () => location.reload());
 refreshAll({ initial: true });
 </script>
 </body>

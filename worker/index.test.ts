@@ -83,6 +83,21 @@ describe("archive gate", () => {
     expect(env.ASSETS.fetch).toHaveBeenCalledOnce();
   });
 
+  it("returns the signed-in GitHub account without invoking the asset binding", async () => {
+    const env = makeEnv();
+    const token = await signSession(
+      { version: 2, githubId: 123, login: "member", exp: Math.floor(Date.now() / 1000) + 300 },
+      env.SESSION_SECRET,
+    );
+    const response = await createHandler()(
+      new Request(`${env.SITE_ORIGIN}/api/me`, { headers: { Cookie: `__Host-portal_session=${token}` } }),
+      env,
+    );
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ login: "member" });
+    expect(env.ASSETS.fetch).not.toHaveBeenCalled();
+  });
+
   it("revokes an existing session when the member leaves the allowlist", async () => {
     const env = makeEnv("SECRET ARCHIVE", []);
     const token = await signSession(
@@ -162,6 +177,26 @@ describe("GitHub OAuth", () => {
     expect(location.searchParams.get("redirect_uri")).toBe(`${env.SITE_ORIGIN}/auth/callback`);
     expect(response.headers.get("Set-Cookie")).toContain("HttpOnly");
     expect(response.headers.get("Set-Cookie")).toContain("SameSite=Lax");
+  });
+
+  it("logs out through POST and clears both local authentication cookies", async () => {
+    const env = makeEnv();
+    const response = await createHandler()(
+      new Request(`${env.SITE_ORIGIN}/auth/logout`, { method: "POST" }),
+      env,
+    );
+    expect(response.status).toBe(303);
+    expect(response.headers.get("Location")).toBe(`${env.SITE_ORIGIN}/login`);
+    const setCookie = response.headers.get("Set-Cookie") ?? "";
+    expect(setCookie).toContain("__Host-portal_session=");
+    expect(setCookie).toContain("__Host-portal_oauth_state=");
+    expect(setCookie.match(/Max-Age=0/gu)).toHaveLength(2);
+  });
+
+  it("does not allow a GET request to trigger logout", async () => {
+    const env = makeEnv();
+    const response = await createHandler()(new Request(`${env.SITE_ORIGIN}/auth/logout`), env);
+    expect(response.status).toBe(405);
   });
 
   it("rejects a callback with a mismatched state before contacting GitHub", async () => {

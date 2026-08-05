@@ -94,6 +94,18 @@ if (!siteHtml.includes('fetch("/data/newcomer-guide.json"') || !siteHtml.include
 if (siteHtml.includes('date === SITE_MANIFEST.latest ? " · 最新"')) {
   throw new Error("日期选择器不得把“最新”拼进日期文本，避免窄屏截断");
 }
+if (siteHtml.includes('$("snapshotMeta").textContent = `${formatDateLabel(SELECTED_DATE)}')) {
+  throw new Error("日期选择器后不得重复显示当前日期");
+}
+if (siteHtml.includes("refreshBtn") || siteHtml.includes("检查更新")) {
+  throw new Error("站点不得保留无效的手动检查更新按钮");
+}
+if (!siteHtml.includes('id="accountLogin"') || !siteHtml.includes('fetch("/api/me"') || !siteHtml.includes('action="/auth/logout"')) {
+  throw new Error("顶部导航必须显示当前 GitHub 账户并提供退出入口");
+}
+if (!siteHtml.includes("@少女阿原")) {
+  throw new Error("页脚必须保留内容疑问联系人");
+}
 let guide;
 try {
   guide = JSON.parse(guideText);

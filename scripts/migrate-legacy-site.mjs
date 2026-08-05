@@ -59,8 +59,13 @@ const extraStyles = `
 .guide-section p{color:var(--mut);font-size:12px;line-height:1.8;margin-top:8px}
 .guide-section ul{margin:12px 0 0 18px;color:var(--mut);font-size:11.5px;line-height:1.8}
 .guide-scope{display:inline-flex;align-items:center;gap:6px;margin-top:10px;border:1px solid rgba(255,179,71,.28);padding:4px 8px;color:var(--amber);font-size:9px;letter-spacing:.12em}
+.account-menu{display:flex;align-items:center;gap:6px;margin-left:4px;white-space:nowrap}
+.account-login{max-width:116px;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-size:10.5px;letter-spacing:.03em}
+.account-menu form{margin:0}
+.account-logout{font:inherit;font-size:10px;color:var(--faint);background:none;border:1px solid var(--dim);padding:4px 8px;cursor:pointer;letter-spacing:.06em}
+.account-logout:hover,.account-logout:focus-visible{color:var(--gr);border-color:var(--gr);outline:none}
 @media(max-width:860px){.nav{height:auto;min-height:50px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}.nav .tabs{order:3;flex-basis:100%}.date-switch{margin-left:auto}.nav .meta{display:none}}
-@media(max-width:520px){.date-switch .label{display:none}.date-switch select{width:116px}#refreshBtn{padding:4px 8px;margin-right:0}.guide-empty{min-height:340px}}
+@media(max-width:520px){.date-switch .label{display:none}.date-switch select{width:116px}.account-login{max-width:92px}.guide-empty{min-height:340px}}
 `;
 shell = replaceOnce(shell, "</style>", `${extraStyles}</style>`, "样式结束标签");
 
@@ -68,7 +73,11 @@ const oldNav = `    <div class="tabs" id="tabs"></div>
     <button id="refreshBtn" style="font:inherit;font-size:12px;color:var(--gr);background:none;border:1px solid var(--dim);padding:4px 12px;cursor:pointer;letter-spacing:.1em;margin-right:10px" title="重新载入当前文件内嵌的数据">↻ 重新载入本文件</button><div class="meta">本地快照 · 08-05 11:25 · EOF</div>`;
 const newNav = `    <div class="tabs" id="tabs"></div>
     <label class="date-switch" for="datePicker"><span class="label">日期</span><select id="datePicker" aria-label="切换档案日期"></select></label>
-    <button id="refreshBtn" title="检查当前日期的最新数据">↻ 检查更新</button><div class="meta" id="snapshotMeta">读取快照…</div>`;
+    <div class="meta" id="snapshotMeta">读取快照…</div>
+    <div class="account-menu" aria-label="当前登录账户">
+      <span class="account-login" id="accountLogin">GitHub 账户</span>
+      <form method="post" action="/auth/logout"><button class="account-logout" type="submit">退出</button></form>
+    </div>`;
 shell = replaceOnce(shell, oldNav, newNav, "顶部导航");
 
 const guidePanel = `<section class="panel" id="panel-guide" hidden>
@@ -126,7 +135,21 @@ function initDatePicker() {
     location.href = next.toString();
   });
   const entry = SITE_MANIFEST.entries?.find((item) => item.date === SELECTED_DATE);
-  $("snapshotMeta").textContent = \`\${formatDateLabel(SELECTED_DATE)} · \${entry?.messages ?? 0} 条消息 · EOF\`;
+  $("snapshotMeta").textContent = \`\${entry?.messages ?? 0} 条消息 · EOF\`;
+}
+
+async function initAccount() {
+  try {
+    const response = await fetch("/api/me", { cache: "no-store" });
+    if (!response.ok) return;
+    const account = await response.json();
+    if (typeof account?.login === "string" && account.login) {
+      $("accountLogin").textContent = \`@\${account.login}\`;
+      $("accountLogin").title = \`GitHub 账户：\${account.login}\`;
+    }
+  } catch {
+    // 账户标签不影响档案主体读取。
+  }
 }
 
 function renderGuide() {
@@ -167,18 +190,23 @@ shell = replaceOnce(shell,
 );
 shell = shell
   .replace('<div class="k">00 // DAILY DELTA</div><h2>今日新增</h2>', '<div class="k">00 // DAILY DELTA</div><h2>今日最新</h2>')
+  .replaceAll('#refreshBtn{font:inherit;font-size:12px;color:var(--gr);background:none;border:1px solid var(--dim);padding:4px 12px;cursor:pointer;letter-spacing:.1em;margin-right:10px}\n#refreshBtn:hover{border-color:var(--gr)}\n', '')
+  .replaceAll('$("refreshBtn").disabled = true;\n', '')
+  .replaceAll('$("refreshBtn").disabled = false;\n', '')
   .replaceAll("正在载入本文件内嵌的群聊与 Issue 快照…", "正在载入当前日期的群聊与 Issue 快照…")
   .replaceAll("已载入本文件快照：", "已载入站点快照：")
   .replaceAll("文件生成于", "快照生成于")
-  .replaceAll("单文件快照中没有", "当前日期快照中没有");
+  .replaceAll("单文件快照中没有", "当前日期快照中没有")
+  .replaceAll("的聚合与精选记录。", "的聚合与精选记录。有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>。")
+  .replaceAll("的新证据数据。", "的新证据数据。有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>。");
 shell = replaceOnce(shell,
   'initTabs();\ninitWarp();',
-  'initDatePicker();\nrenderGuide();\ninitTabs();\ninitWarp();',
+  'initAccount();\ninitDatePicker();\nrenderGuide();\ninitTabs();\ninitWarp();',
   "应用初始化",
 );
 shell = replaceOnce(shell,
   '$("refreshBtn").addEventListener("click", () => refreshAll());',
-  '$("refreshBtn").addEventListener("click", () => location.reload());',
+  '',
   "检查更新按钮",
 );
 

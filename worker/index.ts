@@ -178,6 +178,12 @@ function htmlResponse(body: string, status = 200, extraHeaders?: HeadersInit): R
   return new Response(body, { status, headers });
 }
 
+function jsonResponse(body: unknown, status = 200): Response {
+  const headers = securityHeaders();
+  headers.set("Content-Type", "application/json; charset=utf-8");
+  return new Response(JSON.stringify(body), { status, headers });
+}
+
 function redirect(location: string, status = 302, cookies: string[] = []): Response {
   const headers = securityHeaders(new Headers({ Location: location }));
   for (const value of cookies) headers.append("Set-Cookie", value);
@@ -399,7 +405,13 @@ export function createHandler(githubFetch: GitHubFetch = fetch): (request: Reque
     }
 
     if (url.pathname === "/auth/logout") {
-      return redirect(`${origin}/login`, 303, [cookie(SESSION_COOKIE, "", 0)]);
+      if (request.method !== "POST") {
+        return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+      }
+      return redirect(`${origin}/login`, 303, [
+        cookie(SESSION_COOKIE, "", 0),
+        cookie(STATE_COOKIE, "", 0),
+      ]);
     }
 
     if (request.method !== "GET" && request.method !== "HEAD") {
@@ -419,6 +431,8 @@ export function createHandler(githubFetch: GitHubFetch = fetch): (request: Reque
     if (!allowed) {
       return loginPage("当前 GitHub 账户已不在获准成员名单中。", [cookie(SESSION_COOKIE, "", 0)]);
     }
+
+    if (url.pathname === "/api/me") return jsonResponse({ login: session.login });
 
     const assetResponse = await env.ASSETS.fetch(request);
     const headers = securityHeaders(new Headers(assetResponse.headers));

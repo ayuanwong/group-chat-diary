@@ -23,14 +23,15 @@
 
 ### 如何查看
 
-- 外发网站：访问 Cloudflare Pages 地址后，使用 GitHub 登录；只有 `dsh-external` 组织成员可以进入；
+- 外发网站：访问 Cloudflare Worker 地址后，使用 GitHub 登录；只有 `dsh-external` 组织的有效成员可以进入；
 - GitHub 仓库：获得仓库权限的成员仍可下载对应的 `.html` 文件，在现代浏览器中本地打开；
 - HTML 已内嵌样式、交互脚本和当日快照，不依赖同目录的 JSON 或 JavaScript 文件。
 
 ## 受保护网站
 
-- 部署源是本私有仓库，但 Cloudflare Pages 只发布构建产生的 `dist/`，不会发布 README、构建脚本或仓库根目录；
-- Cloudflare Access 位于所有网页和静态资源之前，使用 GitHub 作为身份提供方，并将访问范围限制为 `dsh-external` 组织；
+- 部署源是本私有仓库，但 Cloudflare Worker 只绑定构建产生的 `dist/`，不会发布 README、构建脚本或仓库根目录；
+- Worker 位于所有网页和静态资源之前，使用 GitHub OAuth 登录，并在每次登录时核验 `dsh-external` 组织成员资格；未通过认证时不会读取或返回档案资源；
+- GitHub OAuth 临时令牌只用于当次成员资格核验，不写入页面、Cookie 或仓库；登录会话使用 Cloudflare Secret 中的密钥签名，并在两小时后失效；
 - 站点响应禁止搜索引擎索引、禁止第三方页面嵌入，并关闭浏览器与边缘缓存；
 - `npm run check` 先校验档案完整性和常见敏感路径/凭据，`npm run build` 再生成可部署目录；
 - `latest.txt` 明确指定首页对应的当日档案，历史档案发布在受同一权限门禁保护的 `/archive/` 下。

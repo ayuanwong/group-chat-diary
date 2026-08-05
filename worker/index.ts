@@ -1,0 +1,315 @@
+const SESSION_COOKIE = "__Host-dsh_session";
+const STATE_COOKIE = "__Host-dsh_oauth_state";
+const SESSION_TTL_SECONDS = 2 * 60 * 60;
+const STATE_TTL_SECONDS = 10 * 60;
+const GITHUB_API_VERSION = "2026-03-10";
+
+type GitHubFetch = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+
+interface SessionPayload {
+  login: string;
+  exp: number;
+}
+
+interface GitHubTokenResponse {
+  access_token?: string;
+  error?: string;
+}
+
+interface GitHubUser {
+  login?: string;
+}
+
+interface GitHubMembership {
+  state?: string;
+}
+
+function encodeBase64Url(bytes: Uint8Array): string {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/u, "");
+}
+
+function decodeBase64Url(value: string): Uint8Array | null {
+  if (!/^[A-Za-z0-9_-]+$/u.test(value)) return null;
+  try {
+    const padding = "=".repeat((4 - (value.length % 4)) % 4);
+    const binary = atob(value.replaceAll("-", "+").replaceAll("_", "/") + padding);
+    return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+  } catch {
+    return null;
+  }
+}
+
+async function importHmacKey(secret: string): Promise<CryptoKey> {
+  return crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign", "verify"],
+  );
+}
+
+export async function signSession(payload: SessionPayload, secret: string): Promise<string> {
+  const body = encodeBase64Url(new TextEncoder().encode(JSON.stringify(payload)));
+  const signature = await crypto.subtle.sign("HMAC", await importHmacKey(secret), new TextEncoder().encode(body));
+  return `${body}.${encodeBase64Url(new Uint8Array(signature))}`;
+}
+
+export async function verifySession(
+  token: string,
+  secret: string,
+  nowSeconds = Math.floor(Date.now() / 1000),
+): Promise<SessionPayload | null> {
+  const [body, signature, extra] = token.split(".");
+  if (!body || !signature || extra) return null;
+  const signatureBytes = decodeBase64Url(signature);
+  const bodyBytes = decodeBase64Url(body);
+  if (!signatureBytes || !bodyBytes) return null;
+
+  const valid = await crypto.subtle.verify(
+    "HMAC",
+    await importHmacKey(secret),
+    new Uint8Array(signatureBytes),
+    new TextEncoder().encode(body),
+  );
+  if (!valid) return null;
+
+  try {
+    const payload = JSON.parse(new TextDecoder().decode(bodyBytes)) as Partial<SessionPayload>;
+    if (typeof payload.login !== "string" || !payload.login || typeof payload.exp !== "number") return null;
+    if (!Number.isSafeInteger(payload.exp) || payload.exp <= nowSeconds) return null;
+    return { login: payload.login, exp: payload.exp };
+  } catch {
+    return null;
+  }
+}
+
+function parseCookies(request: Request): Map<string, string> {
+  const cookies = new Map<string, string>();
+  for (const part of (request.headers.get("Cookie") ?? "").split(";")) {
+    const separator = part.indexOf("=");
+    if (separator < 1) continue;
+    const name = part.slice(0, separator).trim();
+    const value = part.slice(separator + 1).trim();
+    if (name) cookies.set(name, value);
+  }
+  return cookies;
+}
+
+function randomToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return encodeBase64Url(bytes);
+}
+
+function cookie(name: string, value: string, maxAge: number): string {
+  return `${name}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
+}
+
+function securityHeaders(headers = new Headers()): Headers {
+  headers.set("Cache-Control", "private, no-store, max-age=0");
+  headers.set("Pragma", "no-cache");
+  headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  headers.set("X-Frame-Options", "DENY");
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("Referrer-Policy", "no-referrer");
+  headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
+  return headers;
+}
+
+function htmlResponse(body: string, status = 200, extraHeaders?: HeadersInit): Response {
+  const headers = securityHeaders(new Headers(extraHeaders));
+  headers.set("Content-Type", "text/html; charset=utf-8");
+  headers.set(
+    "Content-Security-Policy",
+    "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
+  );
+  return new Response(body, { status, headers });
+}
+
+function redirect(location: string, status = 302, cookies: string[] = []): Response {
+  const headers = securityHeaders(new Headers({ Location: location }));
+  for (const value of cookies) headers.append("Set-Cookie", value);
+  return new Response(null, { status, headers });
+}
+
+function loginPage(org: string, error?: string, cookies: string[] = []): Response {
+  const safeOrg = escapeHtml(org);
+  const errorBlock = error ? `<p class="error">${escapeHtml(error)}</p>` : "";
+  const headers = new Headers();
+  for (const value of cookies) headers.append("Set-Cookie", value);
+  return htmlResponse(`<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>DSH 内测群每日档案 · 成员登录</title>
+  <style>
+    :root{color-scheme:dark}*{box-sizing:border-box}body{min-height:100vh;margin:0;display:grid;place-items:center;padding:24px;background:#030703;color:#d6ffe0;font:15px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}.card{width:min(100%,520px);padding:32px;border:1px solid #225c2f;border-radius:18px;background:#071008;box-shadow:0 24px 80px #0008}h1{margin:0 0 12px;font-size:22px;color:#56ff7b}p{margin:10px 0;color:#a8caae}.error{padding:10px 12px;border:1px solid #8a442f;border-radius:8px;color:#ffd2c3;background:#2a110b}a{display:inline-block;margin-top:14px;padding:11px 18px;border-radius:9px;background:#2ee65a;color:#001806;text-decoration:none;font-weight:700}small{display:block;margin-top:20px;color:#6f8e76}
+  </style>
+</head>
+<body><main class="card"><h1>DSH 内测群每日档案</h1><p>此页面包含内部群聊摘要，仅向 <strong>${safeOrg}</strong> 的有效 GitHub 组织成员开放。</p>${errorBlock}<a href="/auth/login">使用 GitHub 登录</a><small>登录只用于核验组织成员资格；站点不会保存你的 GitHub 访问令牌。</small></main></body>
+</html>`, 200, headers);
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function siteOrigin(env: Env): string | null {
+  try {
+    const url = new URL(env.SITE_ORIGIN);
+    return url.protocol === "https:" && url.pathname === "/" ? url.origin : null;
+  } catch {
+    return null;
+  }
+}
+
+async function githubJson<T>(githubFetch: GitHubFetch, url: string, token: string): Promise<{ response: Response; data: T | null }> {
+  const response = await githubFetch(url, {
+    headers: {
+      Accept: "application/vnd.github+json",
+      Authorization: `Bearer ${token}`,
+      "User-Agent": "dsh-group-chat-diary",
+      "X-GitHub-Api-Version": GITHUB_API_VERSION,
+    },
+  });
+  let data: T | null = null;
+  try {
+    data = await response.json() as T;
+  } catch {
+    // Non-JSON failures are handled by the caller using the HTTP status.
+  }
+  return { response, data };
+}
+
+async function handleOAuthCallback(request: Request, env: Env, githubFetch: GitHubFetch): Promise<Response> {
+  const origin = siteOrigin(env);
+  if (!origin) return htmlResponse("<h1>网站配置错误</h1><p>请联系管理员。</p>", 500);
+
+  const requestUrl = new URL(request.url);
+  const state = requestUrl.searchParams.get("state") ?? "";
+  const code = requestUrl.searchParams.get("code") ?? "";
+  const expectedState = parseCookies(request).get(STATE_COOKIE) ?? "";
+  const clearState = cookie(STATE_COOKIE, "", 0);
+  if (!state || !code || !expectedState || state !== expectedState) {
+    return loginPage(env.GITHUB_ORG, "登录请求已失效，请重新登录。", [clearState]);
+  }
+
+  const callbackUrl = `${origin}/auth/callback`;
+  let tokenResponse: Response;
+  try {
+    tokenResponse = await githubFetch("https://github.com/login/oauth/access_token", {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: env.GITHUB_CLIENT_ID,
+        client_secret: env.GITHUB_CLIENT_SECRET,
+        code,
+        redirect_uri: callbackUrl,
+      }),
+    });
+  } catch {
+    return htmlResponse("<h1>登录暂时失败</h1><p><a href=\"/login\">返回后重试</a></p>", 502, { "Set-Cookie": clearState });
+  }
+  let tokenData: GitHubTokenResponse = {};
+  try {
+    tokenData = await tokenResponse.json() as GitHubTokenResponse;
+  } catch {
+    // The generic error below intentionally avoids returning provider details.
+  }
+  if (!tokenResponse.ok || !tokenData.access_token) {
+    return htmlResponse("<h1>登录暂时失败</h1><p><a href=\"/login\">返回后重试</a></p>", 502, { "Set-Cookie": clearState });
+  }
+
+  const token = tokenData.access_token;
+  let userResult: Awaited<ReturnType<typeof githubJson<GitHubUser>>>;
+  let membershipResult: Awaited<ReturnType<typeof githubJson<GitHubMembership>>>;
+  try {
+    [userResult, membershipResult] = await Promise.all([
+      githubJson<GitHubUser>(githubFetch, "https://api.github.com/user", token),
+      githubJson<GitHubMembership>(githubFetch, `https://api.github.com/user/memberships/orgs/${encodeURIComponent(env.GITHUB_ORG)}`, token),
+    ]);
+  } catch {
+    return htmlResponse("<h1>权限核验暂时失败</h1><p><a href=\"/login\">返回后重试</a></p>", 502, { "Set-Cookie": clearState });
+  }
+
+  const { response: userResponse, data: user } = userResult;
+  const { response: membershipResponse, data: membership } = membershipResult;
+
+  if (!userResponse.ok || !user?.login || !membershipResponse.ok || membership?.state !== "active") {
+    return htmlResponse(
+      "<h1>没有访问权限</h1><p>当前 GitHub 账户不是获准组织的有效成员，或该组织尚未批准此 OAuth 应用。</p><p><a href=\"/login\">返回登录页</a></p>",
+      403,
+      { "Set-Cookie": clearState },
+    );
+  }
+
+  const exp = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS;
+  const session = await signSession({ login: user.login, exp }, env.SESSION_SECRET);
+  return redirect(`${origin}/`, 303, [clearState, cookie(SESSION_COOKIE, session, SESSION_TTL_SECONDS)]);
+}
+
+export function createHandler(githubFetch: GitHubFetch = fetch): (request: Request, env: Env) => Promise<Response> {
+  return async (request: Request, env: Env): Promise<Response> => {
+    const url = new URL(request.url);
+    const origin = siteOrigin(env);
+    if (!origin) return htmlResponse("<h1>网站配置错误</h1><p>请联系管理员。</p>", 500);
+
+    if (url.pathname === "/robots.txt") {
+      return new Response("User-agent: *\nDisallow: /\n", {
+        headers: securityHeaders(new Headers({ "Content-Type": "text/plain; charset=utf-8" })),
+      });
+    }
+    if (url.pathname === "/favicon.ico") return new Response(null, { status: 204, headers: securityHeaders() });
+    if (url.pathname === "/login") return loginPage(env.GITHUB_ORG);
+
+    if (url.pathname === "/auth/login") {
+      if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+      const state = randomToken();
+      const authorize = new URL("https://github.com/login/oauth/authorize");
+      authorize.searchParams.set("client_id", env.GITHUB_CLIENT_ID);
+      authorize.searchParams.set("redirect_uri", `${origin}/auth/callback`);
+      authorize.searchParams.set("scope", "read:org");
+      authorize.searchParams.set("state", state);
+      return redirect(authorize.toString(), 302, [cookie(STATE_COOKIE, state, STATE_TTL_SECONDS)]);
+    }
+
+    if (url.pathname === "/auth/callback") {
+      if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+      return handleOAuthCallback(request, env, githubFetch);
+    }
+
+    if (url.pathname === "/auth/logout") {
+      return redirect(`${origin}/login`, 303, [cookie(SESSION_COOKIE, "", 0)]);
+    }
+
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+    }
+
+    const sessionToken = parseCookies(request).get(SESSION_COOKIE);
+    const session = sessionToken ? await verifySession(sessionToken, env.SESSION_SECRET) : null;
+    if (!session) return redirect(`${origin}/login`);
+
+    const assetResponse = await env.ASSETS.fetch(request);
+    const headers = securityHeaders(new Headers(assetResponse.headers));
+    return new Response(assetResponse.body, { status: assetResponse.status, statusText: assetResponse.statusText, headers });
+  };
+}
+
+const handler = createHandler();
+
+export default {
+  fetch(request, env) {
+    return handler(request, env);
+  },
+} satisfies ExportedHandler<Env>;

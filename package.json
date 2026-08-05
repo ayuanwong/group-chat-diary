@@ -5,9 +5,19 @@
   "description": "Protected static site build for the DSH group chat diary.",
   "scripts": {
     "build": "node scripts/build-site.mjs",
-    "check": "node scripts/build-site.mjs --check"
+    "check": "node scripts/build-site.mjs --check",
+    "types": "wrangler types",
+    "typecheck": "npm run types && tsc --noEmit",
+    "test": "npm run types && vitest run",
+    "deploy:closed": "npm run build && wrangler deploy",
+    "deploy:public": "npm run build && wrangler deploy --config wrangler.public.jsonc"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.119.0"
   }
 }

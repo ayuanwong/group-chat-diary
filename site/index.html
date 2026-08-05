@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>DSH 档案馆 · 官方内测群</title>
+<style>:root{
+  --bg:#030703; --panel:rgba(15,90,36,.10); --panel2:rgba(15,90,36,.18);
+  --gr:#33ff66; --gr2:#1a9c40; --dim:#0f5a24; --ink:#c8ffd6; --mut:#7fe0a0; --faint:#3d8f55;
+  --amber:#ffb347; --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--gr);font-family:var(--mono);line-height:1.6;-webkit-font-smoothing:none;overflow-x:hidden}
+::selection{background:var(--gr);color:#021004}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;background:repeating-linear-gradient(0deg,rgba(0,0,0,.24) 0 1px,transparent 1px 3px)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:91;background:radial-gradient(120% 100% at 50% 50%,transparent 55%,rgba(0,12,0,.5) 100%)}
+.cursor::after{content:"▊";animation:blink 1.05s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.flicker{animation:flick .11s infinite}
+@keyframes flick{0%{opacity:.985}50%{opacity:1}100%{opacity:.99}}
+.wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+[hidden]{display:none!important}
+#warp{position:fixed;inset:0;z-index:96;pointer-events:none;opacity:0;transition:opacity .6s ease}
+#warp.on{opacity:1;pointer-events:auto}
+#warp canvas{position:absolute;inset:0}
+#warp .warp-txt{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);font-size:12px;letter-spacing:.4em;color:var(--gr);text-shadow:0 0 12px rgba(51,255,102,.7);white-space:nowrap}
+#warp .warp-skip{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);font-size:10px;color:var(--faint);letter-spacing:.2em;cursor:pointer}
+header{position:sticky;top:0;z-index:50;background:rgba(2,6,3,.92);border-bottom:1px solid var(--dim)}
+.nav{display:flex;align-items:center;gap:4px;max-width:1060px;margin:0 auto;padding:0 20px;height:50px}
+.nav .logo{font-size:14px;font-weight:700;letter-spacing:.06em;margin-right:18px;color:var(--ink);white-space:nowrap}
+.nav .logo em{font-style:normal;color:var(--gr)}
+.nav .tabs{display:flex;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.nav .tabs::-webkit-scrollbar{display:none}
+.nav .tabs button{font:inherit;font-size:13px;color:var(--mut);background:none;border:1px solid transparent;padding:6px 13px;cursor:pointer;letter-spacing:.1em;transition:all .15s}
+.nav .tabs button:hover{color:var(--ink);border-color:var(--dim)}
+.nav .tabs button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
+.nav .meta{font-size:10.5px;color:var(--faint);letter-spacing:.12em;white-space:nowrap}
+#refreshBtn{font:inherit;font-size:12px;color:var(--gr);background:none;border:1px solid var(--dim);padding:4px 12px;cursor:pointer;letter-spacing:.1em;margin-right:10px}
+#refreshBtn:hover{border-color:var(--gr)}
+@media(max-width:700px){.nav .meta{display:none}.nav .logo{margin-right:8px}.nav .tabs button{padding:6px 8px;font-size:12px}}
+main{position:relative;z-index:2;min-height:80vh}
+.panel{padding:46px 0 80px;animation:panelIn .35s ease both}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.p-head{margin-bottom:30px}
+.p-head .k{font-size:11px;letter-spacing:.24em;color:var(--faint)}
+.p-head h2{font-size:clamp(20px,2.6vw,28px);color:var(--ink);letter-spacing:.06em;margin-top:6px}
+.p-head .desc{color:var(--mut);font-size:12.5px;margin-top:8px;letter-spacing:.04em;max-width:660px}
+.p-head .desc b{color:var(--gr)}
+.chr .ev{padding:11px 0 11px 26px;border-left:1px solid var(--dim);position:relative;font-size:13px}
+.chr .ev::before{content:">";position:absolute;left:6px;color:var(--gr)}
+.chr .ev .w{color:var(--faint);font-size:11px;letter-spacing:.1em}
+.chr .ev .t{color:var(--ink);font-weight:700;margin-top:2px}
+.chr .ev .detail{color:var(--ink);margin-top:4px;line-height:1.75}
+.chr .ev .d{color:var(--mut);margin-top:2px}
+.chr .ev .d .q{color:var(--gr)}
+.sig-bar{border:1px solid var(--dim);border-left:3px solid var(--gr);padding:10px 14px;margin-bottom:18px;font-size:12.5px;color:var(--mut);background:var(--panel)}
+.sig-bar b{color:var(--gr)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.filters button{font:inherit;font-size:12px;color:var(--mut);background:none;border:1px solid var(--dim);padding:4px 12px;cursor:pointer;letter-spacing:.06em;transition:all .15s}
+.filters button:hover{color:var(--ink);border-color:var(--gr2)}
+.filters button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
+.sig-list .s{padding:12px 0;border-bottom:1px dashed var(--dim);font-size:13px}
+.sig-list .s .q{color:var(--ink)}
+.sig-list .s .q::before{content:"“";color:var(--gr);margin-right:2px}
+.sig-list .s .q::after{content:"”";color:var(--gr);margin-left:2px}
+.sig-list .s .m{color:var(--mut);font-size:11px;margin-top:5px;letter-spacing:.06em}
+.sig-list .s .m b{color:var(--gr)}
+.sig-list .s .m .cat{color:var(--faint);border:1px solid var(--dim);padding:0 6px;margin-right:8px}
+.sig-list .s .m .tag{color:var(--ink);border:1px solid var(--dim);padding:0 6px;margin-left:8px}
+.iss{border:1px solid var(--dim);padding:12px 14px;margin-bottom:8px;background:var(--panel);transition:border-color .15s}
+.iss:hover{border-color:var(--gr2)}
+.iss .hd{display:flex;align-items:baseline;gap:8px;font-size:12px;flex-wrap:wrap}
+.iss .hd .no{color:var(--amber);font-size:10.5px;letter-spacing:.08em}
+.iss .hd .t{color:var(--ink);font-weight:700;cursor:pointer}
+.iss .hd .st{font-size:9px;color:var(--faint);border:1px solid var(--dim);padding:0 5px}
+.iss .hd .st.open{color:var(--gr)}
+.iss .sm{font-size:12.5px;color:var(--mut);margin-top:6px;line-height:1.7}
+.iss .sm b{color:var(--gr)}
+.iss .wh{font-size:11px;color:var(--faint);margin-top:4px;line-height:1.7}
+.iss .exp{font-size:10.5px;color:var(--gr2);cursor:pointer;margin-top:9px;user-select:none;letter-spacing:.06em}
+.iss .exp:hover{color:var(--gr)}
+.iss .drop{display:none;margin-top:9px;border-top:1px dashed var(--dim);padding-top:8px}
+.iss.open .drop{display:block}
+.iss .mi{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:baseline;padding:5px 2px;font-size:12px;color:var(--mut);text-decoration:none;border-bottom:1px dotted rgba(255,255,255,.06)}
+.iss .mi:hover{color:var(--gr);background:rgba(51,255,102,.04)}
+.iss .mi .n{color:var(--faint);font-size:10.5px;flex:none}
+.iss .mi .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iss .mi .go{color:var(--gr2);font-size:10px}
+.iss .mi .ms{grid-column:2 / -1;font-size:11px;color:var(--faint);line-height:1.6}
+.delta-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:26px}
+.delta-stat{font:inherit;color:inherit;text-align:left;border:1px solid var(--dim);background:var(--panel);padding:15px 16px;cursor:pointer;transition:border-color .15s,background .15s}
+.delta-stat:hover,.delta-stat:focus-visible{border-color:var(--gr);background:var(--panel2);outline:none}
+.delta-stat .n{font-size:26px;line-height:1.1;color:var(--ink);font-weight:700}
+.delta-stat .l{font-size:10px;color:var(--faint);letter-spacing:.12em;margin-top:7px}
+.delta-stat .go{float:right;color:var(--gr);font-size:10px}
+.delta-subtabs{position:sticky;top:50px;z-index:12;display:flex;gap:5px;padding:10px 0;background:rgba(3,7,3,.96);border-top:1px solid var(--dim);border-bottom:1px solid var(--dim)}
+.delta-subtabs button{font:inherit;font-size:12px;color:var(--mut);background:none;border:1px solid var(--dim);padding:5px 12px;cursor:pointer;letter-spacing:.05em}
+.delta-subtabs button:hover{color:var(--ink);border-color:var(--gr2)}
+.delta-subtabs button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
+.delta-view{scroll-margin-top:110px}
+.delta-block{border-top:1px solid var(--dim);padding-top:25px;margin-top:28px}
+.delta-title{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:13px}
+.delta-title h3{font-size:17px;color:var(--ink);letter-spacing:.05em}
+.delta-title .sub{font-size:11px;color:var(--faint)}
+.delta-lead{font-size:12.5px;color:var(--mut);line-height:1.8;margin-bottom:16px;max-width:820px}
+.delta-lead b{color:var(--gr)}
+.delta-insights{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.delta-insight{border:1px solid var(--dim);background:var(--panel);padding:12px 14px;min-width:0}
+.delta-insight h4{font-size:10px;color:var(--gr);letter-spacing:.13em;margin-bottom:7px}
+.delta-insight p{font-size:11.5px;color:var(--mut);line-height:1.75}
+.delta-insight p b{color:var(--ink)}
+.delta-mini-list{display:grid;gap:5px}
+.delta-mini-list a,.delta-mini-list .item{display:block;color:var(--mut);font-size:10.5px;line-height:1.55;text-decoration:none;border-bottom:1px dotted var(--dim);padding-bottom:4px}
+.delta-mini-list a:hover{color:var(--gr)}
+.delta-mini-list b{color:var(--amber);font-weight:400}
+.delta-topic-list{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-bottom:20px}
+.delta-topic{display:grid;grid-template-columns:115px 1fr 45px;align-items:center;gap:9px;font-size:11px}
+.delta-topic .name{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.delta-topic .track{height:8px;border:1px solid var(--dim);padding:1px}
+.delta-topic .track i{display:block;height:100%;background:var(--gr)}
+.delta-topic .value{color:var(--gr);text-align:right}
+.delta-signals{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.delta-signal{border:1px solid var(--dim);background:var(--panel);padding:11px 12px;min-width:0}
+.delta-signal .q{color:var(--ink);font-size:12.5px;line-height:1.7}
+.delta-signal .m{font-size:10.5px;color:var(--faint);margin-top:6px}
+.delta-signal .m b{color:var(--gr)}
+.delta-issue-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.delta-issue{display:block;border:1px solid var(--dim);background:var(--panel);padding:11px 12px;text-decoration:none;min-width:0}
+.delta-issue:hover{border-color:var(--gr2)}
+.delta-issue .hd{display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}
+.delta-issue .no{color:var(--amber);font-size:10.5px}
+.delta-issue .cat{font-size:9px;color:var(--faint);border:1px solid var(--dim);padding:0 5px}
+.delta-issue .title{color:var(--ink);font-size:12.5px;font-weight:700;line-height:1.5}
+.delta-issue .summary{color:var(--mut);font-size:11px;line-height:1.65;margin-top:6px}
+.delta-issue .meta{font-size:9.5px;color:var(--faint);margin-top:6px}
+.toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.toolbar button{font:inherit;font-size:12px;color:var(--mut);background:none;border:1px solid var(--dim);padding:4px 11px;cursor:pointer;transition:all .15s}
+.toolbar button:hover{color:var(--ink);border-color:var(--gr2)}
+.toolbar button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
+.toolbar input{font:inherit;font-size:12.5px;color:var(--gr);background:var(--panel);border:1px solid var(--dim);padding:4px 10px;width:150px;outline:none}
+.toolbar input:focus{border-color:var(--gr)}
+.toolbar input::placeholder{color:var(--faint)}
+.toolbar .count{margin-left:auto;font-size:11px;color:var(--faint);letter-spacing:.1em}
+.issue-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.issue-controls .filters{margin:0}
+.issue-controls .label{font-size:10px;color:var(--faint);letter-spacing:.14em}
+.collbar{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.collbar .bar{flex:1;height:10px;border:1px solid var(--dim);padding:2px}
+.collbar .bar i{display:block;height:100%;width:0;background:var(--gr);transition:width 1s}
+.collbar .txt{font-size:10.5px;color:var(--faint);letter-spacing:.1em;white-space:nowrap}
+.collbar .txt b{color:var(--gr)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:12px;perspective:1200px}
+.pcard{position:relative;height:336px;border:1px solid var(--dim);background:var(--panel);cursor:pointer;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.pcard:hover{border-color:var(--gr2)}
+.pcard.flip{transform:rotateY(180deg)}
+.pcard .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;padding:14px;display:flex;flex-direction:column}
+.pcard .face.back{transform:rotateY(180deg)}
+.pcard[data-r="SSR"]{border-color:var(--gr)}
+.pcard[data-r="SSR"] .rar{color:var(--bg);background:var(--gr)}
+.pcard[data-r="SR"] .rar{color:var(--gr);border:1px solid var(--gr)}
+.pcard[data-r="R"] .rar{color:var(--mut);border:1px solid var(--gr2)}
+.pcard[data-r="N"] .rar{color:var(--faint);border:1px solid var(--dim)}
+.pcard .head{display:flex;align-items:center;font-size:10px;color:var(--faint);letter-spacing:.1em;border-bottom:1px dashed var(--dim);padding-bottom:7px}
+.pcard .rar{margin-left:auto;font-size:10px;font-weight:700;padding:0 6px;letter-spacing:.08em}
+.pcard .ava{width:54px;height:54px;border:1px solid var(--gr2);margin:10px auto 7px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(51,255,102,.05)}
+.pcard .ava img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) brightness(1.2) contrast(1.05)}
+.pcard .ava .ch{font-size:24px;color:var(--gr);text-shadow:0 0 10px rgba(51,255,102,.6)}
+.pcard .nm{text-align:center;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:.04em}
+.pcard .ttl{text-align:center;font-size:11px;color:var(--gr);margin-top:3px;letter-spacing:.05em;min-height:18px;font-weight:700}
+.pcard .persona{font-size:10.5px;color:var(--mut);line-height:1.65;margin-top:9px;min-height:52px}
+.pcard .bars{margin-top:auto;margin-bottom:20px;display:flex;gap:14px;font-size:10px;border-top:1px dashed var(--dim);padding-top:8px}
+.pcard .bar{display:flex;gap:6px;align-items:center}
+.pcard .bar span{color:var(--faint);font-size:9.5px}
+.pcard .bar b{color:var(--gr);font-size:11px}
+.pcard .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;max-height:22px;overflow:hidden}
+.pcard .tags i{font-style:normal;font-size:9px;color:var(--faint);border:1px solid var(--dim);padding:0 6px}
+.pcard .hint{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:9px;color:var(--faint);letter-spacing:.16em}
+.pcard .face.back .hint{display:none}
+.pcard.flip .face.back .hint{display:block}
+.pcard .back .b-label{font-size:9px;letter-spacing:.24em;color:var(--faint)}
+.pcard .back .b-title{font-size:15px;color:var(--gr);font-weight:700;margin-top:12px;line-height:1.45}
+.pcard .back .b-quote{font-size:12px;line-height:1.75;color:var(--ink);margin:16px 0 10px}
+.pcard .back .b-quote::before{content:"“";color:var(--gr)}
+.pcard .back .b-quote.muted{color:var(--mut)}
+.pcard .back .b-meta{font-size:9.5px;color:var(--faint);letter-spacing:.06em;margin-top:auto;margin-bottom:34px}
+.pcard .back .b-chart{display:flex;align-items:flex-end;gap:1px;height:44px}
+.pcard .back .b-chart i{flex:1;background:var(--gr2);opacity:.8;transform:scaleY(0);transform-origin:bottom;transition:transform .5s}
+.pcard.flip .back .b-chart i{transform:scaleY(1)}
+.pcard .back .b-foot{margin-top:auto;margin-bottom:22px;font-size:8.5px;color:var(--faint);letter-spacing:.06em;line-height:1.5}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:820px){.duo{grid-template-columns:1fr}}
+.data-grid{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:14px}
+.data-title{color:var(--faint);font-size:10px;letter-spacing:.13em;margin-bottom:8px;min-height:32px}
+.hours{border:1px solid var(--dim);padding:12px 10px 0;display:flex;align-items:flex-end;gap:2px;height:170px;background:var(--panel)}
+.hours .h{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%}
+.hours .bar{width:100%;max-width:14px;background:var(--gr);transform:scaleY(0);transform-origin:bottom;transition:transform .6s}
+.hours .h.on .bar{transform:scaleY(1)}
+.hours .h .t{font-size:7.5px;color:var(--faint)}
+.cloud{border:1px solid var(--dim);background:var(--panel);padding:11px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 9px;align-content:center;height:170px}
+.cloud .wd{font-size:9.5px!important;font-weight:700;color:var(--gr2);cursor:default;line-height:1.2;padding:1px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cloud .wd.hot{font-size:11px!important;color:var(--gr)}
+.cloud .wd:hover{color:var(--gr);text-shadow:0 0 10px rgba(51,255,102,.55)}
+.note{font-size:10.5px;color:var(--faint);letter-spacing:.03em;margin-top:14px;line-height:1.65}
+@media(min-width:900px){#panel-data{padding:26px 0 38px}#panel-data .p-head{margin-bottom:18px}}
+body[data-panel="data"] footer{display:none}
+@media(max-width:900px){.data-grid{grid-template-columns:1fr 1fr}.data-grid>div:first-child{grid-column:1/-1}}
+@media(max-width:760px){.delta-insights{grid-template-columns:1fr}}
+@media(max-width:700px){.delta-stats{grid-template-columns:1fr 1fr}.delta-stat:last-child{grid-column:1/-1}.delta-topic-list,.delta-signals,.delta-issue-list{grid-template-columns:1fr}.delta-subtabs{overflow-x:auto;scrollbar-width:none}.delta-subtabs::-webkit-scrollbar{display:none}.delta-subtabs button{white-space:nowrap}}
+@media(max-width:620px){.data-grid{grid-template-columns:1fr}.data-grid>div:first-child{grid-column:auto}.pcard{height:350px}.delta-topic{grid-template-columns:92px 1fr 40px}}
+#refreshBar{position:fixed;left:0;right:0;bottom:0;z-index:92;background:rgba(2,6,3,.96);border-top:1px solid var(--dim);padding:10px 20px;font-size:12px;color:var(--mut);display:none}
+#refreshBar.on{display:block}
+#refreshBar .line{color:var(--gr)}
+#refreshBar .line .dim{color:var(--faint)}
+#refreshBar .bar{width:100%;max-width:480px;height:8px;border:1px solid var(--dim);margin-top:6px;padding:1px}
+#refreshBar .bar i{display:block;height:100%;width:0;background:var(--gr)}
+footer{border-top:1px solid var(--dim);padding:36px 0 54px;position:relative;z-index:2}
+footer .f-in{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+footer .closing{font-size:13px;color:var(--mut);line-height:1.9}
+footer .closing b{color:var(--ink)}
+footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  #warp{display:none}
+}
+
+.date-switch{display:flex;align-items:center;gap:7px;margin-right:8px;color:var(--faint);font-size:10px;letter-spacing:.1em;white-space:nowrap}
+.nav{max-width:1400px}
+.nav .tabs button{white-space:nowrap;flex:0 0 auto}
+.date-switch select{max-width:150px;font:inherit;font-size:11px;color:var(--ink);background:#071008;border:1px solid var(--dim);padding:5px 26px 5px 9px;outline:none;cursor:pointer;color-scheme:dark}
+.date-switch select:hover,.date-switch select:focus{border-color:var(--gr)}
+.nav .tabs button.guide-tab{color:var(--amber);border-color:rgba(255,179,71,.28);position:relative}
+.nav .tabs button.guide-tab::before{content:"🔥";display:inline-block;margin-right:5px;filter:drop-shadow(0 0 5px rgba(255,179,71,.7));animation:guidePulse 1.8s ease-in-out infinite}
+.nav .tabs button.guide-tab.on{background:var(--amber);border-color:var(--amber);color:#160b00}
+@keyframes guidePulse{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.12)}}
+.guide-empty{min-height:420px;display:grid;place-items:center;text-align:center;border:1px solid var(--dim);background:radial-gradient(circle at 50% 35%,rgba(255,179,71,.09),transparent 34%),var(--panel);padding:48px 24px}
+.guide-empty .icon{font-size:54px;line-height:1;filter:drop-shadow(0 0 16px rgba(255,179,71,.55));animation:guidePulse 1.8s ease-in-out infinite}
+.guide-empty h3{color:var(--ink);font-size:20px;margin-top:18px;letter-spacing:.06em}
+.guide-empty p{max-width:540px;color:var(--mut);font-size:12px;margin-top:10px;line-height:1.8}
+.guide-empty .status{display:inline-block;margin-top:18px;border:1px solid rgba(255,179,71,.4);color:var(--amber);font-size:10px;padding:4px 10px;letter-spacing:.14em}
+.guide-content{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.guide-section{border:1px solid var(--dim);background:var(--panel);padding:18px}
+.guide-section h3{color:var(--ink);font-size:15px;letter-spacing:.05em}
+.guide-section p{color:var(--mut);font-size:12px;line-height:1.8;margin-top:8px}
+.guide-section ul{margin:12px 0 0 18px;color:var(--mut);font-size:11.5px;line-height:1.8}
+@media(max-width:860px){.nav{height:auto;min-height:50px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}.nav .tabs{order:3;flex-basis:100%}.date-switch{margin-left:auto}.nav .meta{display:none}}
+@media(max-width:520px){.date-switch .label{display:none}.date-switch select{max-width:125px}#refreshBtn{padding:4px 8px;margin-right:0}.guide-empty{min-height:340px}}
+</style>
+</head>
+<body class="flicker">
+<div id="warp"><canvas id="warpCv"></canvas><div class="warp-txt">HYPERSPACE // WARP</div><div class="warp-skip" id="warpSkip">点击跳过 ▸</div></div>
+<header>
+  <div class="nav">
+    <div class="logo">DSH <em>//</em> 档案馆</div>
+    <div class="tabs" id="tabs"></div>
+    <label class="date-switch" for="datePicker"><span class="label">日期</span><select id="datePicker" aria-label="切换档案日期"></select></label>
+    <button id="refreshBtn" title="检查当前日期的最新数据">↻ 检查更新</button><div class="meta" id="snapshotMeta">读取快照…</div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="panel" id="panel-guide" hidden>
+    <div class="wrap">
+      <div class="p-head"><div class="k">00 // NEWCOMER GUIDE</div><h2>新人导引</h2>
+      <p class="desc">给第一次进入 DSH 内测群的成员准备的起步信息。</p></div>
+      <div class="guide-empty" id="guideContent">
+        <div><div class="icon" aria-hidden="true">🔥</div><h3>新人导引正在整理</h3><p>这里已经预留为独立内容入口。后续资料上传到私有 GitHub 仓库后，会自动同步到这个位置。</p><span class="status">COMING SOON</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-delta" hidden>
+    <div class="wrap">
+      <div class="p-head"><div class="k">00 // DAILY DELTA</div><h2>今日最新</h2>
+      <p class="desc" id="deltaDesc">正在读取当天与前一日快照的差异。</p></div>
+      <div class="delta-stats">
+        <button type="button" class="delta-stat" data-delta-view="topics"><span class="go">查看主题 ↓</span><div class="n" id="deltaMessageNum">0</div><div class="l">新增有效群消息</div></button>
+        <button type="button" class="delta-stat" data-delta-view="issues"><span class="go">查看清单 ↓</span><div class="n" id="deltaIssueNum">0</div><div class="l">新增 ISSUE</div></button>
+        <button type="button" class="delta-stat" data-delta-view="signals"><span class="go">查看对话 ↓</span><div class="n" id="deltaSignalNum">0</div><div class="l">新增精选对话</div></button>
+      </div>
+
+      <div class="delta-subtabs" id="deltaSubtabs" aria-label="今日新增内容切换">
+        <button type="button" class="on" data-delta-view="issues">新增 Issue</button>
+        <button type="button" data-delta-view="topics">对话主题</button>
+        <button type="button" data-delta-view="signals">精选对话</button>
+      </div>
+
+      <section class="delta-view delta-block" id="deltaViewIssues" data-delta-section="issues">
+        <div class="delta-title"><h3>01 · 今天新增了什么 Issue？</h3><span class="sub" id="deltaIssueSummary"></span></div>
+        <div class="delta-insights">
+          <article class="delta-insight"><h4>数据对比与大盘</h4><p id="deltaIssueOverview"></p></article>
+          <article class="delta-insight"><h4>类别与占比分析</h4><p id="deltaIssueCategories"></p></article>
+          <article class="delta-insight"><h4>重点与代表内容</h4><div class="delta-mini-list" id="deltaIssueHighlights"></div></article>
+        </div>
+        <div class="toolbar">
+          <div class="filters" id="deltaIssueFilters" style="margin:0"></div>
+          <input type="search" id="deltaIssueSearch" placeholder="搜索新增 Issue…">
+          <span class="count" id="deltaIssueVisible"></span>
+        </div>
+        <div class="delta-issue-list" id="deltaIssueList"></div>
+      </section>
+
+      <section class="delta-view delta-block" id="deltaViewTopics" data-delta-section="topics" hidden>
+        <div class="delta-title"><h3>02 · 新增对话主要聊了什么？</h3><span class="sub" id="deltaChatRange"></span></div>
+        <div class="delta-insights">
+          <article class="delta-insight"><h4>数据对比与大盘</h4><p id="deltaTopicOverview"></p></article>
+          <article class="delta-insight"><h4>类别与占比分析</h4><p id="deltaTopicCategories"></p></article>
+          <article class="delta-insight"><h4>重点与代表内容</h4><div class="delta-mini-list" id="deltaTopicHighlights"></div></article>
+        </div>
+        <p class="delta-lead" id="deltaTopicLead"></p>
+        <div class="delta-topic-list" id="deltaTopicList"></div>
+      </section>
+
+      <section class="delta-view delta-block" id="deltaViewSignals" data-delta-section="signals" hidden>
+        <div class="delta-title"><h3>03 · 新增精选对话</h3><span class="sub">只展示通过现有质量门槛的精选，不展示完整聊天原文</span></div>
+        <div class="delta-insights">
+          <article class="delta-insight"><h4>精选比例</h4><p id="deltaSignalOverview"></p></article>
+          <article class="delta-insight"><h4>类别与占比分析</h4><p id="deltaSignalCategories"></p></article>
+          <article class="delta-insight"><h4>阅读建议</h4><p id="deltaSignalGuide"></p></article>
+        </div>
+        <div class="delta-signals" id="deltaSignalList"></div>
+      </section>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-chronicle" hidden>
+    <div class="wrap">
+      <div class="p-head"><div class="k">01 // CHRONICLE</div><h2>事件纪事</h2>
+      <p class="desc">从本机微信原始记录中提取完成态事件；当前条目均标为候选，可回到来源指纹复核。</p></div>
+      <div class="chr" id="chronicle"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-signals" hidden>
+    <div class="wrap">
+      <div class="p-head"><div class="k">02 // SIGNALS</div><h2>信号收录</h2>
+      <p class="desc" id="signalDesc">等待重新采集并通过质量门槛。</p></div>
+      <div class="sig-bar"><b>&gt;</b> 精选信号 <b id="sigNum">0</b> 条 / 有效发言 <b id="sigTotal">0</b> 条 · 分类筛选</div>
+      <div class="filters" id="sigFilters"></div>
+      <div class="sig-list" id="sigList"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-cards">
+    <div class="wrap">
+      <div class="p-head"><div class="k">03 // PERSONA</div><h2>成员星卡</h2>
+      <p class="desc" id="personaDesc">没有本机数据库证据的成员不会生成星卡。</p></div>
+      <div class="toolbar">
+        <div id="rarFilters" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <div id="sortBtns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <input type="search" id="cardSearch" placeholder="搜索昵称…">
+        <span class="count" id="cardCount"></span>
+      </div>
+      <div class="collbar"><div class="bar"><i id="collBar"></i></div><div class="txt">活跃星 <b id="collNum">0</b> / <span id="collTotal">0</span></div></div>
+      <div class="grid" id="cardGrid"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-issues" hidden>
+    <div class="wrap">
+      <div class="p-head"><div class="k">04 // ISSUES</div><h2>Issue 汇总</h2>
+      <p class="desc"><b id="issTotal">0</b> 条内测 Issue 按可复查规则归纳成 <b id="issCount">0</b> 组；标题与摘要均来自 GitHub 原始内容。<b>点击 #编号打开对应 Issue</b>。</p></div>
+      <div class="sig-bar"><b>&gt;</b> <b id="issOpen">0</b> 条开放中 · 每条 Issue 只进入一个分组 · 未使用模型猜测 · 数据整理于 <b id="issUpdated">--</b></div>
+      <div class="issue-controls">
+        <span class="label">排序</span><div id="issSortBtns" class="filters"></div>
+        <span class="label">分类</span><div class="filters" id="issCatFilters"></div>
+      </div>
+      <div id="issList"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-data" hidden>
+    <div class="wrap">
+      <div class="p-head"><div class="k">05 // STAR DATA</div><h2>星域数据</h2>
+      <p class="desc">一屏查看群聊活跃时段、Issue 主题和群聊高频词。</p></div>
+      <div class="data-grid">
+        <div>
+          <p class="data-title">GROUP ACTIVITY · 群聊活跃时段</p>
+          <div class="hours" id="hours"></div>
+        </div>
+        <div>
+          <p class="data-title">ISSUE TOPICS · 大家在反馈什么</p>
+          <div class="cloud" id="issueCloud"></div>
+        </div>
+        <div>
+          <p class="data-title">GROUP WORDS · 群里反复讨论什么</p>
+          <div class="cloud" id="groupCloud"></div>
+        </div>
+      </div>
+      <p class="note" id="dataNote">群聊旧数据已作废；新数据必须来自【官方】DSH内测群的本机数据库证据。</p>
+    </div>
+  </section>
+</main>
+
+<div id="refreshBar"><div class="line" id="refreshLine"></div><div class="bar"><i id="refreshFill"></i></div></div>
+<footer>
+  <div class="wrap f-in">
+    <div class="closing" id="footerClosing">旧群聊档案已撤下；等待 <b>【官方】DSH内测群</b> 的新证据数据。</div>
+    <div class="mono" id="footerMeta">&gt; 群消息 0 条 · Issue 0 条 · EOF</div>
+  </div>
+</footer>
+
+<script type="module">"use strict";
+
+const manifestResponse = await fetch("/data/manifest.json", { cache: "no-store" });
+if (!manifestResponse.ok) throw new Error(`manifest.json: HTTP ${manifestResponse.status}`);
+const SITE_MANIFEST = await manifestResponse.json();
+if (!Array.isArray(SITE_MANIFEST.dates) || !SITE_MANIFEST.dates.length || !SITE_MANIFEST.latest) {
+  throw new Error("站点日期清单无效");
+}
+const requestedDate = new URL(location.href).searchParams.get("date");
+const SELECTED_DATE = SITE_MANIFEST.dates.includes(requestedDate) ? requestedDate : SITE_MANIFEST.latest;
+const snapshotResponse = await fetch(`/data/${SELECTED_DATE}.json`, { cache: "no-store" });
+if (!snapshotResponse.ok) throw new Error(`${SELECTED_DATE}.json: HTTP ${snapshotResponse.status}`);
+const EMBEDDED_SNAPSHOT = await snapshotResponse.json();
+const guideResponse = await fetch("/data/newcomer-guide.json", { cache: "no-store" });
+const NEWCOMER_GUIDE = guideResponse.ok ? await guideResponse.json() : { version: 1, status: "empty", sections: [] };
+document.title = `DSH 档案馆 · ${SELECTED_DATE}`;
+
+const DATA_URLS = {
+  group: "group-data.json",
+  issues: "issues.json",
+};
+
+const state = { group: null, issues: null, comparison: null, busy: false, lastRefresh: 0 };
+const $ = (id) => document.getElementById(id);
+const escapeHtml = (value) => String(value ?? "")
+  .replaceAll("&", "&amp;")
+  .replaceAll("<", "&lt;")
+  .replaceAll(">", "&gt;")
+  .replaceAll('"', "&quot;")
+  .replaceAll("'", "&#39;");
+
+async function fetchJson(url) {
+  if (EMBEDDED_SNAPSHOT) {
+    if (url === DATA_URLS.group) return EMBEDDED_SNAPSHOT.group;
+    if (url === DATA_URLS.issues) return EMBEDDED_SNAPSHOT.issues;
+    throw new Error(`当前日期快照中没有 ${url}`);
+  }
+  const separator = url.includes("?") ? "&" : "?";
+  const response = await fetch(`${url}${separator}t=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+  return response.json();
+}
+
+function validGroup(data) {
+  return data && data.version === 3 && data.source?.group === "【官方】DSH内测群" &&
+    Number.isInteger(data.stats?.accepted_messages) && Array.isArray(data.signals) &&
+    Array.isArray(data.chronicles) && Array.isArray(data.members);
+}
+
+function validIssues(data) {
+  return data && data.version === 2 && Array.isArray(data.issues) && Array.isArray(data.issue_groups);
+}
+
+function emptyBlock(message) {
+  return `<div class="sig-bar"><b>&gt;</b> ${escapeHtml(message)}</div>`;
+}
+
+function formatDateLabel(date) {
+  const [year, month, day] = date.split("-").map(Number);
+  return `${year}年${month}月${day}日`;
+}
+
+function initDatePicker() {
+  const picker = $("datePicker");
+  picker.innerHTML = "";
+  for (const date of SITE_MANIFEST.dates) {
+    const option = document.createElement("option");
+    option.value = date;
+    option.textContent = `${formatDateLabel(date)}${date === SITE_MANIFEST.latest ? " · 最新" : ""}`;
+    picker.appendChild(option);
+  }
+  picker.value = SELECTED_DATE;
+  picker.addEventListener("change", () => {
+    const next = new URL(location.href);
+    if (picker.value === SITE_MANIFEST.latest) next.searchParams.delete("date");
+    else next.searchParams.set("date", picker.value);
+    location.href = next.toString();
+  });
+  const entry = SITE_MANIFEST.entries?.find((item) => item.date === SELECTED_DATE);
+  $("snapshotMeta").textContent = `${formatDateLabel(SELECTED_DATE)} · ${entry?.messages ?? 0} 条消息 · EOF`;
+}
+
+function renderGuide() {
+  const content = $("guideContent");
+  const sections = Array.isArray(NEWCOMER_GUIDE?.sections) ? NEWCOMER_GUIDE.sections : [];
+  if (!sections.length) return;
+  content.className = "guide-content";
+  content.innerHTML = sections.map((section) => {
+    const items = Array.isArray(section.items) && section.items.length
+      ? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+      : "";
+    return `<article class="guide-section"><h3>${escapeHtml(section.title || "未命名章节")}</h3>` +
+      `<p>${escapeHtml(section.body || "")}</p>${items}</article>`;
+  }).join("");
+}
+
+function initTabs() {
+  const tabs = [["delta", "今日最新"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue"], ["data", "数据"]];
+  const nav = $("tabs");
+  const requestedTab = new URL(location.href).searchParams.get("tab");
+  let current = tabs.some(([key]) => key === requestedTab) ? requestedTab : "delta";
+  document.body.dataset.panel = current;
+  nav.innerHTML = "";
+  for (const [key, label] of tabs) {
+    const button = document.createElement("button");
+    button.textContent = label;
+    button.dataset.tab = key;
+    button.classList.toggle("guide-tab", key === "guide");
+    button.classList.toggle("on", key === current);
+    button.addEventListener("click", () => {
+      current = key;
+      document.body.dataset.panel = current;
+      nav.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      document.querySelectorAll(".panel").forEach((panel) => { panel.hidden = panel.id !== `panel-${key}`; });
+      const next = new URL(location.href);
+      if (key === "delta") next.searchParams.delete("tab");
+      else next.searchParams.set("tab", key);
+      history.replaceState({}, "", next);
+      window.scrollTo({ top: 0, behavior: "instant" });
+    });
+    nav.appendChild(button);
+  }
+  document.querySelectorAll(".panel").forEach((panel) => { panel.hidden = panel.id !== `panel-${current}`; });
+}
+
+function initWarp() {
+  const wrap = $("warp");
+  if (!wrap) return;
+  const close = () => wrap.classList.remove("on");
+  setTimeout(() => wrap.classList.add("on"), 120);
+  setTimeout(close, 900);
+  $("warpSkip")?.addEventListener("click", close);
+}
+
+function renderChronicle() {
+  const items = state.group?.chronicles ?? [];
+  const box = $("chronicle");
+  box.innerHTML = "";
+  if (!items.length) {
+    box.innerHTML = emptyBlock("当前没有满足“完成态原话 + 事件词”的纪事候选。");
+    return;
+  }
+  for (const event of items) {
+    const element = document.createElement("div");
+    element.className = "ev";
+    element.innerHTML = `<div class="w">${escapeHtml(event.time || "--")}</div>` +
+      `<div class="t">${escapeHtml(event.title)}</div>` +
+      `<div class="detail">${escapeHtml(event.detail || event.quote)}</div>` +
+      `<div class="d"><b>${escapeHtml(event.sender)}</b>：<span class="q">「${escapeHtml(event.quote)}」</span></div>`;
+    box.appendChild(element);
+  }
+}
+
+function compactTime(value) {
+  const text = String(value || "");
+  return text ? text.slice(5, 16).replace("T", " ") : "--";
+}
+
+const TOPIC_DESCRIPTIONS = {
+  "插件": "插件、Skill 与 MCP 扩展",
+  "Issue": "Issue 提报、反馈与协作",
+  "模型": "模型选择、调用与额度",
+  "会话": "会话、上下文与恢复",
+  "Agent": "Agent、子代理与任务执行",
+  "Web UI": "网页、前端与交互界面",
+  "性能": "性能、耗时与稳定性",
+  "文件": "文件、路径与交付产物",
+  "任务": "任务、计划与执行流程",
+  "Windows": "Windows、WSL 与环境适配",
+  "安装": "安装、构建与启动",
+  "数据": "数据、记忆与存储",
+  "Bug": "报错、失败与异常修复",
+  "TUI / CLI": "终端、CLI 与 TUI",
+  "交互体验": "产品交互与使用体验",
+  "权限": "权限、沙箱与安全",
+};
+
+const SIGNAL_TOPIC_BY_DELTA = {
+  "插件": "插件与生态",
+  "Issue": "Issue 与协作",
+  "模型": "模型与调用",
+  "会话": "会话与上下文",
+  "Agent": "Agent 与任务",
+  "Web UI": "Web UI",
+  "性能": "性能稳定性",
+  "文件": "文件与产物",
+  "任务": "Agent 与任务",
+  "Windows": "权限与环境",
+  "安装": "权限与环境",
+  "数据": "数据与记忆",
+  "Bug": "性能稳定性",
+  "TUI / CLI": "CLI/TUI",
+  "交互体验": "产品体验",
+  "权限": "权限与环境",
+};
+
+function percent(value, total) {
+  return total > 0 ? `${(value / total * 100).toFixed(1)}%` : "0.0%";
+}
+
+function shortText(value, limit = 58) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  return text.length > limit ? `${text.slice(0, limit).replace(/[，,。；;\s]+$/, "")}…` : text;
+}
+
+function setupDeltaViews() {
+  const views = {
+    issues: $("deltaViewIssues"),
+    topics: $("deltaViewTopics"),
+    signals: $("deltaViewSignals"),
+  };
+  const activate = (key, scroll) => {
+    if (!views[key]) return;
+    Object.entries(views).forEach(([name, view]) => { view.hidden = name !== key; });
+    $("deltaSubtabs").querySelectorAll("button").forEach((button) => {
+      button.classList.toggle("on", button.dataset.deltaView === key);
+    });
+    if (scroll) views[key].scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  document.querySelectorAll("[data-delta-view]").forEach((button) => {
+    button.onclick = () => activate(button.dataset.deltaView, true);
+  });
+  activate("issues", false);
+}
+
+function renderDelta() {
+  const comparison = state.comparison;
+  const issueList = $("deltaIssueList");
+  const issueFilters = $("deltaIssueFilters");
+  const issueSearch = $("deltaIssueSearch");
+  const topicList = $("deltaTopicList");
+  const signalList = $("deltaSignalList");
+  issueFilters.innerHTML = "";
+  issueList.innerHTML = "";
+  topicList.innerHTML = "";
+  signalList.innerHTML = "";
+  issueSearch.value = "";
+  setupDeltaViews();
+
+  if (!comparison || comparison.status !== "ready") {
+    $("deltaDesc").textContent = "没有找到前一日归档，暂时无法生成可靠的日增量对比。";
+    $("deltaMessageNum").textContent = "--";
+    $("deltaIssueNum").textContent = "--";
+    $("deltaSignalNum").textContent = "--";
+    $("deltaIssueSummary").textContent = "缺少前一日快照";
+    $("deltaIssueOverview").textContent = "缺少前一日快照，无法计算增量和整体占比。";
+    $("deltaIssueCategories").textContent = "暂无类别占比。";
+    $("deltaIssueHighlights").innerHTML = '<span class="item">暂无代表内容。</span>';
+    $("deltaIssueVisible").textContent = "";
+    $("deltaChatRange").textContent = "";
+    $("deltaTopicLead").textContent = "需要保留连续两天的 HTML，才能计算新增内容。";
+    $("deltaTopicOverview").textContent = "暂无可比较的大盘数据。";
+    $("deltaTopicCategories").textContent = "暂无主题占比。";
+    $("deltaTopicHighlights").innerHTML = '<span class="item">暂无代表内容。</span>';
+    $("deltaSignalOverview").textContent = "暂无可比较的精选比例。";
+    $("deltaSignalCategories").textContent = "暂无类别占比。";
+    $("deltaSignalGuide").textContent = "前一日快照可用后再阅读本区。";
+    issueList.innerHTML = emptyBlock("没有可比较的新增 Issue。 ");
+    signalList.innerHTML = emptyBlock("没有可比较的新增对话。 ");
+    return;
+  }
+
+  const issuesByNumber = Object.fromEntries((state.issues?.issues ?? []).map((issue) => [issue.n, issue]));
+  const newIssues = (comparison.newIssueNumbers ?? []).map((number) => issuesByNumber[number]).filter(Boolean);
+  const signalIds = new Set(comparison.newSignalMessageIds ?? []);
+  const newSignals = (state.group?.signals ?? [])
+    .filter((signal) => signalIds.has(signal.message_id))
+    .sort((a, b) => String(b.timestamp).localeCompare(String(a.timestamp)));
+  const topics = (comparison.topicDeltas ?? []).filter((item) => item.delta > 0);
+
+  $("deltaDesc").innerHTML = `比较 <b>${escapeHtml(comparison.previousLabel)}</b> 与 <b>${escapeHtml(comparison.currentLabel)}</b> 两份归档；` +
+    `统计窗口为 ${escapeHtml(compactTime(comparison.previousCutoff))} → ${escapeHtml(compactTime(comparison.currentCutoff))}。`;
+  $("deltaMessageNum").textContent = Number(comparison.newMessageCount || 0).toLocaleString("zh-CN");
+  $("deltaIssueNum").textContent = newIssues.length.toLocaleString("zh-CN");
+  $("deltaSignalNum").textContent = newSignals.length.toLocaleString("zh-CN");
+  $("deltaChatRange").textContent = `${compactTime(comparison.previousCutoff)} → ${compactTime(comparison.currentCutoff)}`;
+
+  const issueCategories = ["全部", ...new Set(newIssues.map((issue) => issue.cat || "其他"))];
+  const categoryCounts = Array.from(new Set(newIssues.map((issue) => issue.cat || "其他")))
+    .map((category) => ({ category, count: newIssues.filter((issue) => (issue.cat || "其他") === category).length }))
+    .sort((a, b) => b.count - a.count || a.category.localeCompare(b.category, "zh"));
+  $("deltaIssueSummary").textContent = categoryCounts.length
+    ? `${newIssues.length} 条；${categoryCounts.slice(0, 3).map((item) => `${item.category} ${item.count}`).join(" · ")}`
+    : "没有新增 Issue";
+  const currentIssueTotal = state.issues?.issues?.length ?? 0;
+  const previousIssueTotal = Math.max(0, currentIssueTotal - newIssues.length);
+  const highPriorityIssues = newIssues.filter((issue) => Number(issue.priority || 0) >= 4);
+  $("deltaIssueOverview").innerHTML = `Issue 总量从 <b>${previousIssueTotal}</b> 增至 <b>${currentIssueTotal}</b>，` +
+    `本轮新增 <b>${newIssues.length}</b> 条，较前一快照增长 <b>${percent(newIssues.length, previousIssueTotal)}</b>；` +
+    `新增内容占当前总量 <b>${percent(newIssues.length, currentIssueTotal)}</b>。`;
+  $("deltaIssueCategories").innerHTML = categoryCounts.length
+    ? `主要是 ${categoryCounts.slice(0, 3).map((item) => `<b>${escapeHtml(item.category)} ${item.count} 条（${percent(item.count, newIssues.length)}）</b>`).join("、")}。` +
+      `优先级 4–5 共 <b>${highPriorityIssues.length} 条（${percent(highPriorityIssues.length, newIssues.length)}）</b>。`
+    : "本轮没有新增 Issue。";
+  const representativeIssues = [];
+  for (const item of categoryCounts) {
+    const candidate = newIssues.filter((issue) => (issue.cat || "其他") === item.category)
+      .sort((a, b) => Number(b.priority || 0) - Number(a.priority || 0) || b.n - a.n)[0];
+    if (candidate) representativeIssues.push(candidate);
+    if (representativeIssues.length >= 3) break;
+  }
+  $("deltaIssueHighlights").innerHTML = representativeIssues.length ? representativeIssues.map((issue) =>
+    `<a href="${escapeHtml(issue.url)}" target="_blank" rel="noopener"><b>#${issue.n}</b> ${escapeHtml(shortText(issue.summary || issue.title, 52))}</a>`
+  ).join("") : '<span class="item">本轮没有新增 Issue。</span>';
+
+  let currentCategory = "全部";
+  let query = "";
+  const drawIssues = () => {
+    const visible = newIssues.filter((issue) => {
+      if (currentCategory !== "全部" && (issue.cat || "其他") !== currentCategory) return false;
+      if (!query) return true;
+      return `${issue.n} ${issue.title} ${issue.summary} ${issue.cat}`.toLowerCase().includes(query);
+    });
+    $("deltaIssueVisible").textContent = `显示 ${visible.length} / ${newIssues.length}`;
+    issueList.innerHTML = visible.length ? visible.map((issue) =>
+      `<a class="delta-issue" href="${escapeHtml(issue.url)}" target="_blank" rel="noopener">` +
+      `<div class="hd"><span class="no">#${issue.n}</span><span class="cat">${escapeHtml(issue.cat || "其他")}</span>` +
+      `<span class="title">${escapeHtml(issue.title)}</span></div>` +
+      `<div class="summary">${escapeHtml(issue.summary || "暂无摘要")}</div>` +
+      `<div class="meta">${escapeHtml(issue.state === "open" ? "开放中" : "已关闭")} · 创建于 ${escapeHtml(compactTime(issue.created))} · 打开 Issue ↗</div></a>`
+    ).join("") : emptyBlock("当前筛选下没有新增 Issue。");
+  };
+  for (const category of issueCategories) {
+    const button = document.createElement("button");
+    const count = category === "全部" ? newIssues.length : newIssues.filter((issue) => (issue.cat || "其他") === category).length;
+    button.textContent = `${category} ${count}`;
+    button.classList.toggle("on", category === currentCategory);
+    button.addEventListener("click", () => {
+      currentCategory = category;
+      issueFilters.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      drawIssues();
+    });
+    issueFilters.appendChild(button);
+  }
+  issueSearch.oninput = () => { query = issueSearch.value.trim().toLowerCase(); drawIssues(); };
+  drawIssues();
+
+  const headlineTopics = topics.slice(0, 3);
+  const currentMessageCount = Number(comparison.currentMessageCount || 0);
+  const previousMessageCount = Number(comparison.previousMessageCount || 0);
+  const newMessageCount = Number(comparison.newMessageCount || 0);
+  $("deltaTopicOverview").innerHTML = `有效群消息从 <b>${previousMessageCount.toLocaleString("zh-CN")}</b> 增至 ` +
+    `<b>${currentMessageCount.toLocaleString("zh-CN")}</b>，新增 <b>${newMessageCount.toLocaleString("zh-CN")}</b> 条；` +
+    `较前一快照增长 <b>${percent(newMessageCount, previousMessageCount)}</b>，新增部分占当前总量 <b>${percent(newMessageCount, currentMessageCount)}</b>。`;
+  const topicHitTotal = topics.reduce((sum, item) => sum + item.delta, 0);
+  $("deltaTopicCategories").innerHTML = headlineTopics.length
+    ? `新增消息产生 <b>${topicHitTotal}</b> 次主题命中；最高的是 ` +
+      `${headlineTopics.map((item) => `<b>${escapeHtml(item.label)} ${item.delta} 次（${percent(item.delta, topicHitTotal)}）</b>`).join("、")}。` +
+      `一条消息可能命中多个主题。`
+    : "新增消息没有命中当前主题词规则。";
+  const topicRepresentatives = headlineTopics.map((item) => {
+    const signalTopic = SIGNAL_TOPIC_BY_DELTA[item.label];
+    const signal = newSignals.find((candidate) => (candidate.topics || []).includes(signalTopic));
+    return signal ? { label: item.label, signal } : null;
+  }).filter(Boolean);
+  $("deltaTopicHighlights").innerHTML = topicRepresentatives.length ? topicRepresentatives.map(({ label, signal }) =>
+    `<span class="item"><b>${escapeHtml(label)}</b> ${escapeHtml(shortText(signal.text, 48))} · ${escapeHtml(signal.sender)}</span>`
+  ).join("") : '<span class="item">暂无可展示的代表性新增对话。</span>';
+  $("deltaTopicLead").innerHTML = topics.length
+    ? `新增 <b>${newMessageCount.toLocaleString("zh-CN")}</b> 条有效发言。讨论增量最高的是 ` +
+      `${headlineTopics.map((item) => `<b>${escapeHtml(TOPIC_DESCRIPTIONS[item.label] || item.label)} +${item.delta}</b>`).join("、")}。` +
+      `下方数字表示含该主题的新增消息数，一条消息可能命中多个主题。`
+    : "新增消息没有命中当前主题词规则。";
+  const visibleTopics = topics.slice(0, 12);
+  const topicMaximum = Math.max(...visibleTopics.map((item) => item.delta), 1);
+  topicList.innerHTML = visibleTopics.map((item) =>
+    `<div class="delta-topic" title="${escapeHtml(TOPIC_DESCRIPTIONS[item.label] || item.label)}">` +
+    `<span class="name">${escapeHtml(item.label)}</span><span class="track"><i style="width:${item.delta / topicMaximum * 100}%"></i></span>` +
+    `<span class="value">+${item.delta}</span></div>`
+  ).join("");
+
+  const signalCategories = Array.from(new Set(newSignals.map((signal) => signal.cat || "其他")))
+    .map((category) => ({ category, count: newSignals.filter((signal) => (signal.cat || "其他") === category).length }))
+    .sort((a, b) => b.count - a.count || a.category.localeCompare(b.category, "zh"));
+  const currentSignalTotal = state.group?.signals?.length ?? 0;
+  $("deltaSignalOverview").innerHTML = `本轮有 <b>${newSignals.length}</b> 条对话进入精选，占新增有效消息 ` +
+    `<b>${percent(newSignals.length, newMessageCount)}</b>，占当前 <b>${currentSignalTotal}</b> 条精选池的 ` +
+    `<b>${percent(newSignals.length, currentSignalTotal)}</b>。这是代表样本，不是完整对话量。`;
+  $("deltaSignalCategories").innerHTML = signalCategories.length
+    ? signalCategories.slice(0, 4).map((item) => `<b>${escapeHtml(item.category)} ${item.count} 条（${percent(item.count, newSignals.length)}）</b>`).join("、") + "。"
+    : "本轮没有新增精选对话。";
+  $("deltaSignalGuide").innerHTML = signalCategories.length
+    ? `建议先看占比最高的 <b>${escapeHtml(signalCategories[0].category)}</b>，再结合“对话主题”中的高频议题判断共性；单条样本只作为线索，不代表整体结论。`
+    : "本轮没有新增精选对话。";
+
+  signalList.innerHTML = newSignals.length ? newSignals.map((signal) =>
+    `<div class="delta-signal"><div class="q">${escapeHtml(signal.text)}</div>` +
+    `<div class="m"><b>${escapeHtml(signal.sender)}</b> · ${escapeHtml(signal.cat)} · ${escapeHtml(signal.time || "--")} · 质量 ${signal.score}/12</div></div>`
+  ).join("") : emptyBlock("本次新增对话中，没有进入现有精选列表的代表记录。");
+}
+
+function renderSignals() {
+  const items = state.group?.signals ?? [];
+  const acceptedCount = state.group?.stats?.accepted_messages ?? 0;
+  const sourceCount = state.group?.stats?.source_messages ?? 0;
+  $("sigNum").textContent = items.length;
+  $("sigTotal").textContent = acceptedCount;
+  if ($("signalDesc")) $("signalDesc").innerHTML = items.length
+    ? `从 <b>${sourceCount}</b> 条本机原始记录中确认 <b>${acceptedCount}</b> 条有效发言，平衡收录 <b>${items.length}</b> 条高质量信号。`
+    : "当前没有通过来源、归属、相关性与信息量门槛的信号。";
+
+  const filters = $("sigFilters");
+  const list = $("sigList");
+  filters.innerHTML = "";
+  list.innerHTML = "";
+  if (!items.length) {
+    list.innerHTML = emptyBlock("暂无合格信号。右侧绿色气泡只归少女阿原，左侧必须有可见署名。");
+    return;
+  }
+  const categories = ["全部", ...new Set(items.map((item) => item.cat))];
+  let current = "全部";
+  const renderList = () => {
+    const visible = current === "全部" ? items : items.filter((item) => item.cat === current);
+    list.innerHTML = visible.map((item) => `<div class="s">` +
+      `<div class="q">${escapeHtml(item.text)}</div>` +
+      `<div class="m"><span class="cat">${escapeHtml(item.cat)}</span>` +
+      `<b>${escapeHtml(item.sender)}</b> · ${escapeHtml(item.time || "--")} · 质量 ${item.score}/12</div></div>`).join("");
+  };
+  for (const category of categories) {
+    const button = document.createElement("button");
+    const count = category === "全部" ? items.length : items.filter((item) => item.cat === category).length;
+    button.textContent = `${category} ${count}`;
+    button.classList.toggle("on", category === current);
+    button.addEventListener("click", () => {
+      current = category;
+      filters.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      renderList();
+    });
+    filters.appendChild(button);
+  }
+  renderList();
+}
+
+function rarityFor(index, total) {
+  const position = (index + 1) / Math.max(total, 1);
+  if (position <= 0.05) return "SSR";
+  if (position <= 0.15) return "SR";
+  if (position <= 0.4) return "R";
+  return "N";
+}
+
+function renderCards() {
+  const original = (state.group?.members ?? []).map((member, index, all) => ({
+    ...member,
+    rarity: rarityFor(index, all.length),
+  }));
+  const grid = $("cardGrid");
+  const filters = $("rarFilters");
+  const sorts = $("sortBtns");
+  const search = $("cardSearch");
+  filters.innerHTML = "";
+  sorts.innerHTML = "";
+  grid.innerHTML = "";
+  search.value = "";
+  $("collNum").textContent = original.length;
+  $("collTotal").textContent = original.length;
+  $("collBar").style.width = original.length ? "100%" : "0%";
+  if ($("personaDesc")) $("personaDesc").innerHTML = original.length
+    ? `基于微信发送者 ID 与联系人表确认 <b>${original.length}</b> 位实际发言成员。`
+    : "旧成员画像已全部撤下；没有新证据的成员不会生成星卡。";
+  if (!original.length) {
+    $("cardCount").textContent = "收录 0 张";
+    grid.innerHTML = emptyBlock("等待重新采集 DSH 内测群消息。");
+    return;
+  }
+
+  let rarity = "全部";
+  let sort = "active";
+  let query = "";
+  const render = () => {
+    let members = original.slice();
+    if (rarity !== "全部") members = members.filter((member) => member.rarity === rarity);
+    if (query) members = members.filter((member) => member.name.toLowerCase().includes(query));
+    if (sort === "active") members.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "zh"));
+    if (sort === "signals") members.sort((a, b) => b.signals - a.signals || b.count - a.count);
+    if (sort === "name") members.sort((a, b) => a.name.localeCompare(b.name, "zh"));
+    grid.innerHTML = "";
+    for (const [index, member] of members.entries()) {
+      const card = document.createElement("div");
+      card.className = "pcard";
+      card.dataset.r = member.rarity;
+      const first = escapeHtml(Array.from(member.name.trim())[0] || "?");
+      const traits = (member.traits ?? []).map((trait) => `<i>${escapeHtml(trait)}</i>`).join("");
+      const evidence = member.representative;
+      const back = evidence
+        ? `<div class="b-label">代表表现</div><div class="b-title">${escapeHtml(evidence.headline)}</div>` +
+          `<div class="b-quote">${escapeHtml(evidence.excerpt)}</div>` +
+          `<div class="b-meta">${escapeHtml(evidence.category)} · ${escapeHtml(evidence.time || "--")}</div>`
+        : `<div class="b-label">样本说明</div><div class="b-title">尚未形成稳定画像</div>` +
+          `<div class="b-quote muted">当前没有足够完整、具体且与 DSH 产品相关的发言进入精选。</div>`;
+      card.innerHTML = `<div class="face front"><div class="head"><span>NO.${String(index + 1).padStart(3, "0")}</span>` +
+        `<span class="rar">${member.rarity}</span></div><div class="ava"><span class="ch">${first}</span></div>` +
+        `<div class="nm">${escapeHtml(member.name)}</div><div class="ttl">${escapeHtml(member.role || "讨论参与者")}</div>` +
+        `<div class="persona">${escapeHtml(member.persona || "当前样本不足，暂不形成角色判断。")}</div>` +
+        `<div class="tags">${traits}</div>` +
+        `<div class="bars"><div class="bar"><span>发言</span><b>${member.count}</b></div>` +
+        `<div class="bar"><span>精选</span><b>${member.signals}</b></div></div>` +
+        `<div class="hint">[ 看代表表现 ]</div></div>` +
+        `<div class="face back">${back}<div class="b-foot">画像只基于本群已验证发言，不推断真实身份</div><div class="hint">[ 返回画像 ]</div></div>`;
+      card.addEventListener("click", () => {
+        card.classList.toggle("flip");
+      });
+      grid.appendChild(card);
+    }
+    $("cardCount").textContent = `收录 ${members.length} 张`;
+  };
+
+  for (const option of ["全部", "SSR", "SR", "R", "N"]) {
+    const button = document.createElement("button");
+    const count = option === "全部" ? original.length : original.filter((member) => member.rarity === option).length;
+    button.textContent = `${option} ${count}`;
+    button.classList.toggle("on", option === rarity);
+    button.addEventListener("click", () => {
+      rarity = option;
+      filters.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      render();
+    });
+    filters.appendChild(button);
+  }
+  for (const [key, label] of [["active", "按消息"], ["signals", "按信号"], ["name", "按名字"]]) {
+    const button = document.createElement("button");
+    button.textContent = label;
+    button.classList.toggle("on", key === sort);
+    button.addEventListener("click", () => {
+      sort = key;
+      sorts.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      render();
+    });
+    sorts.appendChild(button);
+  }
+  search.oninput = () => { query = search.value.trim().toLowerCase(); render(); };
+  render();
+}
+
+function renderIssues() {
+  const issues = state.issues?.issues ?? [];
+  const groups = state.issues?.issue_groups ?? [];
+  const byNumber = Object.fromEntries(issues.map((issue) => [issue.n, issue]));
+  $("issTotal").textContent = issues.length;
+  $("issOpen").textContent = issues.filter((issue) => issue.state === "open").length;
+  $("issCount").textContent = groups.length;
+  $("issUpdated").textContent = state.issues?.updated_at ?? "--";
+  const list = $("issList");
+  const filters = $("issCatFilters");
+  const sorts = $("issSortBtns");
+  list.innerHTML = "";
+  filters.innerHTML = "";
+  sorts.innerHTML = "";
+  if (!groups.length) {
+    list.innerHTML = emptyBlock("Issue 数据尚未生成。");
+    return;
+  }
+  const categories = ["全部", ...new Set(groups.map((group) => group.cat))];
+  let current = "全部";
+  let sortMode = "importance";
+  const render = () => {
+    const visible = (current === "全部" ? groups : groups.filter((group) => group.cat === current))
+      .slice().sort((a, b) => sortMode === "frequency"
+        ? b.issues.length - a.issues.length || b.score - a.score || a.name.localeCompare(b.name, "zh")
+        : b.score - a.score || b.issues.length - a.issues.length || a.name.localeCompare(b.name, "zh"));
+    list.innerHTML = visible.map((group) => {
+      const rows = group.issues.map((number) => {
+        const issue = byNumber[number];
+        if (!issue) return "";
+        return `<a class="mi" href="${escapeHtml(issue.url)}" target="_blank" rel="noopener">` +
+          `<span class="n">#${number}</span><span class="tt">${escapeHtml(issue.title)}</span>` +
+          `<span class="go">↗</span><span class="ms">${escapeHtml(issue.summary)}</span></a>`;
+      }).join("");
+      return `<div class="iss"><div class="hd"><span class="no">${"★".repeat(group.score)}${"☆".repeat(5 - group.score)}</span>` +
+        `<span class="t">${escapeHtml(group.name)}</span><span class="st open">${group.issues.length} 条</span></div>` +
+        `<div class="sm"><b>最新一条：</b>${escapeHtml(group.summary)}</div>` +
+        `<div class="wh">来源摘录：${escapeHtml(group.why)}</div>` +
+        `<div class="exp">▾ 展开 ${group.issues.length} 条关联 Issue</div><div class="drop">${rows}</div></div>`;
+    }).join("");
+    list.querySelectorAll(".iss").forEach((element) => element.addEventListener("click", (event) => {
+      if (event.target.closest("a")) return;
+      element.classList.toggle("open");
+      const count = element.querySelectorAll(".mi").length;
+      element.querySelector(".exp").textContent = element.classList.contains("open") ? "▴ 收起" : `▾ 展开 ${count} 条关联 Issue`;
+    }));
+  };
+  for (const [key, label] of [["importance", "按重要性"], ["frequency", "按频次"]]) {
+    const button = document.createElement("button");
+    button.textContent = label;
+    button.classList.toggle("on", key === sortMode);
+    button.addEventListener("click", () => {
+      sortMode = key;
+      sorts.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      render();
+    });
+    sorts.appendChild(button);
+  }
+  for (const category of categories) {
+    const button = document.createElement("button");
+    const count = category === "全部" ? groups.length : groups.filter((group) => group.cat === category).length;
+    button.textContent = `${category} ${count}`;
+    button.classList.toggle("on", category === current);
+    button.addEventListener("click", () => {
+      current = category;
+      filters.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      render();
+    });
+    filters.appendChild(button);
+  }
+  render();
+}
+
+function renderData() {
+  const hours = state.group?.hourly ?? Array(24).fill(0);
+  const box = $("hours");
+  box.innerHTML = "";
+  const maximum = Math.max(...hours, 1);
+  hours.forEach((value, hour) => {
+    const element = document.createElement("div");
+    element.className = "h on";
+    element.innerHTML = `<div class="bar" style="height:${value / maximum * 100}%"></div><div class="t">${String(hour).padStart(2, "0")}</div>`;
+    box.appendChild(element);
+  });
+  const renderWords = (id, words) => {
+    const cloud = $(id);
+    cloud.innerHTML = "";
+    for (const [index, word] of words.entries()) {
+      const element = document.createElement("div");
+      element.className = `wd${index < 3 ? " hot" : ""}`;
+      element.textContent = `${word.t} ×${word.n}`;
+      element.title = `${word.t}：${word.n} 条相关记录`;
+      cloud.appendChild(element);
+    }
+  };
+  renderWords("issueCloud", state.issues?.topic_words ?? []);
+  renderWords("groupCloud", state.group?.group_topic_words ?? []);
+  if ($("dataNote")) {
+    const stats = state.group?.stats;
+    $("dataNote").textContent = state.group?.status === "ready"
+      ? `本地源记录 ${stats.source_messages} 条；确认发言 ${stats.accepted_messages} 条；排除系统通知或无效记录 ${stats.excluded_messages} 条。Issue 快照计划每日更新；群聊快照必须由本机任务采集后发布，网页按钮只检查 GitHub 上已经发布的文件。`
+      : "旧群聊数据已撤下；没有本机证据时页面保持空白。";
+  }
+}
+
+function renderFooter() {
+  const messageCount = state.group?.stats?.accepted_messages ?? 0;
+  const issueCount = state.issues?.issues?.length ?? 0;
+  if ($("footerClosing")) $("footerClosing").innerHTML = messageCount
+    ? `本页只展示来自 <b>【官方】DSH内测群</b>、且发言归属可由本机微信数据库验证的聚合与精选记录。`
+    : `旧群聊档案已撤下；等待 <b>【官方】DSH内测群</b> 的新证据数据。`;
+  if ($("footerMeta")) $("footerMeta").textContent = `> 群消息 ${messageCount} 条 · Issue ${issueCount} 条 · EOF`;
+}
+
+function renderAll() {
+  renderDelta();
+  renderChronicle();
+  renderSignals();
+  renderCards();
+  renderIssues();
+  renderData();
+  renderFooter();
+}
+
+function refreshStatus(message) {
+  $("refreshLine").textContent = `> ${message}`;
+}
+
+async function refreshAll({ initial = false } = {}) {
+  if (state.busy) return;
+  const now = Date.now();
+  if (!initial && now - state.lastRefresh < 10000) {
+    $("refreshBar").classList.add("on");
+    $("refreshFill").style.width = "100%";
+    refreshStatus("10 秒内已检查过；没有重复请求。");
+    setTimeout(() => {
+      $("refreshBar").classList.remove("on");
+      $("refreshFill").style.width = "0";
+    }, 2200);
+    return;
+  }
+  state.busy = true;
+  state.lastRefresh = now;
+  $("refreshBtn").disabled = true;
+  $("refreshBar").classList.add("on");
+  $("refreshFill").style.width = "20%";
+  refreshStatus(EMBEDDED_SNAPSHOT
+    ? "正在载入当前日期的群聊与 Issue 快照…"
+    : "正在重新拉取已发布的群聊快照与 GitHub Issue 快照…");
+  try {
+    const [group, issues] = await Promise.all([fetchJson(DATA_URLS.group), fetchJson(DATA_URLS.issues)]);
+    if (!validGroup(group)) throw new Error("group-data.json 格式或群名不匹配");
+    if (!validIssues(issues)) throw new Error("issues.json 格式不匹配");
+    state.group = group;
+    state.issues = issues;
+    state.comparison = EMBEDDED_SNAPSHOT?.comparison ?? null;
+    renderAll();
+    $("refreshFill").style.width = "100%";
+    const groupCount = group.stats.accepted_messages;
+    refreshStatus(EMBEDDED_SNAPSHOT
+      ? `已载入站点快照：群消息 ${groupCount} 条 / Issue ${issues.issues.length} 条。快照生成于 ${EMBEDDED_SNAPSHOT.generatedAt || "--"}。`
+      : `已载入：群消息 ${groupCount} 条 / Issue ${issues.issues.length} 条。页面已原地更新；浏览器不会直接读取本机微信。`);
+  } catch (error) {
+    $("refreshFill").style.width = "100%";
+    refreshStatus(`更新失败：${String(error.message || error).slice(0, 100)}`);
+  } finally {
+    state.busy = false;
+    $("refreshBtn").disabled = false;
+    setTimeout(() => {
+      $("refreshBar").classList.remove("on");
+      $("refreshFill").style.width = "0";
+    }, initial ? 1200 : 3200);
+  }
+}
+
+initDatePicker();
+renderGuide();
+initTabs();
+initWarp();
+$("refreshBtn").addEventListener("click", () => location.reload());
+refreshAll({ initial: true });
+</script>
+</body>
+</html>

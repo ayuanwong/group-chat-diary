@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "square-shadow-f6fa",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-08-05",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "vars": {
+    "GITHUB_ORG": "dsh-external",
+    "SITE_ORIGIN": "https://square-shadow-f6fa.lesliewong0923.workers.dev"
+  },
+  "secrets": {
+    "required": ["GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET", "SESSION_SECRET"]
+  },
+  "observability": {
+    "enabled": true
+  }
+}

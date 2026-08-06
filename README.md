@@ -138,7 +138,7 @@
 ## 本地问答预览
 
 - 问答框位于“今日最新”顶部，先在私有 `corpus/` 中检索完整群聊和最新 Issue，再把本轮命中的少量片段交给 DeepSeek；
-- 复制 `.qa.local.env.example` 为不会被 Git 提交的 `.qa.local.env`，填写 `DEEPSEEK_API_KEY`；如需同时检索公开网页，再填写可选的 `TAVILY_API_KEY`；
+- 复制 `.qa.local.env.example` 为不会被 Git 提交的 `.qa.local.env`，填写 `DEEPSEEK_API_KEY`；
 - 当前默认模型为 `deepseek-v4-flash`，可通过 `DEEPSEEK_MODEL` 覆盖；Key 只由绑定在 `127.0.0.1` 的本机服务读取，不会进入浏览器、构建产物或仓库；
 - 执行 `npm run dev:qa` 后访问终端显示的本地地址。此分支只用于本地验收，不会自动部署到 Cloudflare Pages。
 

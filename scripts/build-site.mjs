@@ -111,6 +111,9 @@ if (!siteHtml.includes('id="accountLogin"') || !siteHtml.includes('fetch("/api/m
 if (!siteHtml.includes('id="qaConsole"') || !siteHtml.includes('id="qaForm"') || !siteHtml.includes('fetch("/api/ask"')) {
   throw new Error("今日最新顶部必须保留本地检索问答入口");
 }
+if (!siteHtml.includes('[...(state.group?.chronicles ?? [])].sort((left, right) =>')) {
+  throw new Error("纪事必须按时间倒序渲染");
+}
 if (!siteHtml.includes("@少女阿原")) {
   throw new Error("页脚必须保留内容疑问联系人");
 }

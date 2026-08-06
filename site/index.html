@@ -303,16 +303,9 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 .qa-send{min-width:112px;border:1px solid var(--gr);background:var(--gr);color:#021006;font:700 11px var(--mono);letter-spacing:.1em;padding:0 16px;cursor:pointer;transition:transform .15s,box-shadow .15s,opacity .15s}
 .qa-send:hover:not(:disabled),.qa-send:focus-visible:not(:disabled){transform:translateY(-1px);box-shadow:0 0 24px rgba(51,255,102,.2);outline:none}
 .qa-send:disabled{cursor:not-allowed;opacity:.38}
-.qa-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px;color:var(--faint);font-size:9px;line-height:1.55}
-.qa-web-toggle{display:inline-flex;align-items:center;gap:7px;cursor:pointer;color:var(--mut);white-space:nowrap}
-.qa-web-toggle input{position:absolute;opacity:0;pointer-events:none}
-.qa-switch{position:relative;width:27px;height:14px;border:1px solid var(--dim);background:#030904}
-.qa-switch::after{content:"";position:absolute;left:2px;top:2px;width:8px;height:8px;background:var(--faint);transition:transform .18s,background .18s,box-shadow .18s}
-.qa-web-toggle input:checked+.qa-switch::after{transform:translateX(13px);background:#5beeff;box-shadow:0 0 8px rgba(91,238,255,.7)}
-.qa-web-toggle input:focus-visible+.qa-switch{outline:1px solid var(--gr);outline-offset:2px}
-.qa-web-toggle input:disabled+.qa-switch{opacity:.42}
+.qa-controls{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:9px;color:var(--faint);font-size:9px;line-height:1.55}
 @media(max-width:760px){.qa-top{display:block}.qa-statuses{justify-content:flex-start;max-width:none;margin-top:12px}.qa-source-list{grid-template-columns:1fr}}
-@media(max-width:560px){.qa-inner{padding:16px 13px 13px}.qa-form{grid-template-columns:1fr}.qa-send{min-height:42px}.qa-controls{align-items:flex-start;flex-direction:column}.qa-empty{justify-content:flex-start}.qa-prompt{flex:1 1 46%;text-align:left}}
+@media(max-width:560px){.qa-inner{padding:16px 13px 13px}.qa-form{grid-template-columns:1fr}.qa-send{min-height:42px}.qa-controls{justify-content:flex-start}.qa-empty{justify-content:flex-start}.qa-prompt{flex:1 1 46%;text-align:left}}
 </style>
 </head>
 <body class="flicker">
@@ -357,12 +350,11 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
             <div class="qa-statuses" aria-live="polite">
               <span class="qa-status" id="qaCorpusStatus" data-state="waiting">语料连接中</span>
               <span class="qa-status" id="qaModelStatus" data-state="waiting">DeepSeek 待检测</span>
-              <span class="qa-status" id="qaWebStatus" data-state="waiting">公开网络待检测</span>
             </div>
           </div>
 
           <div class="qa-transcript" id="qaTranscript" aria-live="polite">
-            <div class="qa-empty" id="qaEmpty"><div class="core" aria-hidden="true">⌁</div><div><b>从一个具体问题开始</b>群聊用 G、Issue 用 I、公开网页用 W 标注，点引用即可回看命中来源。</div></div>
+            <div class="qa-empty" id="qaEmpty"><div class="core" aria-hidden="true">⌁</div><div><b>从一个具体问题开始</b>群聊用 G、Issue 用 I 标注，点引用即可回看命中来源。</div></div>
           </div>
           <div class="qa-notice" id="qaNotice" role="status"></div>
 
@@ -380,7 +372,6 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
             <button class="qa-send" id="qaSend" type="submit" disabled>等待模型</button>
           </form>
           <div class="qa-controls">
-            <label class="qa-web-toggle" for="qaUseWeb"><input id="qaUseWeb" type="checkbox" disabled><span class="qa-switch" aria-hidden="true"></span><span id="qaWebLabel">同时检索公开网页（待配置）</span></label>
             <span>完整语料留在本机 / 私有仓库；只把本轮命中的少量片段送往模型。</span>
           </div>
         </div>
@@ -572,19 +563,14 @@ async function refreshQaStatus() {
     const issues = Number(status.corpus?.issueCount || 0).toLocaleString("zh-CN");
     qaSetStatus("qaCorpusStatus", `群聊 ${messages} · Issue ${issues}`, Boolean(status.corpus?.messageCount && status.corpus?.issueCount));
     qaSetStatus("qaModelStatus", status.deepseekReady ? qaModelLabel(status.model) : "等待 DEEPSEEK KEY", Boolean(status.deepseekReady));
-    qaSetStatus("qaWebStatus", status.webReady ? "公开网络 READY" : "公开网络可选", Boolean(status.webReady));
     qaState.ready = Boolean(status.deepseekReady);
     $("qaSend").disabled = !qaState.ready || qaState.busy;
     $("qaSend").textContent = qaState.busy ? "停止生成" : qaState.ready ? "发送问题 ↗" : "等待模型";
-    $("qaUseWeb").disabled = !status.webReady;
-    if (!status.webReady) $("qaUseWeb").checked = false;
-    $("qaWebLabel").textContent = status.webReady ? "同时检索公开网页" : "同时检索公开网页（待配置）";
     $("qaNotice").textContent = status.deepseekReady ? "" : "在本地 .qa.local.env 填入 DEEPSEEK_API_KEY 后，这里会自动变为可提问状态。";
   } catch {
     qaState.ready = false;
     qaSetStatus("qaCorpusStatus", "本地问答服务未连接", false);
     qaSetStatus("qaModelStatus", "DEEPSEEK OFFLINE", false);
-    qaSetStatus("qaWebStatus", "公开网络 OFFLINE", false);
     $("qaSend").disabled = true;
     $("qaSend").textContent = "等待服务";
     $("qaNotice").textContent = "请使用本地问答预览服务打开此页面。";
@@ -612,9 +598,9 @@ function qaTurn(role) {
 function qaRenderAnswer(element, answer) {
   element.classList.remove("streaming");
   element.textContent = "";
-  const parts = String(answer || "").split(/(\[[GIW]\d+\])/gu);
+  const parts = String(answer || "").split(/(\[[GI]\d+\])/gu);
   for (const part of parts) {
-    const citation = part.match(/^\[([GIW]\d+)\]$/u)?.[1];
+    const citation = part.match(/^\[([GI]\d+)\]$/u)?.[1];
     if (!citation) {
       element.appendChild(document.createTextNode(part));
       continue;
@@ -644,7 +630,7 @@ function qaRenderSources(bubble, sources) {
     card.id = `qaSource-${source.citation}`;
     const id = document.createElement("div");
     id.className = "id";
-    id.textContent = `${source.citation} // ${source.kind === "group" ? "群聊" : source.kind === "issue" ? "ISSUE" : "WEB"}`;
+    id.textContent = `${source.citation} // ${source.kind === "group" ? "群聊" : "ISSUE"}`;
     const label = document.createElement("div");
     label.className = "label";
     const safeUrl = typeof source.url === "string" && /^https:\/\//u.test(source.url) ? source.url : null;
@@ -722,7 +708,6 @@ async function qaAsk(question) {
       body: JSON.stringify({
         question,
         history: qaState.history,
-        useWeb: $("qaUseWeb").checked,
       }),
       signal: qaState.controller.signal,
     });
@@ -733,7 +718,7 @@ async function qaAsk(question) {
     await qaReadEvents(response, (event, payload) => {
       if (event === "meta") {
         qaState.sources = Array.isArray(payload.sources) ? payload.sources : [];
-        $("qaNotice").textContent = payload.warning || `已命中 ${qaState.sources.length} 个来源，${qaModelLabel(payload.model)} 正在生成…`;
+        $("qaNotice").textContent = `已命中 ${qaState.sources.length} 个来源，${qaModelLabel(payload.model)} 正在生成…`;
       } else if (event === "token") {
         answer += String(payload.text || "");
         assistantTurn.answer.textContent = answer;
@@ -916,7 +901,9 @@ function initWarp() {
 }
 
 function renderChronicle() {
-  const items = state.group?.chronicles ?? [];
+  const items = [...(state.group?.chronicles ?? [])].sort((left, right) =>
+    String(right.timestamp || right.time || "").localeCompare(String(left.timestamp || left.time || "")),
+  );
   const box = $("chronicle");
   box.innerHTML = "";
   if (!items.length) {

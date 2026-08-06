@@ -15,8 +15,8 @@ describe("private QA corpus retrieval", () => {
 
   it("loads the complete private corpus and retrieves both source families", async () => {
     const corpus = await loadCorpus(root);
-    expect(corpus.stats.messageCount).toBe(13_078);
-    expect(corpus.stats.issueCount).toBe(357);
+    expect(corpus.stats.messageCount).toBe(corpus.manifest.groupChat.totalMessages);
+    expect(corpus.stats.issueCount).toBe(corpus.manifest.issues.dates.at(-1)?.issueCount);
     const result = retrieveCorpus(corpus, "插件与 Issue 反馈");
     expect(result.sources.some((source) => source.kind === "group")).toBe(true);
     expect(result.sources.some((source) => source.kind === "issue")).toBe(true);
@@ -26,13 +26,13 @@ describe("private QA corpus retrieval", () => {
 
   it("ranks explicit changelogs above member questions for version-update queries", async () => {
     const corpus = await loadCorpus(root);
-    const question = "0806 有什么内测版本更新";
+    const question = "最近有什么内测版本更新";
     const plan = defaultQaPlan(question);
     expect(plan).toMatchObject({ intent: "release", source: "group", issueNumber: null });
     const result = retrieveCorpus(corpus, question, { plan, groupLimit: 3, issueLimit: 1 });
     expect(result.sources[0]?.kind).toBe("group");
     expect(result.sources[0]?.label).toContain("Baymax");
-    expect(result.sources[0]?.label).toContain("2026-08-06");
+    expect(result.sources[0]?.label).toContain(corpus.manifest.groupChat.dates.at(-1)?.date);
     expect(result.sources[0]?.excerpt).toMatch(/Changelog|新增|修复|优化/u);
     expect(result.sources.every((source) => source.kind === "group")).toBe(true);
     expect(result.context.match(/^\d{4}-\d{2}-\d{2}T/gmu)).toHaveLength(result.sources.length);

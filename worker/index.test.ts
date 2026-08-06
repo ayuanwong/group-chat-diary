@@ -59,6 +59,12 @@ function makeQaDb(requestCount = 1): D1Database {
     content: "#357 停止生成 引导消息 静默销毁",
     fts_rank: -0.5,
   };
+  const speakerRows = [
+    { ...group, document_key: "test-sync:g:speaker-a-1", sender: "成员甲", content: "我做了完整复现，并整理了原因、方案和验证步骤。", message_count: 120, substantive_count: 82, sample_rank: 1 },
+    { ...group, document_key: "test-sync:g:speaker-a-2", sender: "成员甲", content: "这个交互可以换一种实现，减少一次不必要的等待。", message_count: 120, substantive_count: 82, sample_rank: 2 },
+    { ...group, document_key: "test-sync:g:speaker-b-1", sender: "成员乙", content: "这里有个挺有启发的产品视角，可以从用户目标反推。", message_count: 98, substantive_count: 61, sample_rank: 1 },
+    { ...group, document_key: "test-sync:g:speaker-b-2", sender: "成员乙", content: "实测以后发现问题不是模型，而是上下文组织方式。", message_count: 98, substantive_count: 61, sample_rank: 2 },
+  ];
   return {
     prepare: vi.fn((sql: string) => {
       let values: unknown[] = [];
@@ -70,6 +76,7 @@ function makeQaDb(requestCount = 1): D1Database {
         first: vi.fn(async () => sql.includes("qa_rate_limits") ? { request_count: requestCount } : null),
         all: vi.fn(async () => {
           if (sql.includes("qa_corpus_meta")) return { results: meta };
+          if (sql.includes("PARTITION BY d.sender")) return { results: speakerRows };
           if (sql.includes("qa_corpus_fts")) return { results: values[2] === "group" ? [group] : [issue] };
           if (sql.includes("is_changelog = 1")) return { results: [group] };
           if (sql.includes("position BETWEEN")) {
@@ -230,14 +237,31 @@ describe("protected DeepSeek Q&A", () => {
       "data: [DONE]",
       "",
     ].join("\n\n");
-    const modelFetch = vi.fn(async () => new Response(upstream, {
-      status: 200,
-      headers: { "Content-Type": "text/event-stream" },
-    }));
+    const modelFetch = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      const payload = JSON.parse(String(init?.body ?? "{}")) as { stream?: boolean };
+      if (payload.stream === false) {
+        return Response.json({
+          choices: [{ message: { content: JSON.stringify({
+            // Simulate a planner confusing the compact date with an Issue id.
+            // Deterministic routing must still keep this on the release path.
+            intent: "issue",
+            source: "issue",
+            queries: ["0806", "版本 新增 修复 优化"],
+            days: 3,
+            people: [],
+            issueNumber: "806",
+          }) } }],
+        });
+      }
+      return new Response(upstream, {
+        status: 200,
+        headers: { "Content-Type": "text/event-stream" },
+      });
+    });
     const request = await authenticatedRequest(env, "/api/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: "最近版本更新", history: [] }),
+      body: JSON.stringify({ question: "0806 有什么内测版本更新", history: [] }),
     });
     const response = await createHandler(fetch, modelFetch)(request, env);
     expect(response.status).toBe(200);
@@ -245,11 +269,53 @@ describe("protected DeepSeek Q&A", () => {
     const body = await response.text();
     expect(body).toContain("event: meta");
     expect(body).toContain('"kind":"group"');
-    expect(body).toContain('"kind":"issue"');
+    expect(body).toContain('"intent":"release"');
+    expect(body).not.toContain('"kind":"issue"');
     expect(body).toContain("已完成更新 [G1]");
     expect(body).toContain("event: done");
     expect(body).not.toContain(env.DEEPSEEK_API_KEY);
-    expect(modelFetch).toHaveBeenCalledOnce();
+    expect(modelFetch).toHaveBeenCalledTimes(2);
+    const plannerBody = JSON.parse(String(modelFetch.mock.calls[0]?.[1]?.body)) as Record<string, unknown>;
+    const answerBody = JSON.parse(String(modelFetch.mock.calls[1]?.[1]?.body)) as Record<string, unknown>;
+    expect(plannerBody).toMatchObject({ stream: false, thinking: { type: "disabled" } });
+    expect(answerBody).toMatchObject({ stream: true, thinking: { type: "enabled" }, reasoning_effort: "high" });
+  });
+
+  it("uses member-balanced retrieval and max reasoning for speaker comparison questions", async () => {
+    const env = makeEnv();
+    const upstream = [
+      'data: {"choices":[{"delta":{"content":"更有代表性的是成员甲 [G1]。"}}]}',
+      "data: [DONE]",
+      "",
+    ].join("\n\n");
+    const modelFetch = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      const payload = JSON.parse(String(init?.body ?? "{}")) as { stream?: boolean };
+      if (payload.stream === false) {
+        return Response.json({
+          choices: [{ message: { content: JSON.stringify({
+            intent: "speaker",
+            source: "group",
+            queries: ["表达风格", "洞察 幽默"],
+            days: 0,
+            people: [],
+            issueNumber: null,
+          }) } }],
+        });
+      }
+      return new Response(upstream, { headers: { "Content-Type": "text/event-stream" } });
+    });
+    const request = await authenticatedRequest(env, "/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: "谁说话最有意思" }),
+    });
+    const response = await createHandler(fetch, modelFetch)(request, env);
+    const body = await response.text();
+    expect(body).toContain('"intent":"speaker"');
+    expect(body).toContain("成员甲 · 成员样本");
+    expect(body).toContain("成员乙 · 成员样本");
+    const answerBody = JSON.parse(String(modelFetch.mock.calls[1]?.[1]?.body)) as Record<string, unknown>;
+    expect(answerBody).toMatchObject({ thinking: { type: "enabled" }, reasoning_effort: "max" });
   });
 
   it("rate-limits an authenticated member before contacting DeepSeek", async () => {

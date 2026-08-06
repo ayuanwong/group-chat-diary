@@ -280,6 +280,12 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 .qa-bubble{min-width:0;border:1px solid rgba(51,255,102,.18);background:rgba(2,10,5,.78);padding:11px 13px;color:var(--ink);font-size:12.5px;line-height:1.8}
 .qa-turn.user .qa-bubble{grid-column:1;grid-row:1;border-color:rgba(91,238,255,.2);background:rgba(5,20,22,.72);color:#c9fbff}
 .qa-answer{white-space:pre-wrap;overflow-wrap:anywhere}
+.qa-answer.rendered{white-space:normal}
+.qa-answer.rendered p{margin:0 0 8px}.qa-answer.rendered p:last-child{margin-bottom:0}
+.qa-answer.rendered ul,.qa-answer.rendered ol{margin:5px 0 8px;padding-left:22px}
+.qa-answer.rendered li{margin:3px 0}.qa-answer.rendered strong{color:#f0fff4;font-weight:700}
+.qa-answer.rendered code{border:1px solid rgba(91,238,255,.18);background:rgba(91,238,255,.06);padding:1px 4px;color:#bffaff;font:11px/1.5 var(--mono)}
+.qa-answer-heading{margin:8px 0 4px;color:#bffaff;font-weight:700;letter-spacing:.02em}
 .qa-answer.streaming::after{content:"▊";margin-left:2px;color:var(--gr);animation:blink .75s steps(1) infinite}
 .qa-answer .qa-cite{display:inline;border:0;border-bottom:1px dotted var(--gr);padding:0 1px;color:var(--gr);background:none;font:inherit;cursor:pointer}
 .qa-answer .qa-cite:hover{color:#5beeff;border-color:#5beeff}
@@ -345,7 +351,7 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
             <div>
               <div class="qa-kicker">ASK DSH // RETRIEVAL ONLINE</div>
               <h3 class="qa-title" id="qaTitle"><span class="orb" aria-hidden="true"></span>直接问档案</h3>
-              <p class="qa-subtitle">不用逐个翻 Tab。问题会先检索完整群聊与 Issue，再由 DeepSeek 组织带来源的回答。</p>
+              <p class="qa-subtitle">不用逐个翻 Tab。问题会先判别意图、执行多路检索与融合重排，再由 DeepSeek 组织带来源的回答。</p>
             </div>
             <div class="qa-statuses" aria-live="polite">
               <span class="qa-status" id="qaCorpusStatus" data-state="waiting">语料连接中</span>
@@ -550,8 +556,9 @@ function qaSetStatus(id, label, ready) {
   element.dataset.state = ready ? "ready" : "waiting";
 }
 
-function qaModelLabel(model) {
-  return String(model || "DeepSeek").replaceAll("-", " ").toUpperCase();
+function qaModelLabel(model, thinking = false, effort = "") {
+  const base = String(model || "DeepSeek").replaceAll("-", " ").toUpperCase();
+  return thinking ? `${base} · THINKING${effort ? ` ${String(effort).toUpperCase()}` : ""}` : base;
 }
 
 async function refreshQaStatus() {
@@ -562,7 +569,7 @@ async function refreshQaStatus() {
     const messages = Number(status.corpus?.messageCount || 0).toLocaleString("zh-CN");
     const issues = Number(status.corpus?.issueCount || 0).toLocaleString("zh-CN");
     qaSetStatus("qaCorpusStatus", `群聊 ${messages} · Issue ${issues}`, Boolean(status.corpus?.messageCount && status.corpus?.issueCount));
-    qaSetStatus("qaModelStatus", status.deepseekReady ? qaModelLabel(status.model) : "等待 DEEPSEEK KEY", Boolean(status.deepseekReady));
+    qaSetStatus("qaModelStatus", status.deepseekReady ? qaModelLabel(status.model, status.thinking) : "等待 DEEPSEEK KEY", Boolean(status.deepseekReady));
     qaState.ready = Boolean(status.deepseekReady);
     $("qaSend").disabled = !qaState.ready || qaState.busy;
     $("qaSend").textContent = qaState.busy ? "停止生成" : qaState.ready ? "发送问题 ↗" : "等待模型";
@@ -595,28 +602,75 @@ function qaTurn(role) {
   return { turn, bubble, answer };
 }
 
-function qaRenderAnswer(element, answer) {
-  element.classList.remove("streaming");
-  element.textContent = "";
-  const parts = String(answer || "").split(/(\[[GI]\d+\])/gu);
+function qaCitationButton(citation) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "qa-cite";
+  button.textContent = `[${citation}]`;
+  button.addEventListener("click", () => {
+    const source = $(`qaSource-${citation}`);
+    if (!source) return;
+    source.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    source.classList.add("flash");
+    setTimeout(() => source.classList.remove("flash"), 1000);
+  });
+  return button;
+}
+
+function qaAppendInline(element, value) {
+  const parts = String(value || "").split(/(\[[GI]\d+\]|\*\*[^*\n]+\*\*|`[^`\n]+`)/gu);
   for (const part of parts) {
     const citation = part.match(/^\[([GI]\d+)\]$/u)?.[1];
-    if (!citation) {
+    if (citation) {
+      element.appendChild(qaCitationButton(citation));
+    } else if (/^\*\*[^*\n]+\*\*$/u.test(part)) {
+      const strong = document.createElement("strong");
+      strong.textContent = part.slice(2, -2);
+      element.appendChild(strong);
+    } else if (/^`[^`\n]+`$/u.test(part)) {
+      const code = document.createElement("code");
+      code.textContent = part.slice(1, -1);
+      element.appendChild(code);
+    } else {
       element.appendChild(document.createTextNode(part));
+    }
+  }
+}
+
+function qaRenderAnswer(element, answer) {
+  element.classList.remove("streaming");
+  element.classList.add("rendered");
+  element.replaceChildren();
+  let list = null;
+  let listType = "";
+  for (const rawLine of String(answer || "").replaceAll("\r\n", "\n").split("\n")) {
+    const line = rawLine.trim();
+    if (!line) {
+      list = null;
+      listType = "";
       continue;
     }
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "qa-cite";
-    button.textContent = `[${citation}]`;
-    button.addEventListener("click", () => {
-      const source = $(`qaSource-${citation}`);
-      if (!source) return;
-      source.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      source.classList.add("flash");
-      setTimeout(() => source.classList.remove("flash"), 1000);
-    });
-    element.appendChild(button);
+    const bullet = line.match(/^[-*]\s+(.+)$/u);
+    const ordered = line.match(/^\d+[.)]\s+(.+)$/u);
+    if (bullet || ordered) {
+      const nextType = bullet ? "ul" : "ol";
+      if (!list || listType !== nextType) {
+        list = document.createElement(nextType);
+        listType = nextType;
+        element.appendChild(list);
+      }
+      const item = document.createElement("li");
+      qaAppendInline(item, (bullet || ordered)[1]);
+      list.appendChild(item);
+      continue;
+    }
+    list = null;
+    listType = "";
+    const heading = line.match(/^#{1,3}\s+(.+)$/u);
+    const block = document.createElement(heading ? "div" : "p");
+    if (heading) block.className = "qa-answer-heading";
+    qaAppendInline(block, heading?.[1] || line);
+    element.appendChild(block);
   }
 }
 
@@ -691,7 +745,7 @@ async function qaAsk(question) {
   $("qaSend").disabled = false;
   $("qaSend").textContent = "停止生成";
   $("qaInput").disabled = true;
-  $("qaNotice").textContent = "正在检索完整群聊与 Issue…";
+  $("qaNotice").textContent = "正在理解问题并执行多路检索…";
 
   const userTurn = qaTurn("user");
   userTurn.answer.textContent = question;
@@ -718,7 +772,9 @@ async function qaAsk(question) {
     await qaReadEvents(response, (event, payload) => {
       if (event === "meta") {
         qaState.sources = Array.isArray(payload.sources) ? payload.sources : [];
-        $("qaNotice").textContent = `已命中 ${qaState.sources.length} 个来源，${qaModelLabel(payload.model)} 正在生成…`;
+        const intentLabels = { lookup: "事实检索", issue: "Issue 检索", release: "版本核验", overview: "全局归纳", speaker: "成员比较" };
+        const intent = intentLabels[payload.retrieval?.intent] || "融合检索";
+        $("qaNotice").textContent = `${intent} · ${qaState.sources.length} 个来源 · ${qaModelLabel(payload.model, true, payload.reasoningEffort)} 正在生成…`;
       } else if (event === "token") {
         answer += String(payload.text || "");
         assistantTurn.answer.textContent = answer;

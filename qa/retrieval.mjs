@@ -128,6 +128,10 @@ function trimText(value, limit = 320) {
   return text.length > limit ? `${text.slice(0, limit - 1)}…` : text;
 }
 
+function authoredMessageText(value) {
+  return String(value ?? "").split("↳ 回复", 1)[0].replace(/\s+/gu, " ").trim();
+}
+
 function focusedText(value, questionText, limit = 420) {
   const text = String(value ?? "").replace(/\s+/gu, " ").trim();
   let index = -1;
@@ -252,7 +256,7 @@ function scoreDocument(document, originalQuestion, queryText, queryTokens, corpu
     if (/junk|误创建|测试 issue/iu.test(`${title} ${category}`) && !/junk|误创建/u.test(originalQuestion)) score -= 40;
   } else {
     if (plan.intent === "release") {
-      const authoredText = normalized(document.row.text).split("↳ 回复", 1)[0];
+      const authoredText = normalized(authoredMessageText(document.row.text));
       const explicitChangelog = /deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}|✨\s*新增|🐛\s*修复|🎨\s*优化/iu;
       const isDirectChangelog = explicitChangelog.test(authoredText);
       if (isDirectChangelog) score += 76;
@@ -326,15 +330,18 @@ function groupContext(corpus, index, questionText) {
   return corpus.groupRows
     .slice(Math.max(0, index - 2), Math.min(corpus.groupRows.length, index + 3))
     .filter((candidate) => candidate.timestamp.slice(0, 10) === row.timestamp.slice(0, 10))
-    .map((candidate) => `${candidate.timestamp} · ${candidate.sender ?? "系统"}：${candidate === row
-      ? focusedText(candidate.text, questionText, 1_200)
-      : trimText(candidate.text, 320)}`)
+    .map((candidate) => {
+      const authoredText = authoredMessageText(candidate.text);
+      return `${candidate.timestamp} · ${candidate.sender ?? "系统"}：${candidate === row
+        ? focusedText(authoredText, questionText, 1_200)
+        : trimText(authoredText, 320)}`;
+    })
     .join("\n");
 }
 
 function isSubstantiveMessage(row) {
   if (!row?.sender || row.side === "system") return false;
-  const text = String(row.text ?? "").replace(/\s+/gu, " ").trim();
+  const text = authoredMessageText(row.text);
   if (text.length < 12 || text.length > 1_500) return false;
   const meaningful = text.match(/[\p{Script=Han}a-z0-9]/giu)?.length ?? 0;
   if (meaningful < 7) return false;
@@ -342,7 +349,7 @@ function isSubstantiveMessage(row) {
 }
 
 function representativeScore(document, corpus, criteriaTokens = []) {
-  const text = String(document.row.text ?? "").replace(/\s+/gu, " ").trim();
+  const text = authoredMessageText(document.row.text);
   const length = text.length;
   let score = Math.min(length, 360) / 90;
   if (length >= 24 && length <= 600) score += 3;
@@ -400,7 +407,7 @@ function retrieveSpeakerCorpus(corpus, question, plan, profileLimit = 14) {
     const samples = [first, second].filter(Boolean);
     const citation = `G${index + 1}`;
     const excerpt = first
-      ? `${profile.total} 条发言，${profile.substantive} 条较完整表达；样本：${trimText(first.document.row.text, 120)}`
+      ? `${profile.total} 条发言，${profile.substantive} 条较完整表达；样本：${trimText(authoredMessageText(first.document.row.text), 120)}`
       : `${profile.total} 条发言`;
     sources.push({
       citation,
@@ -413,7 +420,7 @@ function retrieveSpeakerCorpus(corpus, question, plan, profileLimit = 14) {
     context.push(
       `[${citation}] 群成员平衡样本：${profile.sender}\n`
       + `统计：共 ${profile.total} 条发言，其中 ${profile.substantive} 条为长度和内容较完整的表达，覆盖 ${profile.dates.size} 天。\n`
-      + samples.map((item, sampleIndex) => `代表片段 ${sampleIndex + 1}：${item.document.row.timestamp} · ${trimText(item.document.row.text, 520)}`).join("\n"),
+      + samples.map((item, sampleIndex) => `代表片段 ${sampleIndex + 1}：${item.document.row.timestamp} · ${trimText(authoredMessageText(item.document.row.text), 520)}`).join("\n"),
     );
   });
   return {
@@ -468,7 +475,7 @@ function retrieveOverviewCorpus(corpus, question, plan) {
       });
       context.push(
         `[${citation}] ${date} 群聊代表样本（每位成员最多一条）\n`
-        + samples.map((item) => `${item.document.row.timestamp} · ${item.document.row.sender ?? "系统"}：${trimText(item.document.row.text, 520)}`).join("\n"),
+        + samples.map((item) => `${item.document.row.timestamp} · ${item.document.row.sender ?? "系统"}：${trimText(authoredMessageText(item.document.row.text), 520)}`).join("\n"),
       );
     });
   }
@@ -517,7 +524,7 @@ function retrieveLookupCorpus(corpus, question, plan, groupLimit, issueLimit) {
   const questionText = normalized(question);
   const explicitChangelog = /deepseek harness changelog|^changelog\s+\d{4}-\d{2}-\d{2}|✨\s*新增|🐛\s*修复|🎨\s*优化/iu;
   const groupDocuments = plan.intent === "release"
-    ? corpus.groupDocuments.filter((document) => explicitChangelog.test(normalized(document.row.text).split("↳ 回复", 1)[0]))
+    ? corpus.groupDocuments.filter((document) => explicitChangelog.test(normalized(authoredMessageText(document.row.text))))
     : corpus.groupDocuments;
   const groupCandidates = plan.source === "issue" ? [] : fusedRank(groupDocuments, question, corpus, plan, groupLimit);
   const issueDocuments = /bug|缺陷|故障/iu.test(question)
@@ -544,10 +551,13 @@ function retrieveLookupCorpus(corpus, question, plan, groupLimit, issueLimit) {
       label: `${row.sender ?? "系统"} · ${row.timestamp.slice(0, 16).replace("T", " ")}`,
       timestamp: row.timestamp,
       sender: row.sender,
-      excerpt: focusedText(row.text, questionText, 260),
+      excerpt: focusedText(authoredMessageText(row.text), questionText, 260),
       score: Number(score.toFixed(3)),
     });
-    context.push(`[${citation}] 【官方】DSH内测群消息\n${groupContext(corpus, document.sourceIndex, questionText)}`);
+    const sourceContext = plan.intent === "release"
+      ? `${row.timestamp} · ${row.sender ?? "系统"}：${focusedText(authoredMessageText(row.text), questionText, 1_200)}`
+      : groupContext(corpus, document.sourceIndex, questionText);
+    context.push(`[${citation}] 【官方】DSH内测群消息\n${sourceContext}`);
   });
 
   issueHits.forEach(({ document, score }, index) => {

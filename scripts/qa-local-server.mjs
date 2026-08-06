@@ -192,7 +192,7 @@ async function streamDeepSeek(response, config, messages, abortSignal, reasoning
       stream_options: { include_usage: true },
       thinking: { type: "enabled" },
       reasoning_effort: reasoningEffort,
-      max_tokens: 1_800,
+      max_tokens: 384_000,
     }),
     signal: abortSignal,
   });
@@ -202,6 +202,8 @@ async function streamDeepSeek(response, config, messages, abortSignal, reasoning
   const decoder = new TextDecoder();
   let buffer = "";
   let usage = null;
+  let finishReason = null;
+  let hasAnswer = false;
   while (true) {
     const { done, value } = await reader.read();
     buffer += decoder.decode(value ?? new Uint8Array(), { stream: !done }).replaceAll("\r\n", "\n");
@@ -220,11 +222,21 @@ async function streamDeepSeek(response, config, messages, abortSignal, reasoning
           continue;
         }
         if (chunk.usage) usage = chunk.usage;
-        const text = chunk.choices?.[0]?.delta?.content;
-        if (typeof text === "string" && text) sendEvent(response, "token", { text });
+        const choice = chunk.choices?.[0];
+        if (choice?.finish_reason) finishReason = choice.finish_reason;
+        const text = choice?.delta?.content;
+        if (typeof text === "string" && text) {
+          hasAnswer = true;
+          sendEvent(response, "token", { text });
+        }
       }
     }
     if (done) break;
+  }
+  if (!hasAnswer) {
+    throw new Error(finishReason === "length"
+      ? "DeepSeek 思考达到模型输出上限，请重试。"
+      : "DeepSeek 没有返回最终回答，请重试。");
   }
   sendEvent(response, "done", { model: config.model, usage });
 }

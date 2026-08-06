@@ -35,6 +35,7 @@ describe("private QA corpus retrieval", () => {
     expect(result.sources[0]?.label).toContain("2026-08-06");
     expect(result.sources[0]?.excerpt).toMatch(/Changelog|新增|修复|优化/u);
     expect(result.sources.every((source) => source.kind === "group")).toBe(true);
+    expect(result.context.match(/^\d{4}-\d{2}-\d{2}T/gmu)).toHaveLength(result.sources.length);
   });
 
   it("routes speaker comparisons to balanced member profiles instead of literal phrase hits", async () => {
@@ -47,6 +48,7 @@ describe("private QA corpus retrieval", () => {
     expect(result.sources.every((source) => source.kind === "group" && source.label.includes("成员样本"))).toBe(true);
     expect(result.sources.filter((source) => source.excerpt.includes("有意思"))).toHaveLength(0);
     expect(result.context).toContain("按成员聚合后的平衡样本");
+    expect(result.context).not.toContain("↳ 回复");
   });
 
   it("uses date-layered group samples for whole-corpus overview questions", async () => {

@@ -192,6 +192,10 @@ function trimText(value: unknown, limit = 320): string {
   return text.length > limit ? `${text.slice(0, limit - 1)}…` : text;
 }
 
+function authoredMessageText(value: unknown): string {
+  return String(value ?? "").split("↳ 回复", 1)[0].replace(/\s+/gu, " ").trim();
+}
+
 function focusedText(value: unknown, questionText: string, limit = 420): string {
   const text = String(value ?? "").replace(/\s+/gu, " ").trim();
   let index = -1;
@@ -376,7 +380,7 @@ function scoreRow(row: QaDocumentRow, question: string, queryTokens: string[], s
     if (/junk|误创建|测试 issue/iu.test(`${title} ${category}`) && !/junk|误创建/u.test(questionText)) score -= 40;
   } else {
     if (plan.intent === "release") {
-      const authoredText = normalized(row.content).split("↳ 回复", 1)[0];
+      const authoredText = normalized(authoredMessageText(row.content));
       const explicitChangelog = /deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}|✨\s*新增|🐛\s*修复|🎨\s*优化/iu;
       const isDirectChangelog = row.is_changelog === 1 || explicitChangelog.test(authoredText);
       if (isDirectChangelog) score += 72;
@@ -431,25 +435,28 @@ async function groupContext(db: D1Database, meta: QaCorpusMeta, row: QaDocumentR
     ORDER BY position
   `).bind(meta.syncId, row.source_date, Math.max(0, row.position - 2), row.position + 2)
     .all<{ occurred_at: string; sender: string | null; content: string }>();
-  return (result.results ?? []).map((candidate) =>
-    `${candidate.occurred_at} · ${candidate.sender ?? "系统"}：${candidate.occurred_at === row.occurred_at
-      ? focusedText(candidate.content, question, 1_200)
-      : trimText(candidate.content, 320)}`,
-  ).join("\n");
+  return (result.results ?? []).map((candidate) => {
+    const authoredText = authoredMessageText(candidate.content);
+    return `${candidate.occurred_at} · ${candidate.sender ?? "系统"}：${candidate.occurred_at === row.occurred_at
+      ? focusedText(authoredText, question, 1_200)
+      : trimText(authoredText, 320)}`;
+  }).join("\n");
 }
 
 function speakerRowsQuery(): string {
+  const authoredContent = "trim(CASE WHEN instr(d.content, '↳ 回复') > 0 THEN substr(d.content, 1, instr(d.content, '↳ 回复') - 1) ELSE d.content END)";
   return `
     WITH ranked AS (
       SELECT d.document_key, d.kind, d.source_date, d.position, d.occurred_at,
-        d.sender, d.title, d.url, d.state, d.category, d.priority, d.is_changelog, d.excerpt, d.content,
+        d.sender, d.title, d.url, d.state, d.category, d.priority, d.is_changelog, d.excerpt,
+        ${authoredContent} AS content,
         COUNT(*) OVER (PARTITION BY d.sender) AS message_count,
-        SUM(CASE WHEN length(trim(d.content)) BETWEEN 12 AND 1500 THEN 1 ELSE 0 END)
+        SUM(CASE WHEN length(${authoredContent}) BETWEEN 12 AND 1500 THEN 1 ELSE 0 END)
           OVER (PARTITION BY d.sender) AS substantive_count,
         ROW_NUMBER() OVER (
           PARTITION BY d.sender
-          ORDER BY CASE WHEN length(trim(d.content)) BETWEEN 24 AND 600 THEN 0 ELSE 1 END,
-            abs(length(trim(d.content)) - 180), d.position DESC
+          ORDER BY CASE WHEN length(${authoredContent}) BETWEEN 24 AND 600 THEN 0 ELSE 1 END,
+            abs(length(${authoredContent}) - 180), d.position DESC
         ) AS sample_rank
       FROM qa_corpus_documents AS d
       WHERE d.sync_id = ?1 AND d.kind = 'group' AND d.sender IS NOT NULL AND trim(d.sender) <> ''
@@ -482,12 +489,12 @@ async function retrieveSpeakerCorpus(db: D1Database, meta: QaCorpusMeta): Promis
       kind: "group",
       label: `${sender} · 成员样本`,
       sender,
-      excerpt: `${messageCount} 条发言，${substantiveCount} 条较完整表达；样本：${trimText(first?.content, 120)}`,
+      excerpt: `${messageCount} 条发言，${substantiveCount} 条较完整表达；样本：${trimText(authoredMessageText(first?.content), 120)}`,
       score: substantiveCount,
     });
     context.push(
       `[${citation}] 群成员平衡样本：${sender}\n统计：共 ${messageCount} 条发言，其中 ${substantiveCount} 条为长度和内容较完整的表达。\n`
-      + rows.map((row, rowIndex) => `代表片段 ${rowIndex + 1}：${row.occurred_at} · ${trimText(row.content, 520)}`).join("\n"),
+      + rows.map((row, rowIndex) => `代表片段 ${rowIndex + 1}：${row.occurred_at} · ${trimText(authoredMessageText(row.content), 520)}`).join("\n"),
     );
   });
   return {
@@ -581,7 +588,7 @@ async function retrieveOverviewCorpus(
     });
     context.push(
       `[${citation}] ${date} 群聊代表样本（每位成员最多一条）\n`
-      + rows.map((row) => `${row.occurred_at} · ${row.sender ?? "系统"}：${trimText(row.content, 520)}`).join("\n"),
+      + rows.map((row) => `${row.occurred_at} · ${row.sender ?? "系统"}：${trimText(authoredMessageText(row.content), 520)}`).join("\n"),
     );
   });
 
@@ -632,7 +639,9 @@ async function retrieveLookupCorpus(
     .filter((row) => !/高优先级/u.test(question) || Number(row.priority ?? 0) >= 4);
   const groupHits = selectDiverseRows(rankedRows(groupCandidates, question, meta.messageCount, 10, plan), 10);
   const issueHits = rankedRows(issueCandidates, question, meta.issueCount, 8, plan).slice(0, 8);
-  const groupContexts = await Promise.all(groupHits.map(({ row }) => groupContext(db, meta, row, question)));
+  const groupContexts = plan.intent === "release"
+    ? groupHits.map(({ row }) => `${row.occurred_at} · ${row.sender ?? "系统"}：${focusedText(authoredMessageText(row.content), question, 1_200)}`)
+    : await Promise.all(groupHits.map(({ row }) => groupContext(db, meta, row, question)));
   const sources: QaSource[] = [];
   const context: string[] = [];
 
@@ -644,10 +653,10 @@ async function retrieveLookupCorpus(
       label: `${row.sender ?? "系统"} · ${row.occurred_at.slice(0, 16).replace("T", " ")}`,
       timestamp: row.occurred_at,
       sender: row.sender,
-      excerpt: focusedText(row.content, question, 260),
+      excerpt: focusedText(authoredMessageText(row.content), question, 260),
       score: Number(score.toFixed(3)),
     });
-    context.push(`[${citation}] 【官方】DSH内测群消息\n${groupContexts[index] || focusedText(row.content, question, 1_200)}`);
+    context.push(`[${citation}] 【官方】DSH内测群消息\n${groupContexts[index] || focusedText(authoredMessageText(row.content), question, 1_200)}`);
   });
 
   issueHits.forEach(({ row, score }, index) => {
@@ -796,6 +805,8 @@ function streamAnswer(upstream: Response, meta: unknown): ReadableStream<Uint8Ar
       const decoder = new TextDecoder();
       let buffer = "";
       let usage: unknown = null;
+      let finishReason: string | null = null;
+      let hasAnswer = false;
       try {
         while (true) {
           const { done, value } = await reader.read();
@@ -808,18 +819,28 @@ function streamAnswer(upstream: Response, meta: unknown): ReadableStream<Uint8Ar
               .map((line) => line.slice(5).trim()).join("\n");
             if (data && data !== "[DONE]") {
               const payload = JSON.parse(data) as {
-                choices?: Array<{ delta?: { content?: string } }>;
+                choices?: Array<{ delta?: { content?: string }; finish_reason?: string | null }>;
                 usage?: unknown;
               };
               if (payload.usage) usage = payload.usage;
-              const token = payload.choices?.[0]?.delta?.content;
-              if (token) sendEvent(controller, "token", { text: token });
+              const choice = payload.choices?.[0];
+              if (choice?.finish_reason) finishReason = choice.finish_reason;
+              const token = choice?.delta?.content;
+              if (token) {
+                hasAnswer = true;
+                sendEvent(controller, "token", { text: token });
+              }
             }
             boundary = buffer.indexOf("\n\n");
           }
           if (done) break;
         }
-        sendEvent(controller, "done", { usage });
+        if (hasAnswer) sendEvent(controller, "done", { usage });
+        else sendEvent(controller, "error", {
+          error: finishReason === "length"
+            ? "DeepSeek 思考达到模型输出上限，请重试。"
+            : "DeepSeek 没有返回最终回答，请重试。",
+        });
       } catch {
         sendEvent(controller, "error", { error: "模型回答流意外中断，请稍后重试。" });
       } finally {
@@ -894,7 +915,7 @@ export async function handleQaAsk(
         stream_options: { include_usage: true },
         thinking: { type: "enabled" },
         reasoning_effort: reasoningEffort,
-        max_tokens: 1_800,
+        max_tokens: 384_000,
       }),
       signal: request.signal,
     });

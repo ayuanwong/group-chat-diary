@@ -60,7 +60,7 @@ function makeQaDb(requestCount = 1): D1Database {
     fts_rank: -0.5,
   };
   const speakerRows = [
-    { ...group, document_key: "test-sync:g:speaker-a-1", sender: "成员甲", content: "我做了完整复现，并整理了原因、方案和验证步骤。", message_count: 120, substantive_count: 82, sample_rank: 1 },
+    { ...group, document_key: "test-sync:g:speaker-a-1", sender: "成员甲", content: "我做了完整复现，并整理了原因、方案和验证步骤。 ↳ 回复 被引用者：这不是成员甲的观点。", message_count: 120, substantive_count: 82, sample_rank: 1 },
     { ...group, document_key: "test-sync:g:speaker-a-2", sender: "成员甲", content: "这个交互可以换一种实现，减少一次不必要的等待。", message_count: 120, substantive_count: 82, sample_rank: 2 },
     { ...group, document_key: "test-sync:g:speaker-b-1", sender: "成员乙", content: "这里有个挺有启发的产品视角，可以从用户目标反推。", message_count: 98, substantive_count: 61, sample_rank: 1 },
     { ...group, document_key: "test-sync:g:speaker-b-2", sender: "成员乙", content: "实测以后发现问题不是模型，而是上下文组织方式。", message_count: 98, substantive_count: 61, sample_rank: 2 },
@@ -279,6 +279,7 @@ describe("protected DeepSeek Q&A", () => {
     const answerBody = JSON.parse(String(modelFetch.mock.calls[1]?.[1]?.body)) as Record<string, unknown>;
     expect(plannerBody).toMatchObject({ stream: false, thinking: { type: "disabled" } });
     expect(answerBody).toMatchObject({ stream: true, thinking: { type: "enabled" }, reasoning_effort: "high" });
+    expect(answerBody).toHaveProperty("max_tokens", 384_000);
   });
 
   it("uses member-balanced retrieval and max reasoning for speaker comparison questions", async () => {
@@ -316,6 +317,37 @@ describe("protected DeepSeek Q&A", () => {
     expect(body).toContain("成员乙 · 成员样本");
     const answerBody = JSON.parse(String(modelFetch.mock.calls[1]?.[1]?.body)) as Record<string, unknown>;
     expect(answerBody).toMatchObject({ thinking: { type: "enabled" }, reasoning_effort: "max" });
+    expect(answerBody).toHaveProperty("max_tokens", 384_000);
+    expect(JSON.stringify(answerBody)).not.toContain("这不是成员甲的观点");
+  });
+
+  it("reports an explicit error when thinking ends before a final answer", async () => {
+    const env = makeEnv();
+    const upstream = [
+      'data: {"choices":[{"delta":{"reasoning_content":"仍在分析"},"finish_reason":null}]}',
+      'data: {"choices":[{"delta":{"content":""},"finish_reason":"length"}]}',
+      "data: [DONE]",
+      "",
+    ].join("\n\n");
+    const modelFetch = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      const payload = JSON.parse(String(init?.body ?? "{}")) as { stream?: boolean };
+      if (payload.stream === false) {
+        return Response.json({ choices: [{ message: { content: JSON.stringify({
+          intent: "lookup", source: "both", queries: ["插件反馈"], days: 3, people: [], issueNumber: null,
+        }) } }] });
+      }
+      return new Response(upstream, { headers: { "Content-Type": "text/event-stream" } });
+    });
+    const request = await authenticatedRequest(env, "/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: "最近插件反馈" }),
+    });
+    const response = await createHandler(fetch, modelFetch)(request, env);
+    const body = await response.text();
+    expect(body).toContain("event: error");
+    expect(body).toContain("模型输出上限");
+    expect(body).not.toContain("event: done");
   });
 
   it("rate-limits an authenticated member before contacting DeepSeek", async () => {

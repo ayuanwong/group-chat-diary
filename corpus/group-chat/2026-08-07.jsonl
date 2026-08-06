@@ -1,0 +1,953 @@
+{"sequence":15010,"id":"wx-316a33ef4682e44c","timestamp":"2026-08-07T00:00:23+08:00","sender":"少喝凉水","side":"left","messageType":"文本","text":"谢谢，我压力一下小黑鱼","redacted":false}
+{"sequence":15011,"id":"wx-a5b5fc7515d30e6b","timestamp":"2026-08-07T00:01:41+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\"zzyzy\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15012,"id":"wx-5eacc504251bbeb6","timestamp":"2026-08-07T00:01:48+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"好想用大肥鱼啊","redacted":false}
+{"sequence":15013,"id":"wx-2dff9842165f60cc","timestamp":"2026-08-07T00:02:15+08:00","sender":"清","side":"left","messageType":"文本","text":"等待…","redacted":false}
+{"sequence":15014,"id":"wx-e79cdf1ed095c7f1","timestamp":"2026-08-07T00:02:35+08:00","sender":"黑","side":"left","messageType":"图片","text":"[图片] (local_id=15014)","redacted":false}
+{"sequence":15015,"id":"wx-04e7aad728eb6f56","timestamp":"2026-08-07T00:02:40+08:00","sender":"黑","side":"left","messageType":"文本","text":"这是不是意思就是那个是假的","redacted":false}
+{"sequence":15016,"id":"wx-800fbcd331871667","timestamp":"2026-08-07T00:03:59+08:00","sender":"ж","side":"left","messageType":"文本","text":"我觉得是的","redacted":false}
+{"sequence":15017,"id":"wx-2e7b17234de2c317","timestamp":"2026-08-07T00:04:15+08:00","sender":"ж","side":"left","messageType":"文本","text":"算了，以后这种再也不信了～","redacted":false}
+{"sequence":15018,"id":"wx-cb779837d1b6358e","timestamp":"2026-08-07T00:05:16+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"[666]\n  ↳ 回复 Baymax: 正在推送新版本","redacted":false}
+{"sequence":15019,"id":"wx-eab89a6fe6e64dbf","timestamp":"2026-08-07T00:06:23+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"今天会有官方的插件协议吗\n  ↳ 回复 Baymax: 正在推送新版本","redacted":false}
+{"sequence":15020,"id":"wx-6965427af3c7308f","timestamp":"2026-08-07T00:06:25+08:00","sender":"Margoo","side":"left","messageType":"链接/文件","text":"等会\n  ↳ 回复 黑: wxid_o39zyo52lr1w22:  [引用媒体]","redacted":true}
+{"sequence":15021,"id":"wx-02b98e3b51a88f22","timestamp":"2026-08-07T00:06:28+08:00","sender":"D","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15022,"id":"wx-36203e56a124d91f","timestamp":"2026-08-07T00:06:34+08:00","sender":"Margoo","side":"left","messageType":"文本","text":"80.8-80.6=0.3 吗？","redacted":false}
+{"sequence":15023,"id":"wx-4547cd739befefc1","timestamp":"2026-08-07T00:06:36+08:00","sender":"Margoo","side":"left","messageType":"文本","text":"对。。。对吗？","redacted":false}
+{"sequence":15024,"id":"wx-252ed5db7a5f5d80","timestamp":"2026-08-07T00:06:51+08:00","sender":"霓鸿_","side":"left","messageType":"文本","text":"相对差0.3%吧","redacted":false}
+{"sequence":15025,"id":"wx-f3901f238947db08","timestamp":"2026-08-07T00:07:15+08:00","sender":"Lum靖","side":"left","messageType":"链接/文件","text":"÷\n  ↳ 回复 Margoo: 80.8-80.6=0.3 吗？","redacted":false}
+{"sequence":15026,"id":"wx-83443b5021b87ddb","timestamp":"2026-08-07T00:08:30+08:00","sender":"Lum靖","side":"left","messageType":"文本","text":"现在自媒体讲的话99.9%都是假的[破涕为笑]","redacted":false}
+{"sequence":15027,"id":"wx-067f4f7cce5750d3","timestamp":"2026-08-07T00:08:54+08:00","sender":"Margoo","side":"left","messageType":"链接/文件","text":"÷也算不出来吧\n  ↳ 回复 Lumu: [引用] ÷","redacted":true}
+{"sequence":15028,"id":"wx-36236de39502b6ea","timestamp":"2026-08-07T00:10:11+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"新人还没收到邮件，是不是今天无缘了","redacted":false}
+{"sequence":15029,"id":"wx-9efe33d975ed85eb","timestamp":"2026-08-07T00:10:20+08:00","sender":"博皞 bt.wood","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15030,"id":"wx-976c52c48a96733f","timestamp":"2026-08-07T00:10:26+08:00","sender":"Margoo","side":"left","messageType":"链接/文件","text":"骗你的崔佬还没睡呢\n  ↳ 回复 博皞 bt.wood: 新人还没收到邮件，是不是今天无缘了","redacted":false}
+{"sequence":15031,"id":"wx-6e4314a9e507a759","timestamp":"2026-08-07T00:10:30+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"别着急","redacted":false}
+{"sequence":15032,"id":"wx-34728403f181b40f","timestamp":"2026-08-07T00:10:34+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"我们也没推","redacted":false}
+{"sequence":15033,"id":"wx-a78d26ecdfaaf7a6","timestamp":"2026-08-07T00:10:41+08:00","sender":"博皞 bt.wood","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15034,"id":"wx-48cd6a089a289f0c","timestamp":"2026-08-07T00:11:12+08:00","sender":"黑","side":"left","messageType":"图片","text":"[图片] (local_id=15034)","redacted":false}
+{"sequence":15035,"id":"wx-2b10d70d461f3b09","timestamp":"2026-08-07T00:11:19+08:00","sender":"黑","side":"left","messageType":"文本","text":"原来还没适配手机吗","redacted":false}
+{"sequence":15036,"id":"wx-bd684f1e46cb15ea","timestamp":"2026-08-07T00:11:27+08:00","sender":"少喝凉水","side":"left","messageType":"链接/文件","text":"他没睡\n  ↳ 回复 博皞 bt.wood: 新人还没收到邮件，是不是今天无缘了","redacted":false}
+{"sequence":15037,"id":"wx-1f88e975fe6b065c","timestamp":"2026-08-07T00:11:30+08:00","sender":"少喝凉水","side":"left","messageType":"文本","text":"我刚刚收到了","redacted":false}
+{"sequence":15038,"id":"wx-7354748ddd626ca4","timestamp":"2026-08-07T00:11:30+08:00","sender":"黑","side":"left","messageType":"文本","text":"对了这个链接是内网ip","redacted":false}
+{"sequence":15039,"id":"wx-806deb4848557b7b","timestamp":"2026-08-07T00:12:24+08:00","sender":"Turtle🐢","side":"left","messageType":"链接/文件","text":"我看已经推了 我先抢先适配了\n  ↳ 回复 mattheliu(夏目贵志)คิดถึง:  [引用] 今天会有官方的插件协议吗","redacted":true}
+{"sequence":15040,"id":"wx-e803ea296dd4f8d1","timestamp":"2026-08-07T00:12:37+08:00","sender":"清","side":"left","messageType":"文本","text":"等待…","redacted":false}
+{"sequence":15041,"id":"wx-c184c9237970dbe7","timestamp":"2026-08-07T00:12:41+08:00","sender":"清","side":"left","messageType":"文本","text":"uu远程准备着的","redacted":false}
+{"sequence":15042,"id":"wx-304a78491244e290","timestamp":"2026-08-07T00:14:55+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"来了来了","redacted":false}
+{"sequence":15043,"id":"wx-953f7b5922c2aa74","timestamp":"2026-08-07T00:14:57+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\"凉粉\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15044,"id":"wx-48dc0fd31783c279","timestamp":"2026-08-07T00:14:58+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"12分钟前","redacted":false}
+{"sequence":15045,"id":"wx-5aa607562c08335e","timestamp":"2026-08-07T00:15:03+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\"shenjack\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15046,"id":"wx-c8622a81f230ff2b","timestamp":"2026-08-07T00:15:05+08:00","sender":"树","side":"left","messageType":"文本","text":"0806 push了","redacted":false}
+{"sequence":15047,"id":"wx-4dc86a129d77fb5e","timestamp":"2026-08-07T00:15:17+08:00","sender":"shenjack","side":"left","messageType":"图片","text":"[图片] (local_id=15047)","redacted":false}
+{"sequence":15048,"id":"wx-b6e9dd3705bca32d","timestamp":"2026-08-07T00:15:23+08:00","sender":"张仪宇","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15049,"id":"wx-238de7ed209c660d","timestamp":"2026-08-07T00:15:25+08:00","sender":"Adam Platin","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15050,"id":"wx-3a34e624432566e5","timestamp":"2026-08-07T00:15:25+08:00","sender":"Baymax","side":"left","messageType":"文本","text":"刚刚推送了一批私有仓库的邀请，会在GitHub注册邮箱中收到邀请。（可能有些新进群的用户小助手还在处理中）\n\n内测须知：\n\n每人有一个专属于自己的 GitHub repo，你会在 GitHub 注册邮箱中收到邀请。如果你没有收到邀请，请将 GitHub ID 发送给拉你进群的群管理员协助解决。\n\n请注意每个人得到的 repo 中的代码版本都有独特的加密水印的存在。如果外传其中的代码，会违反您签署的《保密承诺函》，需要负法律责任。\n\n内测版本默认会上传所有使用中的 Session Log；如需关闭，可以设置环境变量 DSH_TELEMETRY_DISABLED=1。\n\n我们会给每个人的 DeepSeek API 账户充值1000 元人民币 API 额度用于测试。今天新进群的同学预计明天会收到。\n\nDSH使用过程中遇到的任何bug和建议可以记录在 https://github.com/dsh-external/issues/issues 里面。\n\n希望分享给全体内测用户的插件或相关工具可以放在dsh-external org的私有仓库里面，代码版权由代码作者所有。不保证这个 org 会一直存在。\n\n希望大家能积极的测试和反馈！感谢感谢！\n\n @所有人\n\n## DeepSeek Harness Changelog 2026-08-06\n\n### ✨ 新增\n\n- 对话区新增 TTFT、生成速度和上下文占用明细\n- 支持 ClaudeAgentSDK / Codex 作为 Subganet 实现提供方\n- 设置页面支持自定义模型提供方，并支持获取远程模型列表配置\n- `dsh` CLI 启动入口调整，支持指定配置（及按顺序组合配置）启动能力，详见 `dsh --help`，TUI 可以通过以下方式获得\n```\ndsh plugin --profile tui add https://github.com/dsh-external/turtle-ui.git\ndsh --profile tui\n```\n\n### 🎨 优化\n\n- 缓解会话数据极大时的初始和分页加载卡顿问题\n- 会话侧边栏会显示后台完成的未读提示\n- `/` 命令支持不区分大小写的模糊匹配\n- 优化不同上下文注入类型的展示效果\n- PowerShell 使用与 Bash 一致的终端卡片展示\n- Markdown 流式内容支持增量解析渲染，并修复特定中文/标记渲染问题\n\n### 变更\n\n- DeepSeek 模型提供方名称变化，历史会话需要重新选择模型","redacted":false}
+{"sequence":15051,"id":"wx-9e84e0b5bef394bc","timestamp":"2026-08-07T00:15:32+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"mmchatroomtopmsg\">\n    <mmchatroomtopmsg>\n        <!-- ChatRoomTopMsgRequest -->\n        <chatroomname><![CDATA[45700955751@chatroom]]></chatroomname>\n        <op><![CDATA[2]]></op>\n        <newmsgid><![CDATA[7750855997340686936]]></newmsgid>\n        <msgtype><![CDATA[0]]></msgtype>\n        <username><![CDATA[25984983008475376@openim]]></username>\n\n        <!-- ChatRoomTopMsgResponse -->\n        <id><![CDATA[49]]></id>\n\n        <nickname><![CDATA[]]></nickname>\n    </mmchatroomtopmsg>\n    <chatroominfoversion><![CDATA[60]]></chatroominfoversion>\n</sysmsg>","redacted":false}
+{"sequence":15052,"id":"wx-5c026568dcb2addb","timestamp":"2026-08-07T00:15:34+08:00","sender":"Adam Platin","side":"left","messageType":"文本","text":"开始查issue","redacted":false}
+{"sequence":15053,"id":"wx-ded502332b171fec","timestamp":"2026-08-07T00:15:36+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"mmchatroomtopmsg\">\n    <mmchatroomtopmsg>\n        <!-- ChatRoomTopMsgRequest -->\n        <chatroomname><![CDATA[45700955751@chatroom]]></chatroomname>\n        <op><![CDATA[1]]></op>\n        <newmsgid><![CDATA[3988684898028928867]]></newmsgid>\n        <msgtype><![CDATA[0]]></msgtype>\n        <username><![CDATA[25984983008475376@openim]]></username>\n\n        <!-- ChatRoomTopMsgResponse -->\n        <id><![CDATA[60]]></id>\n\n        <nickname><![CDATA[]]></nickname>\n    </mmchatroomtopmsg>\n    <chatroominfoversion><![CDATA[61]]></chatroominfoversion>\n</sysmsg>","redacted":false}
+{"sequence":15054,"id":"wx-1653875bd1fb56b6","timestamp":"2026-08-07T00:15:46+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"我来帮大家避坑了(\n在内测开始后,你会获得两个仓库,分别用于发送issue和拉取程序,请在GitHub信息列表查看邀请信息\n以下为WSL2 Ubuntu 26.04的安装流程\n正式安装:\n准备GitHub的账号名,密钥用于登录拉取仓库,DS API Key用于使用模型\n安装Git Node以及附属包(如npm)(建议使用nvm安装) 构建工具链(如Ubuntu为build-essential)\n安装命令:\ngit clone 你的测试仓库\ncd 你的测试仓库\nDSH_REPO=你的测试仓库 DSH_REF=仓库中的分支 scripts/install.sh\n踩坑PS:如果你的Node不是使用nvm安装的,而是使用Ubuntu安装的,请注意可能存在缺少unrun依赖的bug,修复方式:首先进行fork,在项目中添加unrun依赖,需要提交至远程(所以需要fork)","redacted":false}
+{"sequence":15055,"id":"wx-0c4554e5d13057c9","timestamp":"2026-08-07T00:15:56+08:00","sender":"小庄","side":"left","messageType":"文本","text":"### 变更\n\n- DeepSeek 模型提供方名称变化，历史会话需要重新选择模型","redacted":false}
+{"sequence":15056,"id":"wx-f546f863c75bc624","timestamp":"2026-08-07T00:15:59+08:00","sender":"小庄","side":"left","messageType":"文本","text":"难道说","redacted":false}
+{"sequence":15057,"id":"wx-3819bf0c80d22c5f","timestamp":"2026-08-07T00:16:04+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"哇！","redacted":false}
+{"sequence":15058,"id":"wx-eafd452c917c2444","timestamp":"2026-08-07T00:16:04+08:00","sender":"树","side":"left","messageType":"文本","text":"DeepSeek 模型提供方名称变化，历史会话需要重新选择模型?","redacted":false}
+{"sequence":15059,"id":"wx-3bead20b00ba8b4a","timestamp":"2026-08-07T00:16:06+08:00","sender":"Adam Platin","side":"left","messageType":"文本","text":"难道说","redacted":false}
+{"sequence":15060,"id":"wx-5aa10f14afd8c5ff","timestamp":"2026-08-07T00:16:08+08:00","sender":"树","side":"left","messageType":"文本","text":"难道说","redacted":false}
+{"sequence":15061,"id":"wx-90ca07af758e648c","timestamp":"2026-08-07T00:16:12+08:00","sender":"夏宇澄","side":"left","messageType":"文本","text":"难道说","redacted":false}
+{"sequence":15062,"id":"wx-4108f2e5d5a1b73d","timestamp":"2026-08-07T00:16:14+08:00","sender":"夏宇澄","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15063,"id":"wx-c66c0fbac9fd5f6e","timestamp":"2026-08-07T00:16:14+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"难道说","redacted":false}
+{"sequence":15064,"id":"wx-7cc7f348ef32c873","timestamp":"2026-08-07T00:16:15+08:00","sender":"爱樰浠","side":"left","messageType":"链接/文件","text":"好耶好耶好耶！\n  ↳ 回复 Baymax: 刚刚推送了一批私有仓库的邀请，会在GitHub注册邮箱中收到邀请。（可能有些新进群的用户小助手还在处理中） 内测须知： 每人有一个专属于自己的 GitHub repo，你会在 GitHub 注册邮箱中收到邀请。如果你没有收到邀请，请将 GitHub ID 发送给拉你进群的群管理员协助解决。 请注意每个人得到的 repo...","redacted":false}
+{"sequence":15065,"id":"wx-a4b160893c467eb1","timestamp":"2026-08-07T00:16:19+08:00","sender":"🧗🏻生鱼安乐（随机统一回🍫","side":"left","messageType":"文本","text":"难道说","redacted":false}
+{"sequence":15066,"id":"wx-01fd959a4a7a82e9","timestamp":"2026-08-07T00:16:20+08:00","sender":"Baymax","side":"left","messageType":"链接/文件","text":"不是你们想的那样\n  ↳ 回复 树: DeepSeek 模型提供方名称变化，历史会话需要重新选择模型?","redacted":false}
+{"sequence":15067,"id":"wx-2273c72ae983c105","timestamp":"2026-08-07T00:16:20+08:00","sender":"Adam Platin","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15068,"id":"wx-2776f111a8f035a7","timestamp":"2026-08-07T00:16:21+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"tui回来了","redacted":false}
+{"sequence":15069,"id":"wx-f40bc65ece20f140","timestamp":"2026-08-07T00:16:24+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"tui回来了","redacted":false}
+{"sequence":15070,"id":"wx-613b0283348ab6e8","timestamp":"2026-08-07T00:16:27+08:00","sender":"树","side":"left","messageType":"文本","text":"崔佬的恩情还不完[流泪][流泪]","redacted":false}
+{"sequence":15071,"id":"wx-f78a8f888d68a0c5","timestamp":"2026-08-07T00:16:29+08:00","sender":"Adam Platin","side":"left","messageType":"文本","text":"啊↘","redacted":false}
+{"sequence":15072,"id":"wx-86303b3a5183898c","timestamp":"2026-08-07T00:16:31+08:00","sender":"🧗🏻生鱼安乐（随机统一回🍫","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15073,"id":"wx-c3b32b0b73952f75","timestamp":"2026-08-07T00:16:31+08:00","sender":"小庄","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15074,"id":"wx-29895e88c9f3d508","timestamp":"2026-08-07T00:16:35+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"害（\n  ↳ 回复 Baymax: [引用] 不是你们想的那样","redacted":true}
+{"sequence":15075,"id":"wx-f8c32a472672c392","timestamp":"2026-08-07T00:16:36+08:00","sender":"树","side":"left","messageType":"链接/文件","text":"那是怎么样的\n  ↳ 回复 Baymax: [引用] 不是你们想的那样","redacted":true}
+{"sequence":15076,"id":"wx-a33d3d2132a28334","timestamp":"2026-08-07T00:16:37+08:00","sender":"牛牛酱","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15077,"id":"wx-95a51d90ca4c20ff","timestamp":"2026-08-07T00:16:39+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"- `dsh` CLI 启动入口调整，支持指定配置（及按顺序组合配置）启动能力，详见 `dsh --help`，TUI 可以通过以下方式获得\n```\ndsh plugin --profile tui add https://github.com/dsh-external/turtle-ui.git\ndsh --profile tui","redacted":false}
+{"sequence":15078,"id":"wx-dd6e1f7e4249f316","timestamp":"2026-08-07T00:16:45+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"tui回来了","redacted":false}
+{"sequence":15079,"id":"wx-8939335b8649ca5f","timestamp":"2026-08-07T00:16:47+08:00","sender":"Adam Platin","side":"left","messageType":"文本","text":"终于有生成速度了","redacted":false}
+{"sequence":15080,"id":"wx-3354e287b130c972","timestamp":"2026-08-07T00:16:49+08:00","sender":"Adam Platin","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15081,"id":"wx-09ac547cf4ed7152","timestamp":"2026-08-07T00:16:50+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"好耶！","redacted":false}
+{"sequence":15082,"id":"wx-758356462cd66c4d","timestamp":"2026-08-07T00:16:53+08:00","sender":"🧗🏻生鱼安乐（随机统一回🍫","side":"left","messageType":"文本","text":"崔佬忙什么嘞👀","redacted":false}
+{"sequence":15083,"id":"wx-9be010f888e1dd54","timestamp":"2026-08-07T00:16:54+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"明天合并哦","redacted":false}
+{"sequence":15084,"id":"wx-ce33eba67fe26367","timestamp":"2026-08-07T00:16:55+08:00","sender":"🧗🏻生鱼安乐（随机统一回🍫","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15085,"id":"wx-c8d78c8fc77a4f68","timestamp":"2026-08-07T00:17:00+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"有官方plugin了！","redacted":false}
+{"sequence":15086,"id":"wx-d387d7f56cfe2eb3","timestamp":"2026-08-07T00:17:08+08:00","sender":"赵文博","side":"left","messageType":"文本","text":"profile !!!","redacted":false}
+{"sequence":15087,"id":"wx-17a033b38b99271c","timestamp":"2026-08-07T00:17:09+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"崔老不是在狠狠的修复issue吗","redacted":false}
+{"sequence":15088,"id":"wx-489f730b520cc83d","timestamp":"2026-08-07T00:17:21+08:00","sender":"Baymax","side":"left","messageType":"文本","text":"大家可以多给新搞的这个profile机制提提意见呀","redacted":false}
+{"sequence":15089,"id":"wx-5b70fa6166e47787","timestamp":"2026-08-07T00:17:23+08:00","sender":"wzh","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15090,"id":"wx-43dfd855aba16061","timestamp":"2026-08-07T00:17:35+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"卡顿问题终于解决了","redacted":false}
+{"sequence":15091,"id":"wx-3bd4787321106152","timestamp":"2026-08-07T00:17:39+08:00","sender":"shenjack","side":"left","messageType":"图片","text":"[图片] (local_id=15091)","redacted":false}
+{"sequence":15092,"id":"wx-811b89012c242aec","timestamp":"2026-08-07T00:17:44+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"太好了\n  ↳ 回复 Baymax: 大家可以多给新搞的这个profile机制提提意见呀","redacted":false}
+{"sequence":15093,"id":"wx-017c33242a09e779","timestamp":"2026-08-07T00:17:48+08:00","sender":"Adam Platin","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15094,"id":"wx-0a34edb2a6af14c6","timestamp":"2026-08-07T00:17:48+08:00","sender":"shenjack","side":"left","messageType":"图片","text":"[图片] (local_id=15094)","redacted":false}
+{"sequence":15095,"id":"wx-43ec3cdad1064218","timestamp":"2026-08-07T00:17:52+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"狠狠的爬一下","redacted":false}
+{"sequence":15096,"id":"wx-53e27c7ffa7d6706","timestamp":"2026-08-07T00:18:06+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"好滴👌🏻\n  ↳ 回复 Baymax: 大家可以多给新搞的这个profile机制提提意见呀","redacted":false}
+{"sequence":15097,"id":"wx-5974851da692769e","timestamp":"2026-08-07T00:18:12+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"@shenjack 这是不是群里面的 @绝版小乌龟","redacted":false}
+{"sequence":15098,"id":"wx-473738edfd0179b2","timestamp":"2026-08-07T00:18:42+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"哦哦（","redacted":false}
+{"sequence":15099,"id":"wx-b8ae6477b9eed24c","timestamp":"2026-08-07T00:18:44+08:00","sender":"张仪宇","side":"left","messageType":"文本","text":"草  真turtle","redacted":false}
+{"sequence":15100,"id":"wx-c20e66ce09329058","timestamp":"2026-08-07T00:18:45+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] \"DeepSeek入群助手，不回复咨询@深度求索\"邀请\"好名字\"加入了群聊","redacted":false}
+{"sequence":15101,"id":"wx-1513b19ef4a93fca","timestamp":"2026-08-07T00:18:50+08:00","sender":"树","side":"left","messageType":"文本","text":"这个profile有什么","redacted":false}
+{"sequence":15102,"id":"wx-cb226f57c80cd997","timestamp":"2026-08-07T00:19:00+08:00","sender":"张仪宇","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15103,"id":"wx-5a6ff9b73fb6132d","timestamp":"2026-08-07T00:19:05+08:00","sender":"🧗🏻生鱼安乐（随机统一回🍫","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15104,"id":"wx-85a39187eacce01c","timestamp":"2026-08-07T00:19:05+08:00","sender":"墨磊","side":"left","messageType":"链接/文件","text":"没考虑 monorepo [破涕为笑]\n  ↳ 回复 Baymax: 大家可以多给新搞的这个profile机制提提意见呀","redacted":false}
+{"sequence":15105,"id":"wx-7be76f66d7f53546","timestamp":"2026-08-07T00:20:03+08:00","sender":"赵文博","side":"left","messageType":"文本","text":"一个 profile 叫 Codex，一个 profile 叫 Claude Code，再来个 pi，开始赛马","redacted":false}
+{"sequence":15106,"id":"wx-f5b1ff7f3eb22b15","timestamp":"2026-08-07T00:20:11+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[666]","redacted":false}
+{"sequence":15107,"id":"wx-4c904546acfb5ff4","timestamp":"2026-08-07T00:20:22+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"我zed呢！（\n  ↳ 回复 赵文博: 一个 profile 叫 Codex，一个 profile 叫 Claude Code，再来个 pi，开始赛马","redacted":false}
+{"sequence":15108,"id":"wx-fa364ca38514625d","timestamp":"2026-08-07T00:20:39+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] \"DeepSeek入群助手，不回复咨询@深度求索\"邀请\"保持冷静\"加入了群聊","redacted":false}
+{"sequence":15109,"id":"wx-5dbf345de23a6aad","timestamp":"2026-08-07T00:20:40+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"终于解决了","redacted":false}
+{"sequence":15110,"id":"wx-ef841c96e83e8151","timestamp":"2026-08-07T00:20:43+08:00","sender":"墨磊","side":"left","messageType":"链接/文件","text":"zed 又不是独立 agent\n  ↳ 回复 shenjack:  [引用] 我zed呢！（","redacted":true}
+{"sequence":15111,"id":"wx-2dc2fd56b258cbc7","timestamp":"2026-08-07T00:20:51+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"这么晚还在拉人","redacted":false}
+{"sequence":15112,"id":"wx-11bc096297667df3","timestamp":"2026-08-07T00:20:52+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"zed agent不是agent啊（逃","redacted":false}
+{"sequence":15113,"id":"wx-15fdb1287a005a0b","timestamp":"2026-08-07T00:20:57+08:00","sender":"只有你不在的a10","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15114,"id":"wx-dc5493f927d2985c","timestamp":"2026-08-07T00:20:58+08:00","sender":"清","side":"left","messageType":"文本","text":"这么晚还在拉人","redacted":false}
+{"sequence":15115,"id":"wx-29d8803918511507","timestamp":"2026-08-07T00:21:00+08:00","sender":"赵文博","side":"left","messageType":"文本","text":"每个现在和未来的 Agent ，都不过是个 DSH profile 罢了","redacted":false}
+{"sequence":15116,"id":"wx-70fa3dfb9f94854f","timestamp":"2026-08-07T00:21:09+08:00","sender":"Turtle🐢","side":"left","messageType":"链接/文件","text":"考虑了吧\n  ↳ 回复 morlay:  [引用] 没考虑 monorepo [破涕为笑]","redacted":true}
+{"sequence":15117,"id":"wx-83e5403d6763afc7","timestamp":"2026-08-07T00:21:09+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"来了个可能明天才能进的倒霉蛋","redacted":false}
+{"sequence":15118,"id":"wx-8a581b88af51335e","timestamp":"2026-08-07T00:21:09+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"小助手太累了","redacted":false}
+{"sequence":15119,"id":"wx-7b02c1a2c9f6c9b4","timestamp":"2026-08-07T00:21:10+08:00","sender":"清","side":"left","messageType":"文本","text":"等待邮件…","redacted":false}
+{"sequence":15120,"id":"wx-2b73c90c8bb915e3","timestamp":"2026-08-07T00:21:25+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"你和ai仔细研究一下是不是也能用monorepo","redacted":false}
+{"sequence":15121,"id":"wx-19fd265b7636e701","timestamp":"2026-08-07T00:21:51+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"新版本install还要下载codex和claude sdk？","redacted":false}
+{"sequence":15122,"id":"wx-5a50ada11c5d6386","timestamp":"2026-08-07T00:21:59+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] \"DeepSeek入群助手，不回复咨询@深度求索\"邀请\"anion\"加入了群聊","redacted":false}
+{"sequence":15123,"id":"wx-7d40e9b865292376","timestamp":"2026-08-07T00:22:01+08:00","sender":"张仪宇","side":"left","messageType":"文本","text":"每个现在和未来的 Agent ，都不过是个 DSH profile 罢了","redacted":false}
+{"sequence":15124,"id":"wx-549e54f2fc91d8ba","timestamp":"2026-08-07T00:22:07+08:00","sender":"树","side":"left","messageType":"文本","text":"每个现在和未来的 Agent ，都不过是个 DSH profile 罢了","redacted":false}
+{"sequence":15125,"id":"wx-3ed84e3c18b0a804","timestamp":"2026-08-07T00:22:23+08:00","sender":"卡比卡比","side":"left","messageType":"文本","text":"等待邮件…","redacted":false}
+{"sequence":15126,"id":"wx-a676b92d542f31cf","timestamp":"2026-08-07T00:22:33+08:00","sender":null,"side":"system","messageType":"链接/文件","text":"[链接/文件] \"Laplaceyoung\" 拍了拍 \"inschrift-spruch-raum\" ヾ(⌒∇⌒*)See You♪","redacted":false}
+{"sequence":15127,"id":"wx-1789c04a7b27a348","timestamp":"2026-08-07T00:22:35+08:00","sender":"x","side":"left","messageType":"文本","text":"等待邮件…","redacted":false}
+{"sequence":15128,"id":"wx-58661b57fb35f172","timestamp":"2026-08-07T00:22:36+08:00","sender":null,"side":"system","messageType":"链接/文件","text":"[链接/文件] \"Laplaceyoung\" 拍了拍 \"卡比卡比\" 肩膀说：请你吃饭","redacted":false}
+{"sequence":15129,"id":"wx-752ac111f521700e","timestamp":"2026-08-07T00:22:39+08:00","sender":"Adam Platin","side":"left","messageType":"文本","text":"这次代码变动好多","redacted":false}
+{"sequence":15130,"id":"wx-0bbd9092112f7ea1","timestamp":"2026-08-07T00:22:41+08:00","sender":"博皞 bt.wood","side":"left","messageType":"链接/文件","text":"等待邮件...目前还没收到...\n  ↳ 回复 Baymax: 刚刚推送了一批私有仓库的邀请，会在GitHub注册邮箱中收到邀请。（可能有些新进群的用户小助手还在处理中） 内测须知： 每人有一个专属于自己的 GitHub repo，你会在 GitHub 注册邮箱中收到邀请。如果你没有收到邀请，请将 GitHub ID 发送给拉你进群的群管理员协助解决。 请注意每个人得到的 repo...","redacted":false}
+{"sequence":15131,"id":"wx-64e190795abfe550","timestamp":"2026-08-07T00:23:26+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"@卡比卡比 卡老师","redacted":false}
+{"sequence":15132,"id":"wx-041d8ee4409f7f65","timestamp":"2026-08-07T00:23:29+08:00","sender":"墨磊","side":"left","messageType":"链接/文件","text":"能对外提供 acp 么 [旺柴]\n  ↳ 回复 shenjack: zed agent不是agent啊（逃","redacted":false}
+{"sequence":15133,"id":"wx-f89cff3dafbd0157","timestamp":"2026-08-07T00:23:40+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"真的需要下载这俩嘛","redacted":false}
+{"sequence":15134,"id":"wx-d4f46fc04f67d7bb","timestamp":"2026-08-07T00:23:41+08:00","sender":"zzyzy","side":"left","messageType":"图片","text":"[图片] (local_id=15134)","redacted":false}
+{"sequence":15135,"id":"wx-68ed2278129a01dc","timestamp":"2026-08-07T00:23:56+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] \"DeepSeek入群助手，不回复咨询@深度求索\"邀请\"Yuan Shuai\"加入了群聊","redacted":false}
+{"sequence":15136,"id":"wx-4cdf062fc1157661","timestamp":"2026-08-07T00:24:00+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"我看代码加了这俩的subagent功能","redacted":false}
+{"sequence":15137,"id":"wx-ef219f0dd2c7a212","timestamp":"2026-08-07T00:24:15+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"是jackwener吗","redacted":false}
+{"sequence":15138,"id":"wx-01104653811d4dc0","timestamp":"2026-08-07T00:24:21+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"好啊好啊","redacted":false}
+{"sequence":15139,"id":"wx-0d6c6d8f978ccf79","timestamp":"2026-08-07T00:24:32+08:00","sender":"Margoo","side":"left","messageType":"链接/文件","text":"我去，我的 claude 和 codex 交互插件可以退役了\n  ↳ 回复 Baymax: 刚刚推送了一批私有仓库的邀请，会在GitHub注册邮箱中收到邀请。（可能有些新进群的用户小助手还在处理中） 内测须知： 每人有一个专属于自己的 GitHub repo，你会在 GitHub 注册邮箱中收到邀请。如果你没有收到邀请，请将 GitHub ID 发送给拉你进群的群管理员协助解决。 请注意每个人得到的 repo...","redacted":false}
+{"sequence":15140,"id":"wx-a7b904ea5ab4f89b","timestamp":"2026-08-07T00:24:32+08:00","sender":"墨磊","side":"left","messageType":"文本","text":"这 [旺柴]\n我觉得我要继续搞定制化裁剪了","redacted":false}
+{"sequence":15141,"id":"wx-9ba3cbfdaa07b3ac","timestamp":"2026-08-07T00:24:37+08:00","sender":"张仪宇","side":"left","messageType":"文本","text":"cc？不过是我们dsh的subagent罢了.jpg","redacted":false}
+{"sequence":15142,"id":"wx-19b5726ac312af04","timestamp":"2026-08-07T00:24:38+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"直接bash scripts/install.sh就得下载了","redacted":false}
+{"sequence":15143,"id":"wx-b4f7e128c7d870ac","timestamp":"2026-08-07T00:24:46+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"你们都玩上啦？","redacted":false}
+{"sequence":15144,"id":"wx-0e1113fa866dde7a","timestamp":"2026-08-07T00:24:55+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"果然还是要一个能选择性下载的功能吧","redacted":false}
+{"sequence":15145,"id":"wx-74ec5bec561c79fd","timestamp":"2026-08-07T00:25:01+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"\\o/","redacted":false}
+{"sequence":15146,"id":"wx-9e2e2036d6fa9e43","timestamp":"2026-08-07T00:25:01+08:00","sender":"shenjack","side":"left","messageType":"图片","text":"[图片] (local_id=15148)","redacted":false}
+{"sequence":15147,"id":"wx-b1a157325453634d","timestamp":"2026-08-07T00:25:01+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"看起来像是cli嘛","redacted":false}
+{"sequence":15148,"id":"wx-dbbbc43be630bd78","timestamp":"2026-08-07T00:25:01+08:00","sender":"Functorゝ","side":"left","messageType":"文本","text":"你还没玩上吗🤔","redacted":false}
+{"sequence":15149,"id":"wx-152f0d088a915fc2","timestamp":"2026-08-07T00:25:02+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"哈哈哈","redacted":false}
+{"sequence":15150,"id":"wx-987b5b8302e41fc8","timestamp":"2026-08-07T00:25:10+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"还没呢","redacted":false}
+{"sequence":15151,"id":"wx-82060733520e19e8","timestamp":"2026-08-07T00:25:12+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"webui + cli\n  ↳ 回复 保持冷静: 看起来像是cli嘛","redacted":false}
+{"sequence":15152,"id":"wx-cc0644a0c8de819a","timestamp":"2026-08-07T00:25:13+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"才申请","redacted":false}
+{"sequence":15153,"id":"wx-a97bf048e1fd7cf6","timestamp":"2026-08-07T00:25:33+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"已经玩了一周了","redacted":false}
+{"sequence":15154,"id":"wx-5e9fe607b378c90f","timestamp":"2026-08-07T00:25:36+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[旺柴]","redacted":false}
+{"sequence":15155,"id":"wx-2c7be9886a4f4f89","timestamp":"2026-08-07T00:25:38+08:00","sender":"我，吉他，猫，LLM","side":"left","messageType":"文本","text":"奇怪","redacted":false}
+{"sequence":15156,"id":"wx-effa8a66fa24eec4","timestamp":"2026-08-07T00:25:41+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"群里都是大佬","redacted":false}
+{"sequence":15157,"id":"wx-4b1fde03029e7fa6","timestamp":"2026-08-07T00:25:52+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"上周五拿到的","redacted":false}
+{"sequence":15158,"id":"wx-4b0016eab3ecc6ab","timestamp":"2026-08-07T00:25:56+08:00","sender":"陈泽洲","side":"left","messageType":"文本","text":"安装的时候必须下载这两个包吗？感觉如果是这样，想实现DSH装到WSL里面，但是codex和claude在cmd里面，似乎默认调用方式不行吧？","redacted":false}
+{"sequence":15159,"id":"wx-2ed77b94ca465661","timestamp":"2026-08-07T00:25:58+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"怎么说\n  ↳ 回复 我，吉他，猫，LLM: 奇怪","redacted":false}
+{"sequence":15160,"id":"wx-61ff62982f6d203c","timestamp":"2026-08-07T00:26:12+08:00","sender":"Turtle🐢","side":"left","messageType":"链接/文件","text":"也许或许可能应该拆成out of tree插件，然后走dsh plugin 加载\n  ↳ 回复 zzyzy: 果然还是要一个能选择性下载的功能吧","redacted":false}
+{"sequence":15161,"id":"wx-0ae87e4793c28535","timestamp":"2026-08-07T00:26:39+08:00","sender":"zzyzy","side":"left","messageType":"链接/文件","text":"是的是的，毕竟这俩玩意也不是必需品\n  ↳ 回复 绝版小乌龟: [引用] 也许或许可能应该拆成out of tree插件，然后走dsh plugin 加载","redacted":true}
+{"sequence":15162,"id":"wx-7d2a188a3bd27e67","timestamp":"2026-08-07T00:27:42+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"Turtle ui是从几天前的官方release里拆出来的原厂tui，除了比一开始多了一些bugfix之外没有特别的地方，然后适配了最新profile插件机制","redacted":false}
+{"sequence":15163,"id":"wx-2cb59370f921f0e4","timestamp":"2026-08-07T00:27:48+08:00","sender":"陈泽洲","side":"left","messageType":"文本","text":"毕竟这两个可能还有和桌面端的共用配置数据吧，比如代理商、cc-switch啥的","redacted":false}
+{"sequence":15164,"id":"wx-0396a7bbb1d27507","timestamp":"2026-08-07T00:28:02+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"我感觉官方tui也没啥特别的，只是能用","redacted":false}
+{"sequence":15165,"id":"wx-783067f3ab875fc8","timestamp":"2026-08-07T00:28:22+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"而且设计决策比如为了复制粘贴牺牲美观也不一定符合大部分人的品味","redacted":false}
+{"sequence":15166,"id":"wx-2508949d364db720","timestamp":"2026-08-07T00:28:55+08:00","sender":"树","side":"left","messageType":"图片","text":"[图片] (local_id=15166)","redacted":false}
+{"sequence":15167,"id":"wx-3d12ed4fd73d713f","timestamp":"2026-08-07T00:29:32+08:00","sender":"树","side":"left","messageType":"文本","text":"一天刷29条agent note？","redacted":false}
+{"sequence":15168,"id":"wx-17f111f4638626f3","timestamp":"2026-08-07T00:30:59+08:00","sender":"杨文峰","side":"left","messageType":"文本","text":"今天这个版本合并有一些冲突，插件的一些功能也要重新写","redacted":false}
+{"sequence":15169,"id":"wx-d73880374a99d8e7","timestamp":"2026-08-07T00:31:01+08:00","sender":"杨文峰","side":"left","messageType":"图片","text":"[图片] (local_id=15169)","redacted":false}
+{"sequence":15170,"id":"wx-50da853b6cce325d","timestamp":"2026-08-07T00:31:03+08:00","sender":"Turtle🐢","side":"left","messageType":"链接/文件","text":"哦对 现在还得自己配那个session id，目前只是能启动但是是固定session的\n  ↳ 回复 绝版小乌龟: Turtle ui是从几天前的官方release里拆出来的原厂tui，除了比一开始多了一些bugfix之外没有特别的地方，然后适配了最新profile插件机制","redacted":false}
+{"sequence":15171,"id":"wx-d79d63284ef15739","timestamp":"2026-08-07T00:31:39+08:00","sender":"Turtle🐢","side":"left","messageType":"链接/文件","text":"这个版本的profile不能很好的支持配命令行参数，暂时只能通过传环境变量和写配置解决\n  ↳ 回复 绝版小乌龟: [引用] 哦对 现在还得自己配那个session id，目前只是能启动但是是固定session的","redacted":true}
+{"sequence":15172,"id":"wx-a129091a293ad665","timestamp":"2026-08-07T00:32:07+08:00","sender":"黑","side":"left","messageType":"文本","text":"当初担心的写放大/内存问题，实际运行中都没有出现。\n\nDSH 实际写入量（微乎其微）：\n- 整个 dsh-data 才 2.7M（Aug 5 至今 1 天多积累），会话目录 2.1M（17 个会话文件）\n- DSH web 主进程（pid 105934，运行 11 小时）直接磁盘写入只有 4KB，其余 37MB 是 wchar（网络发送，不落盘）\n- 会话数据约 1-3MB/天——完全不是写密集型负载\n内存占用（无压力）：\n- tmpfs 只占 2.8M / 2G（1%）\n- 容器内存 482Mi / 4G，available 3.5G\n- 当初担心的「tmpfs 吃光 4G 内存导致 OOM」（记忆里 512M 就 OOM 过）完全没有出现","redacted":false}
+{"sequence":15173,"id":"wx-bb4cdd1d54350e2e","timestamp":"2026-08-07T00:32:14+08:00","sender":"黑","side":"left","messageType":"文本","text":"所以说写放大问题没看到啊","redacted":false}
+{"sequence":15174,"id":"wx-fd1aa4327be715c1","timestamp":"2026-08-07T00:33:20+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"但是我在用 TUI 的时候经常会越用越卡，然后内存爆炸，自动关闭进程","redacted":false}
+{"sequence":15175,"id":"wx-635cb02bcbe462a6","timestamp":"2026-08-07T00:34:03+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"tui比较简单 谁都能写一个 最好写一个模块化的 替代官方tui","redacted":false}
+{"sequence":15176,"id":"wx-d7c547cc71dfde52","timestamp":"2026-08-07T00:34:31+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"这个感觉也不咋样","redacted":false}
+{"sequence":15177,"id":"wx-ff2fa2655eb0c560","timestamp":"2026-08-07T00:35:03+08:00","sender":".....","side":"left","messageType":"文本","text":"我想到一个神奇的创意","redacted":false}
+{"sequence":15178,"id":"wx-c177b1e649555a00","timestamp":"2026-08-07T00:35:14+08:00","sender":".....","side":"left","messageType":"文本","text":"拿旧版qq做客户端","redacted":false}
+{"sequence":15179,"id":"wx-e720eb7c6898607f","timestamp":"2026-08-07T00:35:22+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\"shenjack\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15180,"id":"wx-03cf1ce996a30857","timestamp":"2026-08-07T00:35:23+08:00","sender":".....","side":"left","messageType":"文本","text":"用dsh模拟一个qq服务器","redacted":false}
+{"sequence":15181,"id":"wx-9c5d03b318a9d5e7","timestamp":"2026-08-07T00:35:30+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"qt QQ?\n  ↳ 回复 .....: 拿旧版qq做客户端","redacted":false}
+{"sequence":15182,"id":"wx-ea6c2386532014a1","timestamp":"2026-08-07T00:35:32+08:00","sender":".....","side":"left","messageType":"链接/文件","text":"完全不能用那种\n  ↳ 回复 shenjack:  [引用] qt","redacted":true}
+{"sequence":15183,"id":"wx-470586b4289769da","timestamp":"2026-08-07T00:35:40+08:00","sender":".....","side":"left","messageType":"文本","text":"qq2008","redacted":false}
+{"sequence":15184,"id":"wx-40cb6dc96a2e0036","timestamp":"2026-08-07T00:35:43+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"那你不如拿qq第三方客户端\n  ↳ 回复 .....: 用dsh模拟一个qq服务器","redacted":false}
+{"sequence":15185,"id":"wx-35aacdfcfb3b3b9f","timestamp":"2026-08-07T00:35:45+08:00","sender":".....","side":"left","messageType":"文本","text":"搞个假的服务器","redacted":false}
+{"sequence":15186,"id":"wx-50a789853a802b1c","timestamp":"2026-08-07T00:35:48+08:00","sender":".....","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15187,"id":"wx-0a80a0da563de23d","timestamp":"2026-08-07T00:35:56+08:00","sender":"shenjack","side":"left","messageType":"图片","text":"[图片] (local_id=15187)","redacted":false}
+{"sequence":15188,"id":"wx-50588eda6cd8c25f","timestamp":"2026-08-07T00:36:01+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"这玩意可是真有","redacted":false}
+{"sequence":15189,"id":"wx-07f4ecf4455327a0","timestamp":"2026-08-07T00:36:03+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"欸卧槽","redacted":false}
+{"sequence":15190,"id":"wx-e0f00e58c10bb40c","timestamp":"2026-08-07T00:36:03+08:00","sender":"墨磊","side":"left","messageType":"链接/文件","text":"场景是啥\n  ↳ 回复 黑: 当初担心的写放大/内存问题，实际运行中都没有出现。 DSH 实际写入量（微乎其微）： - 整个 dsh-data 才 2.7M（Aug 5 至今 1 天多积累），会话目录 2.1M（17 个会话文件） - DSH web 主进程（pid 105934，运行 11 小时）直接磁盘写入只有 4KB，其余 37MB 是 wc...","redacted":false}
+{"sequence":15191,"id":"wx-51628b8b1939119d","timestamp":"2026-08-07T00:36:05+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"还真是哦","redacted":false}
+{"sequence":15192,"id":"wx-6557e3404e0ab180","timestamp":"2026-08-07T00:36:06+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"草","redacted":false}
+{"sequence":15193,"id":"wx-c4dd4ba86ba6b0b3","timestamp":"2026-08-07T00:36:20+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"正常使用\n  ↳ 回复: [引用] 场景是啥","redacted":true}
+{"sequence":15194,"id":"wx-e34e39339f19db47","timestamp":"2026-08-07T00:36:23+08:00","sender":"黑","side":"left","messageType":"文本","text":"当agent啊","redacted":false}
+{"sequence":15195,"id":"wx-c4972d2819fe298d","timestamp":"2026-08-07T00:36:40+08:00","sender":".....","side":"left","messageType":"文本","text":"我想到的原因是怀旧","redacted":false}
+{"sequence":15196,"id":"wx-b8fbea41301646c6","timestamp":"2026-08-07T00:36:49+08:00","sender":"墨磊","side":"left","messageType":"链接/文件","text":"coding 呢？\n  ↳ 回复 黑: 当agent啊","redacted":false}
+{"sequence":15197,"id":"wx-753ffae06b120c1c","timestamp":"2026-08-07T00:37:01+08:00","sender":".....","side":"left","messageType":"文本","text":"拿qq2008用deepseek很抽象","redacted":false}
+{"sequence":15198,"id":"wx-1686587841882d6a","timestamp":"2026-08-07T00:37:10+08:00","sender":".....","side":"left","messageType":"文本","text":"而且搞一大堆角色扮演作为QQ好友","redacted":false}
+{"sequence":15199,"id":"wx-405f10fe72fa07a6","timestamp":"2026-08-07T00:37:12+08:00","sender":"zzyzy","side":"left","messageType":"图片","text":"[图片] (local_id=15199)","redacted":false}
+{"sequence":15200,"id":"wx-a5a13759c759690f","timestamp":"2026-08-07T00:37:26+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"新增的小圈圈","redacted":false}
+{"sequence":15201,"id":"wx-8707c933c07e98fd","timestamp":"2026-08-07T00:37:27+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"dsh现在没做好checkpoints\n  ↳ 回复: [引用] coding 呢？","redacted":true}
+{"sequence":15202,"id":"wx-639aaf71f1730f09","timestamp":"2026-08-07T00:37:32+08:00","sender":"黑","side":"left","messageType":"文本","text":"你敢用来coding吗……","redacted":false}
+{"sequence":15203,"id":"wx-84ae7ec04ef8025d","timestamp":"2026-08-07T00:37:34+08:00","sender":"黑","side":"left","messageType":"文本","text":"我不敢","redacted":false}
+{"sequence":15204,"id":"wx-f46fef269ad7b5c0","timestamp":"2026-08-07T00:38:05+08:00","sender":"Margoo","side":"left","messageType":"链接/文件","text":"我已经用来泡模型训练还有大型项目维护了\n  ↳ 回复 黑: 你敢用来coding吗……","redacted":false}
+{"sequence":15205,"id":"wx-5ac045e3526b26b3","timestamp":"2026-08-07T00:38:20+08:00","sender":"Margoo","side":"left","messageType":"文本","text":"目前除了 session 偶尔爆炸+更新冲突以外没有大问题","redacted":false}
+{"sequence":15206,"id":"wx-a444751ca818b39a","timestamp":"2026-08-07T00:38:25+08:00","sender":"墨磊","side":"left","messageType":"链接/文件","text":"有啥不敢的 这周全是 上下文上去了，直接就得爆读写\n  ↳ 回复 黑: 你敢用来coding吗……","redacted":false}
+{"sequence":15207,"id":"wx-5b13400825300058","timestamp":"2026-08-07T00:38:26+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"饿死胆小撑死胆大😂","redacted":false}
+{"sequence":15208,"id":"wx-02b9ff27b6932ab5","timestamp":"2026-08-07T00:38:41+08:00","sender":"Margoo","side":"left","messageType":"图片","text":"[图片] (local_id=15208)","redacted":false}
+{"sequence":15209,"id":"wx-254588c8dd006f2c","timestamp":"2026-08-07T00:38:47+08:00","sender":"Margoo","side":"left","messageType":"文本","text":"要测就要猛猛测","redacted":false}
+{"sequence":15210,"id":"wx-cab8a0244ad387af","timestamp":"2026-08-07T00:38:49+08:00","sender":"墨磊","side":"left","messageType":"链接/文件","text":"改了 session 才好的\n  ↳ 回复 morlay: [引用] 有啥不敢的 这周全是 上下文上去了，直接就得爆读写","redacted":true}
+{"sequence":15211,"id":"wx-385fea6f2341d8eb","timestamp":"2026-08-07T00:38:55+08:00","sender":"Margoo","side":"left","messageType":"文本","text":"[强]","redacted":false}
+{"sequence":15212,"id":"wx-df314ad3a43bbe75","timestamp":"2026-08-07T00:38:59+08:00","sender":"黑","side":"left","messageType":"文本","text":"[强]","redacted":false}
+{"sequence":15213,"id":"wx-56e83b8052165bdb","timestamp":"2026-08-07T00:39:17+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"何意味","redacted":false}
+{"sequence":15214,"id":"wx-df71ddc05c230f9c","timestamp":"2026-08-07T00:39:17+08:00","sender":"shenjack","side":"left","messageType":"图片","text":"[图片] (local_id=15214)","redacted":false}
+{"sequence":15215,"id":"wx-e1ef8ffc77cb440e","timestamp":"2026-08-07T00:39:19+08:00","sender":"Margoo","side":"left","messageType":"文本","text":"我的新 idea 我都让他参与 50% 左右了","redacted":false}
+{"sequence":15216,"id":"wx-805df1d47b68ae40","timestamp":"2026-08-07T00:39:23+08:00","sender":"shenjack","side":"left","messageType":"图片","text":"[图片] (local_id=15216)","redacted":false}
+{"sequence":15217,"id":"wx-5fb51f88610f7834","timestamp":"2026-08-07T00:40:05+08:00","sender":"黑","side":"left","messageType":"文本","text":"新版加载的是profile bundles（$DSH_HOME/profiles/<name>/package.json 里 dsh.profile.bundles 引用的 cordis 包）。旧版 $DSH_HOME/plugins + dsh.plugin.json（plugin-registry 协议）的插件系统在新版主仓库已被 profile 机制取代——「everything is a plugin」变成「everything is a profile/bundle」。","redacted":false}
+{"sequence":15218,"id":"wx-0d2299203040a7a9","timestamp":"2026-08-07T00:40:12+08:00","sender":"黑","side":"left","messageType":"文本","text":"插件要改改","redacted":false}
+{"sequence":15219,"id":"wx-4ffd230b7fc798c1","timestamp":"2026-08-07T00:40:20+08:00","sender":"黑","side":"left","messageType":"文本","text":"[亲亲]","redacted":false}
+{"sequence":15220,"id":"wx-c0cb519ae79919a7","timestamp":"2026-08-07T00:41:16+08:00","sender":"杨文峰","side":"left","messageType":"文本","text":"今晚睡不了，好多都要改","redacted":false}
+{"sequence":15221,"id":"wx-c59ad02eec102d84","timestamp":"2026-08-07T00:41:28+08:00","sender":"树","side":"left","messageType":"链接/文件","text":"我也注意到了，我也要改这个\n  ↳ 回复 黑: 新版加载的是profile bundles（$DSH_HOME/profiles/<name>/package.json 里 dsh.profile.bundles 引用的 cordis 包）。旧版 $DSH_HOME/plugins + dsh.plugin.json（plugin-registry 协议）的插件系统...","redacted":false}
+{"sequence":15222,"id":"wx-234ee0e315a60aa7","timestamp":"2026-08-07T00:41:31+08:00","sender":"博皞 bt.wood","side":"left","messageType":"链接/文件","text":"定义这么宏大的吗\n  ↳ 回复 黑: 新版加载的是profile bundles（$DSH_HOME/profiles/<name>/package.json 里 dsh.profile.bundles 引用的 cordis 包）。旧版 $DSH_HOME/plugins + dsh.plugin.json（plugin-registry 协议）的插件系统...","redacted":false}
+{"sequence":15223,"id":"wx-ca5d8ab6675c0dbe","timestamp":"2026-08-07T00:41:46+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"继续等邮件....","redacted":false}
+{"sequence":15224,"id":"wx-f9d2fd71dec77a55","timestamp":"2026-08-07T00:43:13+08:00","sender":"墨磊","side":"left","messageType":"文本","text":"强行依赖 pnpm [裂开]","redacted":false}
+{"sequence":15225,"id":"wx-effb45f2ce172bdb","timestamp":"2026-08-07T00:43:24+08:00","sender":"shenjack","side":"left","messageType":"图片","text":"[图片] (local_id=15225)","redacted":false}
+{"sequence":15226,"id":"wx-23f1f9d499cd9d09","timestamp":"2026-08-07T00:43:26+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"哈哈右边这个输出被截断了","redacted":false}
+{"sequence":15227,"id":"wx-f7af9c40ceb90a04","timestamp":"2026-08-07T00:43:26+08:00","sender":"zzyzy","side":"left","messageType":"图片","text":"[图片] (local_id=15227)","redacted":false}
+{"sequence":15228,"id":"wx-889e19340d741716","timestamp":"2026-08-07T00:45:49+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[捂脸]","redacted":false}
+{"sequence":15229,"id":"wx-3c6297552dee15b4","timestamp":"2026-08-07T00:46:22+08:00","sender":"小小小小蒋","side":"left","messageType":"图片","text":"[图片] (local_id=15229)","redacted":false}
+{"sequence":15230,"id":"wx-eadfc12458cf76df","timestamp":"2026-08-07T00:46:24+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"复用这套写一个可插拔的轻量化sdk方案[旺柴]@morlay\n  ↳ 回复 黑: 新版加载的是profile bundles（$DSH_HOME/profiles/<name>/package.json 里 dsh.profile.bundles 引用的 cordis 包）。旧版 $DSH_HOME/plugins + dsh.plugin.json（plugin-registry 协议）的插件系统...","redacted":false}
+{"sequence":15231,"id":"wx-6bcfd977f55cf0f7","timestamp":"2026-08-07T00:47:23+08:00","sender":"墨磊","side":"left","messageType":"链接/文件","text":"是，但我依然要去掉 yaml [旺柴]\n  ↳ 回复 mattheliu(夏目贵志)คิดถึง:  [引用] 复用这套写一个可插拔的轻量化sdk方案[旺柴]@morlay","redacted":true}
+{"sequence":15232,"id":"wx-95fc607eda2c80ad","timestamp":"2026-08-07T00:47:28+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"？！\n  ↳ 回复 inschrift-spruch-raum: wxid_113q2w3plnli22:  [引用媒体]","redacted":true}
+{"sequence":15233,"id":"wx-f253672566567536","timestamp":"2026-08-07T00:47:47+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"我也搓一个","redacted":false}
+{"sequence":15234,"id":"wx-d2204e1347d43afe","timestamp":"2026-08-07T00:47:48+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[旺柴]","redacted":false}
+{"sequence":15235,"id":"wx-06f9fdc07a56f304","timestamp":"2026-08-07T00:48:05+08:00","sender":"shenjack","side":"left","messageType":"图片","text":"[图片] (local_id=15235)","redacted":false}
+{"sequence":15236,"id":"wx-5eaea4e6f8d4c7d8","timestamp":"2026-08-07T00:48:08+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"终于发到我了","redacted":false}
+{"sequence":15237,"id":"wx-28e93db48a7ba9fb","timestamp":"2026-08-07T00:48:49+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"上调多少目前没说","redacted":false}
+{"sequence":15238,"id":"wx-49f79455dc54be27","timestamp":"2026-08-07T00:48:53+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"我还以为价格出了","redacted":false}
+{"sequence":15239,"id":"wx-fa0768579122a7d5","timestamp":"2026-08-07T00:50:20+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] \"DeepSeek入群助手，不回复咨询@深度求索\"邀请\"aisolate\"加入了群聊","redacted":false}
+{"sequence":15240,"id":"wx-199aa7a7806a4e91","timestamp":"2026-08-07T00:50:40+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] \"DeepSeek入群助手，不回复咨询@深度求索\"邀请\"陈超群\"加入了群聊","redacted":false}
+{"sequence":15241,"id":"wx-d6498a28a9e936b8","timestamp":"2026-08-07T00:50:58+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"马上三百人了","redacted":false}
+{"sequence":15242,"id":"wx-60189e43bf63c12c","timestamp":"2026-08-07T00:51:25+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"不算多啦","redacted":false}
+{"sequence":15243,"id":"wx-830fa991e4f7c16d","timestamp":"2026-08-07T00:51:32+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"ds用户那得多少啊","redacted":false}
+{"sequence":15244,"id":"wx-738ee90bf003ca74","timestamp":"2026-08-07T00:52:14+08:00","sender":"树","side":"left","messageType":"文本","text":"突然发现bundle把魔理沙干掉了","redacted":false}
+{"sequence":15245,"id":"wx-ce0531570ece2970","timestamp":"2026-08-07T00:52:29+08:00","sender":"shenjack","side":"left","messageType":"图片","text":"[图片] (local_id=15245)","redacted":false}
+{"sequence":15246,"id":"wx-7689d797a4a001bb","timestamp":"2026-08-07T00:52:30+08:00","sender":"清","side":"left","messageType":"文本","text":"继续等邮件....","redacted":false}
+{"sequence":15247,"id":"wx-6d7b1a9dc74bd057","timestamp":"2026-08-07T00:52:46+08:00","sender":"树","side":"left","messageType":"文本","text":"现在我们直接打包一个npm就能加载了","redacted":false}
+{"sequence":15248,"id":"wx-75333173dd84d328","timestamp":"2026-08-07T00:52:46+08:00","sender":"nɘƨoЯ","side":"left","messageType":"图片","text":"[图片] (local_id=15248)","redacted":false}
+{"sequence":15249,"id":"wx-5c857a4415ee395d","timestamp":"2026-08-07T00:52:50+08:00","sender":"保持冷静","side":"left","messageType":"链接/文件","text":"+1\n  ↳ 回复 Laplaceyoung: 继续等邮件....","redacted":false}
+{"sequence":15250,"id":"wx-54d2886429a644f5","timestamp":"2026-08-07T00:52:51+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"继续等邮件....","redacted":false}
+{"sequence":15251,"id":"wx-49d9b55d1b6cc775","timestamp":"2026-08-07T00:53:32+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] \"DeepSeek入群助手，不回复咨询@深度求索\"邀请\"王禹诚\"加入了群聊","redacted":false}
+{"sequence":15252,"id":"wx-3dbea0d92b2e8a3f","timestamp":"2026-08-07T00:53:35+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"我看了半天不敢说话 原来dsh就是DeepSeek harness","redacted":false}
+{"sequence":15253,"id":"wx-981e9c6b9fae88a4","timestamp":"2026-08-07T00:53:55+08:00","sender":"树","side":"left","messageType":"文本","text":"dsh就是DeepSeek Harness","redacted":false}
+{"sequence":15254,"id":"wx-bccba24d71e8c4b2","timestamp":"2026-08-07T00:53:57+08:00","sender":"树","side":"left","messageType":"文本","text":"DSH","redacted":false}
+{"sequence":15255,"id":"wx-d7984df7347cbbcb","timestamp":"2026-08-07T00:54:02+08:00","sender":"博皞 bt.wood","side":"left","messageType":"链接/文件","text":"这么省的嘛\n  ↳ 回复 r05En1cU:  [引用媒体]","redacted":true}
+{"sequence":15256,"id":"wx-3fb381a694db2dea","timestamp":"2026-08-07T00:54:28+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"[捂脸]\n  ↳ 回复 凉粉: 突然发现bundle把魔理沙干掉了","redacted":false}
+{"sequence":15257,"id":"wx-c48408d03fc2a183","timestamp":"2026-08-07T00:54:31+08:00","sender":"杨文峰","side":"left","messageType":"文本","text":"06版本会话加载这么快吗？现在基本上是秒加载呀！以前长的要等几分钟。","redacted":false}
+{"sequence":15258,"id":"wx-9746dd6d2b35c221","timestamp":"2026-08-07T00:54:38+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"啊？\n  ↳ 回复 黑: 新版加载的是profile bundles（$DSH_HOME/profiles/<name>/package.json 里 dsh.profile.bundles 引用的 cordis 包）。旧版 $DSH_HOME/plugins + dsh.plugin.json（plugin-registry 协议）的插件系统...","redacted":false}
+{"sequence":15259,"id":"wx-1256864d9fb59dd2","timestamp":"2026-08-07T00:54:47+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"大幅度优化","redacted":false}
+{"sequence":15260,"id":"wx-e8a42743b6371f3a","timestamp":"2026-08-07T00:54:47+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"那之前写的插件","redacted":false}
+{"sequence":15261,"id":"wx-9fb8378ef682300c","timestamp":"2026-08-07T00:54:51+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"是不是都不行了","redacted":false}
+{"sequence":15262,"id":"wx-088f3dbaa5c9c076","timestamp":"2026-08-07T00:54:54+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"重构[旺柴]\n  ↳ 回复 只有你不在的a10: 那之前写的插件","redacted":false}
+{"sequence":15263,"id":"wx-43f18cb7346d19a2","timestamp":"2026-08-07T00:55:02+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"改[旺柴]","redacted":false}
+{"sequence":15264,"id":"wx-ecc1534939952ac5","timestamp":"2026-08-07T00:55:05+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我了个去","redacted":false}
+{"sequence":15265,"id":"wx-56c21fdec2a5e057","timestamp":"2026-08-07T00:55:07+08:00","sender":"只有你不在的a10","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15266,"id":"wx-56ec3439671234c7","timestamp":"2026-08-07T00:55:24+08:00","sender":"杨文峰","side":"left","messageType":"文本","text":"最影响体验的会话加载时间，这个问题解决了，真好。","redacted":false}
+{"sequence":15267,"id":"wx-b159d518464b53d0","timestamp":"2026-08-07T00:55:28+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"幸好我只写了两个","redacted":false}
+{"sequence":15268,"id":"wx-e8aa3ebb8be40728","timestamp":"2026-08-07T00:55:47+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"而且还很简单","redacted":false}
+{"sequence":15269,"id":"wx-229d851ff47ee7d4","timestamp":"2026-08-07T00:55:54+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15270,"id":"wx-002ad6b243bd3800","timestamp":"2026-08-07T00:55:59+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"那他们那些插件岂不是","redacted":false}
+{"sequence":15271,"id":"wx-1c93bfda9de0b4b0","timestamp":"2026-08-07T00:56:03+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"[捂脸]","redacted":false}
+{"sequence":15272,"id":"wx-a856842c078a5c6a","timestamp":"2026-08-07T00:56:03+08:00","sender":"杨文峰","side":"left","messageType":"文本","text":"Trajectory 也秒加载","redacted":false}
+{"sequence":15273,"id":"wx-b108a6832cf4f2a7","timestamp":"2026-08-07T00:56:21+08:00","sender":"树","side":"left","messageType":"文本","text":"都得改","redacted":false}
+{"sequence":15274,"id":"wx-876571f08b9f59d9","timestamp":"2026-08-07T00:56:24+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"希望在发布的时候","redacted":false}
+{"sequence":15275,"id":"wx-3dc25e5dcf823d09","timestamp":"2026-08-07T00:56:29+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"改动估计很小","redacted":false}
+{"sequence":15276,"id":"wx-64ad2a01e131312d","timestamp":"2026-08-07T00:56:31+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"tui也能出","redacted":false}
+{"sequence":15277,"id":"wx-798a684e1671e930","timestamp":"2026-08-07T00:56:31+08:00","sender":"树","side":"left","messageType":"文本","text":"我看看能不能整个skill做一下port吧","redacted":false}
+{"sequence":15278,"id":"wx-45912c95e7aa8dd5","timestamp":"2026-08-07T00:56:58+08:00","sender":"树","side":"left","messageType":"文本","text":"其实改动也不大，因为Bundle本身就是一种打包形式，我们只需要打包成npm就可以了","redacted":false}
+{"sequence":15279,"id":"wx-fb317ee57aca1a8d","timestamp":"2026-08-07T00:57:06+08:00","sender":"树","side":"left","messageType":"文本","text":"cordis的部分其实不怎么大","redacted":false}
+{"sequence":15280,"id":"wx-f72ffe8780d70ad3","timestamp":"2026-08-07T00:57:20+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"那继续找dsh的bug","redacted":false}
+{"sequence":15281,"id":"wx-4af6dce1069ccca7","timestamp":"2026-08-07T00:57:26+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"npm不可以上传现在","redacted":false}
+{"sequence":15282,"id":"wx-a26d8bc2cb3de62d","timestamp":"2026-08-07T00:57:26+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"早有预料","redacted":false}
+{"sequence":15283,"id":"wx-3e6de8e036cf963b","timestamp":"2026-08-07T00:57:32+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] \"DeepSeek入群助手，不回复咨询@深度求索\"邀请\"yilololo\"加入了群聊","redacted":false}
+{"sequence":15284,"id":"wx-515d623c70d57643","timestamp":"2026-08-07T00:57:34+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"内测","redacted":false}
+{"sequence":15285,"id":"wx-f12c88c6b4bd9c4c","timestamp":"2026-08-07T00:58:13+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"是的","redacted":false}
+{"sequence":15286,"id":"wx-33e2acd740f3e55b","timestamp":"2026-08-07T00:58:17+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"不能上传","redacted":false}
+{"sequence":15287,"id":"wx-767ddc41ccbfd03c","timestamp":"2026-08-07T00:58:29+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"cordis插件有一百种方法加进来,因为很好做,最后官方统一也几乎是必然,剩下的完全是个人口味问题","redacted":false}
+{"sequence":15288,"id":"wx-89283ff56e8a45e6","timestamp":"2026-08-07T00:59:02+08:00","sender":"树","side":"left","messageType":"文本","text":"不能上传，但是可以做成npm的pack","redacted":false}
+{"sequence":15289,"id":"wx-f5deaf9e298f123e","timestamp":"2026-08-07T01:00:42+08:00","sender":"树","side":"left","messageType":"文本","text":"我看了一下，只需要的npm格式就好了，直接走git","redacted":false}
+{"sequence":15290,"id":"wx-29d9419ba85d722c","timestamp":"2026-08-07T01:01:40+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"是的","redacted":false}
+{"sequence":15291,"id":"wx-a930a7034faa89b0","timestamp":"2026-08-07T01:02:59+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"所以现在插件都先怼dsh-external那个组织咯[旺柴]","redacted":false}
+{"sequence":15292,"id":"wx-83c53c516e2e2359","timestamp":"2026-08-07T01:03:06+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"对","redacted":false}
+{"sequence":15293,"id":"wx-641d894b9d961aa3","timestamp":"2026-08-07T01:03:10+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"都不能露","redacted":false}
+{"sequence":15294,"id":"wx-4a2f0803fb1c0501","timestamp":"2026-08-07T01:03:11+08:00","sender":"树","side":"left","messageType":"文本","text":"对的","redacted":false}
+{"sequence":15295,"id":"wx-e8d1ecf24d19ca06","timestamp":"2026-08-07T01:05:06+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"是的","redacted":false}
+{"sequence":15296,"id":"wx-acfa182cc58b0ee5","timestamp":"2026-08-07T01:07:25+08:00","sender":"zzyzy","side":"left","messageType":"图片","text":"[图片] (local_id=15296)","redacted":false}
+{"sequence":15297,"id":"wx-a31e689223d9937d","timestamp":"2026-08-07T01:07:38+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"这个预览版是不是代表快发了？","redacted":false}
+{"sequence":15298,"id":"wx-632c9d8e5d2816bb","timestamp":"2026-08-07T01:07:54+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"🤔","redacted":false}
+{"sequence":15299,"id":"wx-48cd05ac26bb0186","timestamp":"2026-08-07T01:07:59+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"坏了","redacted":false}
+{"sequence":15300,"id":"wx-c322ec4a6a88e9d2","timestamp":"2026-08-07T01:08:05+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"难不成真今天发？","redacted":false}
+{"sequence":15301,"id":"wx-5f2964728e34ac43","timestamp":"2026-08-07T01:08:11+08:00","sender":"树","side":"left","messageType":"文本","text":"不太现实","redacted":false}
+{"sequence":15302,"id":"wx-2ebcbbd1436eb0b9","timestamp":"2026-08-07T01:08:17+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"确实","redacted":false}
+{"sequence":15303,"id":"wx-b178a5ae4dc975c2","timestamp":"2026-08-07T01:08:18+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"能不能先发pro、","redacted":false}
+{"sequence":15304,"id":"wx-671a44f45aed69e3","timestamp":"2026-08-07T01:08:21+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"不是吧","redacted":false}
+{"sequence":15305,"id":"wx-08f5b91942840940","timestamp":"2026-08-07T01:08:27+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"我刚内测就要发","redacted":false}
+{"sequence":15306,"id":"wx-7da3b206e05f6e75","timestamp":"2026-08-07T01:08:27+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"支持\n  ↳ 回复 Chimney.: 能不能先发pro、","redacted":false}
+{"sequence":15307,"id":"wx-ac105daf7f851865","timestamp":"2026-08-07T01:08:31+08:00","sender":"Margoo","side":"left","messageType":"链接/文件","text":"啊？？？\n  ↳ 回复 zzyzy: wxid_t12k78ufwbrf21:  [引用媒体]","redacted":true}
+{"sequence":15308,"id":"wx-8353984227e43b97","timestamp":"2026-08-07T01:08:35+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"内测个寂寞","redacted":false}
+{"sequence":15309,"id":"wx-71d0b4bb1faa111c","timestamp":"2026-08-07T01:08:37+08:00","sender":"清","side":"left","messageType":"文本","text":"不是吧","redacted":false}
+{"sequence":15310,"id":"wx-c34f61a5bbf5cf42","timestamp":"2026-08-07T01:08:37+08:00","sender":"Margoo","side":"left","messageType":"文本","text":"就现在这个完成度","redacted":false}
+{"sequence":15311,"id":"wx-b06da71a7dc746e2","timestamp":"2026-08-07T01:08:41+08:00","sender":"Margoo","side":"left","messageType":"文本","text":"发吗？？","redacted":false}
+{"sequence":15312,"id":"wx-7ccd7e07a32e761d","timestamp":"2026-08-07T01:08:48+08:00","sender":"黑","side":"left","messageType":"文本","text":"怎么可能","redacted":false}
+{"sequence":15313,"id":"wx-84eee1e0ac2f6da1","timestamp":"2026-08-07T01:08:51+08:00","sender":"Margoo","side":"left","messageType":"文本","text":"不能把","redacted":false}
+{"sequence":15314,"id":"wx-fd1fc48b657998e9","timestamp":"2026-08-07T01:08:51+08:00","sender":"黑","side":"left","messageType":"文本","text":"现在这个完成度不可能发的","redacted":false}
+{"sequence":15315,"id":"wx-d6357383aabb7c43","timestamp":"2026-08-07T01:08:57+08:00","sender":"黑","side":"left","messageType":"文本","text":"发了IPO都受影响","redacted":false}
+{"sequence":15316,"id":"wx-2f624924d345abbb","timestamp":"2026-08-07T01:09:02+08:00","sender":"黑","side":"left","messageType":"文本","text":"[捂脸]","redacted":false}
+{"sequence":15317,"id":"wx-fabe23d5128d51ab","timestamp":"2026-08-07T01:09:10+08:00","sender":"清","side":"left","messageType":"文本","text":"我还没内测","redacted":false}
+{"sequence":15318,"id":"wx-27acc11c85c8b96a","timestamp":"2026-08-07T01:09:11+08:00","sender":"黑","side":"left","messageType":"文本","text":"质疑你的产品税","redacted":false}
+{"sequence":15319,"id":"wx-a6cd97bf51bf0ea5","timestamp":"2026-08-07T01:09:11+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"[偷笑]","redacted":false}
+{"sequence":15320,"id":"wx-46b9ec4fdbf6a994","timestamp":"2026-08-07T01:09:15+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"这个发了大概率会挨喷","redacted":false}
+{"sequence":15321,"id":"wx-c7e31e2e414b61d0","timestamp":"2026-08-07T01:09:23+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"确实","redacted":false}
+{"sequence":15322,"id":"wx-2c0b4d4fcd47fa41","timestamp":"2026-08-07T01:09:41+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"其实不发也在","redacted":false}
+{"sequence":15323,"id":"wx-4cdaf8c183df45c4","timestamp":"2026-08-07T01:09:44+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"我还没上车呢","redacted":false}
+{"sequence":15324,"id":"wx-498fc805635937d4","timestamp":"2026-08-07T01:09:50+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"我还没上车呢","redacted":false}
+{"sequence":15325,"id":"wx-f4463e08af7d0268","timestamp":"2026-08-07T01:10:11+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"😂","redacted":false}
+{"sequence":15326,"id":"wx-b617f2f51c897fe5","timestamp":"2026-08-07T01:10:17+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"莫慌莫慌，越晚上车体验越好","redacted":false}
+{"sequence":15327,"id":"wx-88644bb53d35018f","timestamp":"2026-08-07T01:10:21+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"DS还是没有经验","redacted":false}
+{"sequence":15328,"id":"wx-326700bdce7726b0","timestamp":"2026-08-07T01:10:23+08:00","sender":"Margoo","side":"left","messageType":"链接/文件","text":"这个发了就彻底降级成牢梁了\n  ↳ 回复 ShiroEirin: 这个发了大概率会挨喷","redacted":false}
+{"sequence":15329,"id":"wx-01e9875313550852","timestamp":"2026-08-07T01:10:30+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"这种事情就应该多个团队赛马","redacted":false}
+{"sequence":15330,"id":"wx-f55c45898981ebff","timestamp":"2026-08-07T01:10:37+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"谁先跑出来谁上","redacted":false}
+{"sequence":15331,"id":"wx-d37d0331305680d4","timestamp":"2026-08-07T01:10:56+08:00","sender":"Margoo","side":"left","messageType":"链接/文件","text":"成本不太现实，而且这样会让团队氛围变得很紧张吧\n  ↳ 回复 inschrift-spruch-raum: 这种事情就应该多个团队赛马","redacted":false}
+{"sequence":15332,"id":"wx-dbbccc9dc9b1bd05","timestamp":"2026-08-07T01:10:56+08:00","sender":"树","side":"left","messageType":"文本","text":"我估计他们也赛不了","redacted":false}
+{"sequence":15333,"id":"wx-fe16c183e5988876","timestamp":"2026-08-07T01:10:56+08:00","sender":"少喝凉水","side":"left","messageType":"链接/文件","text":"他们总共就一个团队，没法赛\n  ↳ 回复 inschrift-spruch-raum: 这种事情就应该多个团队赛马","redacted":false}
+{"sequence":15334,"id":"wx-31dfa1d896bbcc88","timestamp":"2026-08-07T01:10:57+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"鹅味太正了","redacted":false}
+{"sequence":15335,"id":"wx-344013dd756e0c9a","timestamp":"2026-08-07T01:10:58+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"技术好的那个做备用方案逐步替换先上的","redacted":false}
+{"sequence":15336,"id":"wx-0c4c5cda258b9b03","timestamp":"2026-08-07T01:11:06+08:00","sender":"树","side":"left","messageType":"文本","text":"社区的实现都没怎么被采纳","redacted":false}
+{"sequence":15337,"id":"wx-c15183f2e4902293","timestamp":"2026-08-07T01:11:11+08:00","sender":"保持冷静","side":"left","messageType":"链接/文件","text":"哈哈哈哈\n  ↳ 回复 Margoo: [引用] 这个发了就彻底降级成牢梁了","redacted":true}
+{"sequence":15338,"id":"wx-0095457274834d0c","timestamp":"2026-08-07T01:11:14+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"怎么这样","redacted":false}
+{"sequence":15339,"id":"wx-df5ac1c92d8e18dc","timestamp":"2026-08-07T01:11:35+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[旺柴]","redacted":false}
+{"sequence":15340,"id":"wx-b6e39d4d1d850d38","timestamp":"2026-08-07T01:11:39+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"梁总称号一直变","redacted":false}
+{"sequence":15341,"id":"wx-7fe48f20c29ddc31","timestamp":"2026-08-07T01:11:46+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"嘛其实没那么差吧，把插件配置系统加上就差不多了","redacted":false}
+{"sequence":15342,"id":"wx-a018dc43408b9573","timestamp":"2026-08-07T01:11:47+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"前几天还梁圣呢","redacted":false}
+{"sequence":15343,"id":"wx-04944a4ee3e32eb6","timestamp":"2026-08-07T01:11:49+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"新版本对插件的兼容性进行了改变吗","redacted":false}
+{"sequence":15344,"id":"wx-8e3318ed43e05b6a","timestamp":"2026-08-07T01:11:56+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"之前写的插件要重构？？","redacted":false}
+{"sequence":15345,"id":"wx-c93da9bbd826381b","timestamp":"2026-08-07T01:11:56+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"涨价预告出来后已经普遍喊梁子了[旺柴]","redacted":false}
+{"sequence":15346,"id":"wx-a87f1ac40f9628a5","timestamp":"2026-08-07T01:12:01+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"你说们的插件是什么","redacted":false}
+{"sequence":15347,"id":"wx-f8298c785b727d7c","timestamp":"2026-08-07T01:12:06+08:00","sender":"树","side":"left","messageType":"文本","text":"没有变cordis","redacted":false}
+{"sequence":15348,"id":"wx-858719b0dd69430c","timestamp":"2026-08-07T01:12:07+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"plugin pack？","redacted":false}
+{"sequence":15349,"id":"wx-d9e17e8bb58a20b2","timestamp":"2026-08-07T01:12:09+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"改了\n  ↳ 回复 Chimney.: 新版本对插件的兼容性进行了改变吗","redacted":false}
+{"sequence":15350,"id":"wx-d060772225b3210a","timestamp":"2026-08-07T01:12:10+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"tui还是要打磨","redacted":false}
+{"sequence":15351,"id":"wx-e25d221c1a359492","timestamp":"2026-08-07T01:12:16+08:00","sender":"树","side":"left","messageType":"文本","text":"但是魔理沙估计要死了","redacted":false}
+{"sequence":15352,"id":"wx-41c9f2e8984aca62","timestamp":"2026-08-07T01:12:20+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"是的\n  ↳ 回复 Chimney.: 之前写的插件要重构？？","redacted":false}
+{"sequence":15353,"id":"wx-83aaed9ff4d2d71f","timestamp":"2026-08-07T01:12:24+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"晕","redacted":false}
+{"sequence":15354,"id":"wx-1dcc3e75f07565ae","timestamp":"2026-08-07T01:12:31+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"刚改完cc-tui","redacted":false}
+{"sequence":15355,"id":"wx-fd2a84eebf61e4e6","timestamp":"2026-08-07T01:12:47+08:00","sender":"树","side":"left","messageType":"文本","text":"最多变成一个插件面板管理器，然后如果用户需要加插件，就直接dsh plugin add就可以了","redacted":false}
+{"sequence":15356,"id":"wx-f8f5aec719a55d84","timestamp":"2026-08-07T01:13:04+08:00","sender":"WenJie Chen","side":"left","messageType":"文本","text":"现在改成 profile了","redacted":false}
+{"sequence":15357,"id":"wx-1e277c4ecdb0978f","timestamp":"2026-08-07T01:13:09+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"有啥区别啊","redacted":false}
+{"sequence":15358,"id":"wx-9ad4cecf6d17d0e6","timestamp":"2026-08-07T01:13:16+08:00","sender":"树","side":"left","messageType":"文本","text":"profile是另一个东西","redacted":false}
+{"sequence":15359,"id":"wx-37a180cc87f39ea9","timestamp":"2026-08-07T01:13:40+08:00","sender":"WenJie Chen","side":"left","messageType":"文本","text":"有点奇怪 不至于两套插件安装逻辑","redacted":false}
+{"sequence":15360,"id":"wx-ad528fd70c6cb946","timestamp":"2026-08-07T01:13:46+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"力竭了😭","redacted":false}
+{"sequence":15361,"id":"wx-23e659692209196e","timestamp":"2026-08-07T01:13:58+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"难道一天白整了吗  能让ai自己适配吗（）","redacted":false}
+{"sequence":15362,"id":"wx-32f576e985ca40f7","timestamp":"2026-08-07T01:13:58+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"不需要重构","redacted":false}
+{"sequence":15363,"id":"wx-d0aeb897f0f7f1ad","timestamp":"2026-08-07T01:14:00+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"那不是和我这个重复了吗\n  ↳ 回复 凉粉: 最多变成一个插件面板管理器，然后如果用户需要加插件，就直接dsh plugin add就可以了","redacted":false}
+{"sequence":15364,"id":"wx-d79fdf5d07596f1e","timestamp":"2026-08-07T01:14:04+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"没有plugin了吧","redacted":false}
+{"sequence":15365,"id":"wx-441f6dd1e342bd41","timestamp":"2026-08-07T01:14:05+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"就是个安装元数据","redacted":false}
+{"sequence":15366,"id":"wx-4ec84abd9df707b5","timestamp":"2026-08-07T01:14:16+08:00","sender":"树","side":"left","messageType":"链接/文件","text":"ex-setting？\n  ↳ 回复 inschrift-spruch-raum: [引用] 那不是和我这个重复了吗","redacted":true}
+{"sequence":15367,"id":"wx-ab391d5075c12e26","timestamp":"2026-08-07T01:14:26+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"对","redacted":false}
+{"sequence":15368,"id":"wx-0b7c71c04eb1f6d6","timestamp":"2026-08-07T01:14:35+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"没事","redacted":false}
+{"sequence":15369,"id":"wx-d6e60f341658f922","timestamp":"2026-08-07T01:14:39+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"咱群里赛马[旺柴]","redacted":false}
+{"sequence":15370,"id":"wx-98bc0ab816801701","timestamp":"2026-08-07T01:14:43+08:00","sender":"树","side":"left","messageType":"文本","text":"[流泪]","redacted":false}
+{"sequence":15371,"id":"wx-b45d03984e21ef83","timestamp":"2026-08-07T01:14:43+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"我这个还能自动爬取可配置功能","redacted":false}
+{"sequence":15372,"id":"wx-db93cd9f459dcb50","timestamp":"2026-08-07T01:14:47+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[旺柴]","redacted":false}
+{"sequence":15373,"id":"wx-fcc584b2771774f9","timestamp":"2026-08-07T01:14:48+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"谁做得好用谁的","redacted":false}
+{"sequence":15374,"id":"wx-bf1b5334eab737e6","timestamp":"2026-08-07T01:14:49+08:00","sender":"WenJie Chen","side":"left","messageType":"文本","text":"群里赛马","redacted":false}
+{"sequence":15375,"id":"wx-983def383a4007df","timestamp":"2026-08-07T01:14:51+08:00","sender":"树","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15376,"id":"wx-a2cf402f0e45dd8f","timestamp":"2026-08-07T01:14:53+08:00","sender":"WenJie Chen","side":"left","messageType":"文本","text":"666","redacted":false}
+{"sequence":15377,"id":"wx-2bfa017f37c523b1","timestamp":"2026-08-07T01:14:54+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"谁做得好用谁的","redacted":false}
+{"sequence":15378,"id":"wx-0dd385a2c5b06afd","timestamp":"2026-08-07T01:14:55+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"私密马赛","redacted":false}
+{"sequence":15379,"id":"wx-a7c6fef6734a67b9","timestamp":"2026-08-07T01:14:59+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"谁做得好用谁的","redacted":false}
+{"sequence":15380,"id":"wx-29feb03d62a39e1d","timestamp":"2026-08-07T01:15:00+08:00","sender":"树","side":"left","messageType":"文本","text":"我没招了","redacted":false}
+{"sequence":15381,"id":"wx-19c6b88deab68e8a","timestamp":"2026-08-07T01:15:08+08:00","sender":"树","side":"left","messageType":"文本","text":"我看看还能不能活一下吧","redacted":false}
+{"sequence":15382,"id":"wx-363d69d37ddfdb1b","timestamp":"2026-08-07T01:15:11+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"@凉粉 没事你拿我代码去吧,给魔理沙加上配置功能","redacted":false}
+{"sequence":15383,"id":"wx-26d172c115b42479","timestamp":"2026-08-07T01:15:18+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"我这边就归档了","redacted":false}
+{"sequence":15384,"id":"wx-9cb72f9d6bf6b45c","timestamp":"2026-08-07T01:15:26+08:00","sender":"树","side":"left","messageType":"文本","text":"也可以","redacted":false}
+{"sequence":15385,"id":"wx-aafbf2eb6caaa81a","timestamp":"2026-08-07T01:15:50+08:00","sender":"树","side":"left","messageType":"文本","text":"不过我估计我们最后还是要死，官方整个panel完全是顺手的事情","redacted":false}
+{"sequence":15386,"id":"wx-2e3119bdcf9fed2d","timestamp":"2026-08-07T01:16:12+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"说不定最后用的就是你的代码\n  ↳ 回复 凉粉: 不过我估计我们最后还是要死，官方整个panel完全是顺手的事情","redacted":false}
+{"sequence":15387,"id":"wx-7c997e21b9560f34","timestamp":"2026-08-07T01:16:15+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"想开点","redacted":false}
+{"sequence":15388,"id":"wx-fa970172281b339f","timestamp":"2026-08-07T01:16:15+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"666自己社区赛马😂","redacted":false}
+{"sequence":15389,"id":"wx-0ac118a123dbd98f","timestamp":"2026-08-07T01:16:24+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[捂脸]","redacted":false}
+{"sequence":15390,"id":"wx-74245a22fbbb7bdc","timestamp":"2026-08-07T01:18:20+08:00","sender":"树","side":"left","messageType":"文本","text":"那咋办","redacted":false}
+{"sequence":15391,"id":"wx-738f6e31130094b5","timestamp":"2026-08-07T01:18:32+08:00","sender":"树","side":"left","messageType":"文本","text":"又不让我们做PR（","redacted":false}
+{"sequence":15392,"id":"wx-ee7dcef5016efbb0","timestamp":"2026-08-07T01:18:39+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"麻了","redacted":false}
+{"sequence":15393,"id":"wx-3787249e97856b62","timestamp":"2026-08-07T01:18:42+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"harness不开源吗","redacted":false}
+{"sequence":15394,"id":"wx-9a4f36ca7bec4f02","timestamp":"2026-08-07T01:18:44+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"有一种做无用功的感觉","redacted":false}
+{"sequence":15395,"id":"wx-d62bed98124d66d4","timestamp":"2026-08-07T01:19:07+08:00","sender":"少喝凉水","side":"left","messageType":"文本","text":"其实我们才是马","redacted":false}
+{"sequence":15396,"id":"wx-0ba6fcf020b86b5b","timestamp":"2026-08-07T01:19:10+08:00","sender":"树","side":"left","messageType":"文本","text":"开源但是内部commit没有公开，开发团队也基本看不到人影","redacted":false}
+{"sequence":15397,"id":"wx-1d5718655b472293","timestamp":"2026-08-07T01:19:24+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"每天都要重新做一遍适配","redacted":false}
+{"sequence":15398,"id":"wx-e517fdd771ed3d61","timestamp":"2026-08-07T01:19:24+08:00","sender":"少喝凉水","side":"left","messageType":"文本","text":"赛失败了就要被斩杀","redacted":false}
+{"sequence":15399,"id":"wx-40d48447275dce78","timestamp":"2026-08-07T01:19:25+08:00","sender":"树","side":"left","messageType":"文本","text":"写了pr也没办法合并","redacted":false}
+{"sequence":15400,"id":"wx-6e2fd3888446b484","timestamp":"2026-08-07T01:19:25+08:00","sender":"Chimney.","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15401,"id":"wx-b8e3fd5ec1dc519c","timestamp":"2026-08-07T01:19:25+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"害","redacted":false}
+{"sequence":15402,"id":"wx-31d16c3e0a3f23a1","timestamp":"2026-08-07T01:19:32+08:00","sender":"清","side":"left","messageType":"文本","text":"一点半了，，，还能等到我吗","redacted":false}
+{"sequence":15403,"id":"wx-06449989dc5d3f84","timestamp":"2026-08-07T01:19:34+08:00","sender":"少喝凉水","side":"left","messageType":"文本","text":"你笑话ds斩杀基膜厂","redacted":false}
+{"sequence":15404,"id":"wx-932c4abcc22e6b5b","timestamp":"2026-08-07T01:19:37+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"我觉得，不要老想着占领入口制定标准，这个地方越抢越需要官方统一。多做有确定增量价值，从小事做起。比如我觉得桌宠官方绝对不会做","redacted":false}
+{"sequence":15405,"id":"wx-d0c093bbe6979e5c","timestamp":"2026-08-07T01:19:41+08:00","sender":"少喝凉水","side":"left","messageType":"文本","text":"其实ds连开发者也斩杀","redacted":false}
+{"sequence":15406,"id":"wx-2a05af324ae5dd18","timestamp":"2026-08-07T01:19:45+08:00","sender":"杨文峰","side":"left","messageType":"文本","text":"提供插件方向思路，实现ds自己做。","redacted":false}
+{"sequence":15407,"id":"wx-174f6c050306932f","timestamp":"2026-08-07T01:19:50+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"codex claudecode都不想玩了","redacted":false}
+{"sequence":15408,"id":"wx-664742f7029fabec","timestamp":"2026-08-07T01:19:54+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"就想玩dsh","redacted":false}
+{"sequence":15409,"id":"wx-b2862eca4e138bd9","timestamp":"2026-08-07T01:19:55+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"而且tui也不见得就是得官方方案吧 那个也不咋样","redacted":false}
+{"sequence":15410,"id":"wx-2f1f5784cf714492","timestamp":"2026-08-07T01:20:17+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"没人玩我的tui吗","redacted":false}
+{"sequence":15411,"id":"wx-17b0e8988064a41a","timestamp":"2026-08-07T01:20:20+08:00","sender":"Chimney.","side":"left","messageType":"图片","text":"[图片] (local_id=15411)","redacted":false}
+{"sequence":15412,"id":"wx-c219d2c498d003c5","timestamp":"2026-08-07T01:20:23+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"我也是这样想的,我之前做web compoment,这玩意官方是绝对不会做的\n  ↳ 回复 绝版小乌龟: 我觉得，不要老想着占领入口制定标准，这个地方越抢越需要官方统一。多做有确定增量价值，从小事做起。比如我觉得桌宠官方绝对不会做","redacted":false}
+{"sequence":15413,"id":"wx-24833e3ca0d4c446","timestamp":"2026-08-07T01:20:27+08:00","sender":"清","side":"left","messageType":"链接/文件","text":"我要做个会把codex的桌宠打死的桌宠\n  ↳ 回复 绝版小乌龟: 我觉得，不要老想着占领入口制定标准，这个地方越抢越需要官方统一。多做有确定增量价值，从小事做起。比如我觉得桌宠官方绝对不会做","redacted":false}
+{"sequence":15414,"id":"wx-53c993305e19828f","timestamp":"2026-08-07T01:20:49+08:00","sender":"保持冷静","side":"left","messageType":"链接/文件","text":"桌宠大乱斗\n  ↳ 回复 Laplaceyoung: [引用] 我要做个会把codex的桌宠打死的桌宠","redacted":true}
+{"sequence":15415,"id":"wx-f3ace08520fc29c0","timestamp":"2026-08-07T01:20:58+08:00","sender":"只有你不在的a10","side":"left","messageType":"图片","text":"[图片] (local_id=15415)","redacted":false}
+{"sequence":15416,"id":"wx-25bbe3fe2ed33e03","timestamp":"2026-08-07T01:20:59+08:00","sender":"zzyzy","side":"left","messageType":"链接/文件","text":"看起来不错\n  ↳ 回复 Chimney.: wxid_ysewd795k2fg22:  [引用媒体]","redacted":true}
+{"sequence":15417,"id":"wx-6d03923d818e97fc","timestamp":"2026-08-07T01:21:02+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"workbuddy codex claude code 同时赛马","redacted":false}
+{"sequence":15418,"id":"wx-8d5bfc5b39f620a9","timestamp":"2026-08-07T01:21:02+08:00","sender":"Turtle🐢","side":"left","messageType":"链接/文件","text":"不太清楚这个是啥，不过官方web好像留了扩展口子\n  ↳ 回复 inschrift-spruch-raum:  [引用] 我也是这样想的,我之前做web compoment,这玩意官方是绝对不会做的","redacted":true}
+{"sequence":15419,"id":"wx-4549ef3c0a168f22","timestamp":"2026-08-07T01:21:06+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"重构ing","redacted":false}
+{"sequence":15420,"id":"wx-1d5d10e0a629e58e","timestamp":"2026-08-07T01:21:07+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"输了的桌宠被打死","redacted":false}
+{"sequence":15421,"id":"wx-e2c33f67b3e805b3","timestamp":"2026-08-07T01:21:13+08:00","sender":"清","side":"left","messageType":"链接/文件","text":"omp不错\n  ↳ 回复 只有你不在的a10:  [引用媒体]","redacted":true}
+{"sequence":15422,"id":"wx-bf18e87c667e2d87","timestamp":"2026-08-07T01:21:20+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"还有dsh的","redacted":false}
+{"sequence":15423,"id":"wx-9c5e91bd99cef810","timestamp":"2026-08-07T01:21:27+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"这段时间还是尽可能玩耍压测吧","redacted":false}
+{"sequence":15424,"id":"wx-df3116fa12118c29","timestamp":"2026-08-07T01:21:39+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"能提供意见就行了（","redacted":false}
+{"sequence":15425,"id":"wx-7ed82bccce010029","timestamp":"2026-08-07T01:21:47+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"这就是dsh那个官方的tui\n  ↳ 回复 Laplaceyoung:  [引用] omp不错","redacted":true}
+{"sequence":15426,"id":"wx-438ec1a9b1343cfd","timestamp":"2026-08-07T01:21:50+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"[捂脸]","redacted":false}
+{"sequence":15427,"id":"wx-324dcaa095b76c36","timestamp":"2026-08-07T01:21:56+08:00","sender":"崔小天","side":"left","messageType":"链接/文件","text":"开源发布之后所有内部 commit 历史都会公开的，开发团队的确目前都在忙着写代码没有时间水群\n  ↳ 回复 凉粉: 开源但是内部commit没有公开，开发团队也基本看不到人影","redacted":false}
+{"sequence":15428,"id":"wx-d6893e77d3d03db2","timestamp":"2026-08-07T01:21:57+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"我知道有口子,但是官方前端用的react,其他前端框架代码怎么接进来,目的是这个\n  ↳ 回复 绝版小乌龟: [引用] 不太清楚这个是啥，不过官方web好像留了扩展口子","redacted":true}
+{"sequence":15429,"id":"wx-a1b67dd9f3717f48","timestamp":"2026-08-07T01:22:08+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"惨惨\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: [引用] 开源发布之后所有内部 commit 历史都会公开的，开发团队的确目前都在忙着写代码没有时间水群","redacted":true}
+{"sequence":15430,"id":"wx-4557df012271c46f","timestamp":"2026-08-07T01:22:14+08:00","sender":"树","side":"left","messageType":"链接/文件","text":"惨惨\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: [引用] 开源发布之后所有内部 commit 历史都会公开的，开发团队的确目前都在忙着写代码没有时间水群","redacted":true}
+{"sequence":15431,"id":"wx-71f3f32c2c6a46bd","timestamp":"2026-08-07T01:22:15+08:00","sender":"zzyzy","side":"left","messageType":"链接/文件","text":"爱信等\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: [引用] 开源发布之后所有内部 commit 历史都会公开的，开发团队的确目前都在忙着写代码没有时间水群","redacted":true}
+{"sequence":15432,"id":"wx-6b5fe2563ce0da6a","timestamp":"2026-08-07T01:22:16+08:00","sender":"清","side":"left","messageType":"链接/文件","text":"惨惨\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: [引用] 开源发布之后所有内部 commit 历史都会公开的，开发团队的确目前都在忙着写代码没有时间水群","redacted":true}
+{"sequence":15433,"id":"wx-21438e1770aef7dd","timestamp":"2026-08-07T01:22:22+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"会看issue么\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）:  [引用] 开源发布之后所有内部 commit 历史都会公开的，开发团队的确目前都在忙着写代码没有时间水群","redacted":true}
+{"sequence":15434,"id":"wx-9c1530d45aafb90d","timestamp":"2026-08-07T01:22:40+08:00","sender":"少喝凉水","side":"left","messageType":"图片","text":"[图片] (local_id=15434)","redacted":false}
+{"sequence":15435,"id":"wx-6c8c3620c2d23b2b","timestamp":"2026-08-07T01:22:42+08:00","sender":"崔小天","side":"left","messageType":"文本","text":"有人想应聘 dsh 团队开发者关系/开源社区运营岗位的吗？","redacted":false}
+{"sequence":15436,"id":"wx-8f9969a94f882d69","timestamp":"2026-08-07T01:22:52+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"有什么要求吗（）","redacted":false}
+{"sequence":15437,"id":"wx-9e0780820c101712","timestamp":"2026-08-07T01:22:56+08:00","sender":"树","side":"left","messageType":"文本","text":"有什么要求吗（）","redacted":false}
+{"sequence":15438,"id":"wx-ec7a1f71f175e4ef","timestamp":"2026-08-07T01:22:56+08:00","sender":"崔小天","side":"left","messageType":"链接/文件","text":"会的\n  ↳ 回复 只有你不在的a10: [引用] 会看issue么","redacted":true}
+{"sequence":15439,"id":"wx-0bee38405ffeaa41","timestamp":"2026-08-07T01:23:01+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"我去\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: 有人想应聘 dsh 团队开发者关系/开源社区运营岗位的吗？","redacted":false}
+{"sequence":15440,"id":"wx-9ebe8c5fc6660c84","timestamp":"2026-08-07T01:23:05+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"那就行\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）:  [引用] 会的","redacted":true}
+{"sequence":15441,"id":"wx-6156abd8a4457162","timestamp":"2026-08-07T01:23:11+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"你们去应聘","redacted":false}
+{"sequence":15442,"id":"wx-f4efab703759c913","timestamp":"2026-08-07T01:23:13+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"👀👀👀👀👀👀\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: 有人想应聘 dsh 团队开发者关系/开源社区运营岗位的吗？","redacted":false}
+{"sequence":15443,"id":"wx-54f8a82d9f394e87","timestamp":"2026-08-07T01:23:20+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"给你们内招","redacted":false}
+{"sequence":15444,"id":"wx-b5329f7198c16423","timestamp":"2026-08-07T01:23:21+08:00","sender":"崔小天","side":"left","messageType":"链接/文件","text":"我尽快写个 JD 啊\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: 有人想应聘 dsh 团队开发者关系/开源社区运营岗位的吗？","redacted":false}
+{"sequence":15445,"id":"wx-0e2faa9a81a29ce8","timestamp":"2026-08-07T01:23:27+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"水群能力比较强行吗（）","redacted":false}
+{"sequence":15446,"id":"wx-d4aae3dc3e9fa41e","timestamp":"2026-08-07T01:23:34+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"水群能力比较强行吗（）","redacted":false}
+{"sequence":15447,"id":"wx-fd9b195af642f162","timestamp":"2026-08-07T01:23:35+08:00","sender":"只有你不在的a10","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15448,"id":"wx-c238ee2f50b38836","timestamp":"2026-08-07T01:23:41+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"这个有点想，但是我是学生😭","redacted":false}
+{"sequence":15449,"id":"wx-ce1beb717bcf6e8f","timestamp":"2026-08-07T01:23:43+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"水群能力比较强行吗（）","redacted":false}
+{"sequence":15450,"id":"wx-58c04a2b05fd7c8d","timestamp":"2026-08-07T01:23:51+08:00","sender":"树","side":"left","messageType":"文本","text":"这个有点想，但是我是学生😭","redacted":false}
+{"sequence":15451,"id":"wx-dde24cbf629cb746","timestamp":"2026-08-07T01:23:52+08:00","sender":"保持冷静","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15452,"id":"wx-c954b9a377958c71","timestamp":"2026-08-07T01:24:17+08:00","sender":"啊不错的飞过海","side":"left","messageType":"文本","text":"27应届生能实习吗","redacted":false}
+{"sequence":15453,"id":"wx-c0821c8e526e2a86","timestamp":"2026-08-07T01:24:18+08:00","sender":"啊不错的飞过海","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15454,"id":"wx-f8a04696506f2a66","timestamp":"2026-08-07T01:24:29+08:00","sender":"清","side":"left","messageType":"文本","text":"28届能hc吗","redacted":false}
+{"sequence":15455,"id":"wx-3c5c47f2e67a2f34","timestamp":"2026-08-07T01:24:39+08:00","sender":"崔小天","side":"left","messageType":"文本","text":"初步大概想的是，cs 相关背景，有开源社区相关经验，对运营工作有热情和能力，类似于这样？","redacted":false}
+{"sequence":15456,"id":"wx-9fa84ab9636b0b4a","timestamp":"2026-08-07T01:24:40+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\"凉粉\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15457,"id":"wx-db93ed5d3cb5dfc8","timestamp":"2026-08-07T01:24:45+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"那可以又开始新一轮找茬\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）:  [引用] 会的","redacted":true}
+{"sequence":15458,"id":"wx-b9d15dcd9a27ee0f","timestamp":"2026-08-07T01:24:49+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"这个有点想，但是我是学生😭","redacted":false}
+{"sequence":15459,"id":"wx-261c2c3da2275cdd","timestamp":"2026-08-07T01:24:56+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"哭哭","redacted":false}
+{"sequence":15460,"id":"wx-3c3f4a3c7068e783","timestamp":"2026-08-07T01:24:57+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"辅修计算机算是有背景吗😭\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: 初步大概想的是，cs 相关背景，有开源社区相关经验，对运营工作有热情和能力，类似于这样？","redacted":false}
+{"sequence":15461,"id":"wx-273a028eb4bc554a","timestamp":"2026-08-07T01:25:08+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"信管专业算是有背景吗😭","redacted":false}
+{"sequence":15462,"id":"wx-b3f1957bbc3f7bb7","timestamp":"2026-08-07T01:25:13+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"正好试试新版本","redacted":false}
+{"sequence":15463,"id":"wx-5525cc83ff7dd02a","timestamp":"2026-08-07T01:25:20+08:00","sender":"清","side":"left","messageType":"文本","text":"csgo背景（","redacted":false}
+{"sequence":15464,"id":"wx-0fbdbb0e36aea541","timestamp":"2026-08-07T01:25:29+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"666","redacted":false}
+{"sequence":15465,"id":"wx-656b4bc07f47a423","timestamp":"2026-08-07T01:25:33+08:00","sender":"崔小天","side":"left","messageType":"文本","text":"ds 公司有很多实习生担任重要岗位，但一般不开放实习生做对外交流发声的岗位","redacted":false}
+{"sequence":15466,"id":"wx-8f0ea0993d0f2c50","timestamp":"2026-08-07T01:25:44+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"原来如此","redacted":false}
+{"sequence":15467,"id":"wx-da5f29f67b73b441","timestamp":"2026-08-07T01:25:44+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"那确实\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: ds 公司有很多实习生担任重要岗位，但一般不开放实习生做对外交流发声的岗位","redacted":false}
+{"sequence":15468,"id":"wx-f2d350b5a7b1573c","timestamp":"2026-08-07T01:25:48+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"怕翻车吧","redacted":false}
+{"sequence":15469,"id":"wx-68c2870b72c5d288","timestamp":"2026-08-07T01:25:52+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"实习生工资开那么高","redacted":false}
+{"sequence":15470,"id":"wx-87063ca1a85d4433","timestamp":"2026-08-07T01:25:52+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"那确实","redacted":false}
+{"sequence":15471,"id":"wx-d3d03cfff7eeb5b8","timestamp":"2026-08-07T01:26:00+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"和正式也没啥区别了","redacted":false}
+{"sequence":15472,"id":"wx-5367fc58915e2eef","timestamp":"2026-08-07T01:26:02+08:00","sender":".....","side":"left","messageType":"文本","text":"强啊","redacted":false}
+{"sequence":15473,"id":"wx-4d3e32be654e488b","timestamp":"2026-08-07T01:26:04+08:00","sender":".....","side":"left","messageType":"文本","text":"我有点想","redacted":false}
+{"sequence":15474,"id":"wx-716260de98dc9af0","timestamp":"2026-08-07T01:26:04+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"那个5k5是假的\n  ↳ 回复 只有你不在的a10: 实习生工资开那么高","redacted":false}
+{"sequence":15475,"id":"wx-439b425e0a0a0222","timestamp":"2026-08-07T01:26:07+08:00","sender":".....","side":"left","messageType":"文本","text":"但是我比较菜","redacted":false}
+{"sequence":15476,"id":"wx-b8432277e8d6df0f","timestamp":"2026-08-07T01:26:07+08:00","sender":"树","side":"left","messageType":"文本","text":"能理解了","redacted":false}
+{"sequence":15477,"id":"wx-6eb6b82833865e23","timestamp":"2026-08-07T01:26:09+08:00","sender":"只有你不在的a10","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15478,"id":"wx-775c935f288030a5","timestamp":"2026-08-07T01:26:10+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"我也想去ds上班😭","redacted":false}
+{"sequence":15479,"id":"wx-29bc5cf2e0eb7ef5","timestamp":"2026-08-07T01:26:15+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"我也想去ds上班😭","redacted":false}
+{"sequence":15480,"id":"wx-e64e7a9f54f6692c","timestamp":"2026-08-07T01:26:20+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"我也想去ds上班😭","redacted":false}
+{"sequence":15481,"id":"wx-f9af33ef1952dc4c","timestamp":"2026-08-07T01:26:23+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"梦中情司","redacted":false}
+{"sequence":15482,"id":"wx-25391f67f6dc6bbe","timestamp":"2026-08-07T01:26:38+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"我也想去ds上班😭","redacted":false}
+{"sequence":15483,"id":"wx-9ea74d38518d3509","timestamp":"2026-08-07T01:26:46+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"你速速去投简历\n  ↳ 回复 .....: 但是我比较菜","redacted":false}
+{"sequence":15484,"id":"wx-be746f1610d76040","timestamp":"2026-08-07T01:26:47+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"第一次见一个群里的人这么想上班的","redacted":false}
+{"sequence":15485,"id":"wx-3464289f95f477ab","timestamp":"2026-08-07T01:26:49+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"打2折也好啊\n  ↳ 回复 shenjack:  [引用] 那个5k5是假的","redacted":true}
+{"sequence":15486,"id":"wx-66193bca7a3e51ab","timestamp":"2026-08-07T01:26:53+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"还是多给dsh找找bug吧","redacted":false}
+{"sequence":15487,"id":"wx-ec88f5077efb5c8c","timestamp":"2026-08-07T01:26:55+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"都是没上过班的朋友 哈哈哈哈","redacted":false}
+{"sequence":15488,"id":"wx-4aa87e76da350f9b","timestamp":"2026-08-07T01:26:58+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"还是多给dsh找找bug吧","redacted":false}
+{"sequence":15489,"id":"wx-4170d965094337fc","timestamp":"2026-08-07T01:27:07+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"😭 在实习（）\n  ↳ 回复 保持冷静: 都是没上过班的朋友 哈哈哈哈","redacted":false}
+{"sequence":15490,"id":"wx-a5c4500e5888f770","timestamp":"2026-08-07T01:27:10+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"是的，我还是给dsh找bug把","redacted":false}
+{"sequence":15491,"id":"wx-c2268455a70c837b","timestamp":"2026-08-07T01:27:14+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"在中国日报实习（）","redacted":false}
+{"sequence":15492,"id":"wx-0b859683d3249c26","timestamp":"2026-08-07T01:27:15+08:00","sender":"aisolate","side":"left","messageType":"文本","text":"打造一个ds 的 Tibo","redacted":false}
+{"sequence":15493,"id":"wx-c96b36e635a7f6be","timestamp":"2026-08-07T01:27:22+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"实习和真实上班还是不一样","redacted":false}
+{"sequence":15494,"id":"wx-b040bc70ea04ad67","timestamp":"2026-08-07T01:27:28+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"是","redacted":false}
+{"sequence":15495,"id":"wx-1f329620038db3ed","timestamp":"2026-08-07T01:27:33+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"所以还是没上过班","redacted":false}
+{"sequence":15496,"id":"wx-fe87efbf941080e9","timestamp":"2026-08-07T01:27:34+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"@一下 就reset那种吗","redacted":false}
+{"sequence":15497,"id":"wx-7511d1999d78dbce","timestamp":"2026-08-07T01:27:39+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"不过我实习比正式上班还拼","redacted":false}
+{"sequence":15498,"id":"wx-71dc16490bd11e30","timestamp":"2026-08-07T01:27:41+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"插件不是很多蓝海吗，也不止找bug吧","redacted":false}
+{"sequence":15499,"id":"wx-86767378fd4e00f5","timestamp":"2026-08-07T01:27:51+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"明明是@一下就降价（）\n  ↳ 回复 保持冷静: @一下 就reset那种吗","redacted":false}
+{"sequence":15500,"id":"wx-ca167b9bcb2b0244","timestamp":"2026-08-07T01:27:55+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"天天干到晚上9点10点","redacted":false}
+{"sequence":15501,"id":"wx-bb059ddcf98a2010","timestamp":"2026-08-07T01:27:59+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"周末还加班","redacted":false}
+{"sequence":15502,"id":"wx-8d1b1c44eb8158ce","timestamp":"2026-08-07T01:28:00+08:00","sender":"清","side":"left","messageType":"文本","text":"群里能打广告吗（","redacted":false}
+{"sequence":15503,"id":"wx-10d42cce0ac8f299","timestamp":"2026-08-07T01:28:05+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"插件感觉还是等官方约定最好","redacted":false}
+{"sequence":15504,"id":"wx-704e01cd032105a6","timestamp":"2026-08-07T01:28:10+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"上班以后就是摸鱼","redacted":false}
+{"sequence":15505,"id":"wx-8befb0dbc364a576","timestamp":"2026-08-07T01:28:12+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"zzz","redacted":false}
+{"sequence":15506,"id":"wx-140cf9b435de8042","timestamp":"2026-08-07T01:28:15+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"睡了（）","redacted":false}
+{"sequence":15507,"id":"wx-8c8a50d99b288cd8","timestamp":"2026-08-07T01:28:15+08:00","sender":"清","side":"left","messageType":"文本","text":"我司最近急招人","redacted":false}
+{"sequence":15508,"id":"wx-a9c4aeb2bc0c16db","timestamp":"2026-08-07T01:28:17+08:00","sender":"清","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15509,"id":"wx-d7330362015bbf28","timestamp":"2026-08-07T01:28:20+08:00","sender":"Turtle🐢","side":"left","messageType":"链接/文件","text":"什么是官方约定呢\n  ↳ 回复 zzyzy: 插件感觉还是等官方约定最好","redacted":false}
+{"sequence":15510,"id":"wx-86240741e5780a82","timestamp":"2026-08-07T01:28:32+08:00","sender":"清","side":"left","messageType":"链接/文件","text":"等待邮件…\n  ↳ 回复 shenjack: 睡了（）","redacted":false}
+{"sequence":15511,"id":"wx-e7fe9bd0261ef1e3","timestamp":"2026-08-07T01:28:33+08:00","sender":"树","side":"left","messageType":"链接/文件","text":"什么公司\n  ↳ 回复 Laplaceyoung: 我司最近急招人","redacted":false}
+{"sequence":15512,"id":"wx-a4db46c75cbed1d0","timestamp":"2026-08-07T01:28:35+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\"保持冷静\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15513,"id":"wx-5a8e11b1fab0f3d7","timestamp":"2026-08-07T01:28:42+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"mcp 和skill不都有通用标准吗","redacted":false}
+{"sequence":15514,"id":"wx-42e0ed88d18b749d","timestamp":"2026-08-07T01:28:43+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"比如插件市场能直接从dsh external安装啥的","redacted":false}
+{"sequence":15515,"id":"wx-88a16f7995a82413","timestamp":"2026-08-07T01:28:55+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"？！ 看来我8:30到17:30，还迟到（一两分钟）还是太轻松了\n  ↳ 回复 只有你不在的a10: 天天干到晚上9点10点","redacted":false}
+{"sequence":15516,"id":"wx-7e552cda8013eb37","timestamp":"2026-08-07T01:29:02+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"现在其实可以（）\n  ↳ 回复 zzyzy: 比如插件市场能直接从dsh external安装啥的","redacted":false}
+{"sequence":15517,"id":"wx-85530791398d092e","timestamp":"2026-08-07T01:29:08+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"就是给个git地址","redacted":false}
+{"sequence":15518,"id":"wx-11050b44d7949dd4","timestamp":"2026-08-07T01:29:11+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"插件市场感觉悬","redacted":false}
+{"sequence":15519,"id":"wx-33fdfe335a8a9c8c","timestamp":"2026-08-07T01:29:14+08:00","sender":"清","side":"left","messageType":"链接/文件","text":"做语音模型的infra公司（，有意向可私我\n  ↳ 回复 凉粉: [引用] 什么公司","redacted":true}
+{"sequence":15520,"id":"wx-ae23c1bacf73be65","timestamp":"2026-08-07T01:29:14+08:00","sender":"树","side":"left","messageType":"文本","text":"现在就可以","redacted":false}
+{"sequence":15521,"id":"wx-9ed2b3684808b68f","timestamp":"2026-08-07T01:29:20+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"这个要配审查的","redacted":false}
+{"sequence":15522,"id":"wx-2aa09f0d12955ae8","timestamp":"2026-08-07T01:29:22+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我现在带实习生一般都不怎么要求别人加班","redacted":false}
+{"sequence":15523,"id":"wx-e784d3a97a31c9ca","timestamp":"2026-08-07T01:29:22+08:00","sender":"树","side":"left","messageType":"链接/文件","text":"讯飞？\n  ↳ 回复 Laplaceyoung: [引用] 做语音模型的infra公司（，有意向可私我","redacted":true}
+{"sequence":15524,"id":"wx-6fed801443046d73","timestamp":"2026-08-07T01:29:24+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"给git地址太麻烦了","redacted":false}
+{"sequence":15525,"id":"wx-b86c19d16cd20f26","timestamp":"2026-08-07T01:29:29+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"压榨海淀区的不要命了\n  ↳ 回复 shenjack:  [引用] ？！ 看来我8:30到17:30，还迟到（一两分钟）还是太轻松了","redacted":true}
+{"sequence":15526,"id":"wx-127c464c000f4bf8","timestamp":"2026-08-07T01:29:31+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"👀","redacted":false}
+{"sequence":15527,"id":"wx-e537f3fb49dc3665","timestamp":"2026-08-07T01:29:32+08:00","sender":".....","side":"left","messageType":"链接/文件","text":"那看来要求很高啊\n  ↳ 回复 Laplaceyoung:  [引用] 做语音模型的infra公司（，有意向可私我","redacted":true}
+{"sequence":15528,"id":"wx-1fdc77cd988c0030","timestamp":"2026-08-07T01:29:37+08:00","sender":"少喝凉水","side":"left","messageType":"链接/文件","text":"好家伙，当面牛头人\n  ↳ 回复 Laplaceyoung:  [引用] 做语音模型的infra公司（，有意向可私我","redacted":true}
+{"sequence":15529,"id":"wx-06336d4924610107","timestamp":"2026-08-07T01:29:38+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"最好能有market place 直接选","redacted":false}
+{"sequence":15530,"id":"wx-73270c2fe8778fb2","timestamp":"2026-08-07T01:29:38+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"何意味\n  ↳ 回复 inschrift-spruch-raum: [引用] 压榨海淀区的不要命了","redacted":true}
+{"sequence":15531,"id":"wx-67472266e2e78a82","timestamp":"2026-08-07T01:29:56+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"cd在朝阳啊（）\n  ↳ 回复 inschrift-spruch-raum: [引用] 压榨海淀区的不要命了","redacted":true}
+{"sequence":15532,"id":"wx-d3df00d76c652742","timestamp":"2026-08-07T01:29:58+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"这个个人感觉官方不太可能做","redacted":false}
+{"sequence":15533,"id":"wx-575286eab2f46d3b","timestamp":"2026-08-07T01:30:00+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"infra不好搞啊","redacted":false}
+{"sequence":15534,"id":"wx-6cea479d5e10f1b6","timestamp":"2026-08-07T01:30:05+08:00","sender":"清","side":"left","messageType":"链接/文件","text":"新一点小一点\n  ↳ 回复 凉粉: [引用] 讯飞？","redacted":true}
+{"sequence":15535,"id":"wx-f15d4426510b48b0","timestamp":"2026-08-07T01:30:12+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"哦记错了","redacted":false}
+{"sequence":15536,"id":"wx-9145230438520775","timestamp":"2026-08-07T01:30:13+08:00","sender":"shenjack","side":"left","messageType":"链接/文件","text":"🤔\n  ↳ 回复 Laplaceyoung: [引用] 新一点小一点","redacted":true}
+{"sequence":15537,"id":"wx-aab52358d2270aee","timestamp":"2026-08-07T01:30:15+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"摸摸摸（）","redacted":false}
+{"sequence":15538,"id":"wx-5f2220151298a213","timestamp":"2026-08-07T01:30:17+08:00","sender":"shenjack","side":"left","messageType":"文本","text":"zzz","redacted":false}
+{"sequence":15539,"id":"wx-10d69cb251eeb769","timestamp":"2026-08-07T01:30:22+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"不知道dsh到底是想面对哪些用户","redacted":false}
+{"sequence":15540,"id":"wx-4949982b5e5a20e1","timestamp":"2026-08-07T01:30:29+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"专业用户","redacted":false}
+{"sequence":15541,"id":"wx-1beea3a5e4745a09","timestamp":"2026-08-07T01:30:32+08:00","sender":".....","side":"left","messageType":"链接/文件","text":"全体用户不\n  ↳ 回复 保持冷静: 不知道dsh到底是想面对哪些用户","redacted":false}
+{"sequence":15542,"id":"wx-02fdc455c80f25ff","timestamp":"2026-08-07T01:30:33+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"如果都是群里的硬核用户","redacted":false}
+{"sequence":15543,"id":"wx-803a731622fac786","timestamp":"2026-08-07T01:30:33+08:00","sender":".....","side":"left","messageType":"文本","text":"吧","redacted":false}
+{"sequence":15544,"id":"wx-c40a153dc47804a8","timestamp":"2026-08-07T01:30:33+08:00","sender":"清","side":"left","messageType":"文本","text":"继续等待邮件…","redacted":false}
+{"sequence":15545,"id":"wx-6e214ddacc35a5e9","timestamp":"2026-08-07T01:30:37+08:00","sender":"清","side":"left","messageType":"文本","text":"开发者","redacted":false}
+{"sequence":15546,"id":"wx-f62ff3b623798e49","timestamp":"2026-08-07T01:30:37+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"那确实不需要","redacted":false}
+{"sequence":15547,"id":"wx-cfdf04d43eedf85b","timestamp":"2026-08-07T01:30:42+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"但是如果面对小白用户","redacted":false}
+{"sequence":15548,"id":"wx-f5c9c5bf53c54405","timestamp":"2026-08-07T01:30:47+08:00","sender":"树","side":"left","messageType":"文本","text":"不管了，先暂时把魔理沙改成插件面板吧","redacted":false}
+{"sequence":15549,"id":"wx-c6fd725fe5afd9a7","timestamp":"2026-08-07T01:30:49+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"小白算了","redacted":false}
+{"sequence":15550,"id":"wx-9966964db0065719","timestamp":"2026-08-07T01:31:00+08:00","sender":"清","side":"left","messageType":"文本","text":"插件应该是个很克制的东西我理解","redacted":false}
+{"sequence":15551,"id":"wx-ee5cf86846b72d90","timestamp":"2026-08-07T01:31:03+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我同事搞开发的都不想依赖agent","redacted":false}
+{"sequence":15552,"id":"wx-890cae879a1b08ee","timestamp":"2026-08-07T01:31:11+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"bash git地址 都是天堑","redacted":false}
+{"sequence":15553,"id":"wx-c237572cfc14c381","timestamp":"2026-08-07T01:31:11+08:00","sender":"清","side":"left","messageType":"文本","text":"不然很容易做得像workbuddy","redacted":false}
+{"sequence":15554,"id":"wx-14ccdc20a89290d1","timestamp":"2026-08-07T01:31:19+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"只有我这种懒人","redacted":false}
+{"sequence":15555,"id":"wx-d1256ad5c72808e9","timestamp":"2026-08-07T01:31:27+08:00","sender":"少喝凉水","side":"left","messageType":"文本","text":"知道做什么很简单，知道不做什么很难","redacted":false}
+{"sequence":15556,"id":"wx-cca4d95d0ba2f729","timestamp":"2026-08-07T01:31:29+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"才会想着让agent接管我的生活","redacted":false}
+{"sequence":15557,"id":"wx-d0405b6b05467db7","timestamp":"2026-08-07T01:31:36+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"agent is life","redacted":false}
+{"sequence":15558,"id":"wx-8a4cc9c739e33ed7","timestamp":"2026-08-07T01:31:39+08:00","sender":".....","side":"left","messageType":"文本","text":"所以harness的记忆系统有吗","redacted":false}
+{"sequence":15559,"id":"wx-f69f629e16609f2b","timestamp":"2026-08-07T01:31:49+08:00","sender":"树","side":"left","messageType":"文本","text":"有了","redacted":false}
+{"sequence":15560,"id":"wx-2f96afe14c64e43f","timestamp":"2026-08-07T01:31:50+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"肯定有吧","redacted":false}
+{"sequence":15561,"id":"wx-9889d51a2609fde8","timestamp":"2026-08-07T01:31:57+08:00","sender":"树","side":"left","messageType":"文本","text":"不过是dse","redacted":false}
+{"sequence":15562,"id":"wx-605abc9e846e309b","timestamp":"2026-08-07T01:31:58+08:00","sender":".....","side":"left","messageType":"文本","text":"现在有吗","redacted":false}
+{"sequence":15563,"id":"wx-77448c2d18d25af7","timestamp":"2026-08-07T01:32:03+08:00","sender":"云","side":"left","messageType":"文本","text":"记忆系统x AGENTS.md✅","redacted":false}
+{"sequence":15564,"id":"wx-022ddbc74597c6f3","timestamp":"2026-08-07T01:32:06+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"记忆系统现在没啥问题啊","redacted":false}
+{"sequence":15565,"id":"wx-0af9ca18cc6af65e","timestamp":"2026-08-07T01:32:07+08:00","sender":"树","side":"left","messageType":"文本","text":"官方还没有实现","redacted":false}
+{"sequence":15566,"id":"wx-7b578230d96cd711","timestamp":"2026-08-07T01:32:07+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\".....\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15567,"id":"wx-5dc988a18839ae85","timestamp":"2026-08-07T01:32:16+08:00","sender":"树","side":"left","messageType":"文本","text":"那个我做了","redacted":false}
+{"sequence":15568,"id":"wx-abe69ffa8ab1b3c2","timestamp":"2026-08-07T01:32:16+08:00","sender":"清","side":"left","messageType":"文本","text":"@云 ye[旺柴]","redacted":false}
+{"sequence":15569,"id":"wx-8a21ed25a5e45514","timestamp":"2026-08-07T01:32:25+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"能做和做得好还是差很远","redacted":false}
+{"sequence":15570,"id":"wx-e8d6d0eedeefb4be","timestamp":"2026-08-07T01:32:30+08:00","sender":"树","side":"left","messageType":"文本","text":"抄的是codex的实现","redacted":false}
+{"sequence":15571,"id":"wx-639e8afe31a746ec","timestamp":"2026-08-07T01:32:32+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"怎么压缩的","redacted":false}
+{"sequence":15572,"id":"wx-9ff28873b87d72b1","timestamp":"2026-08-07T01:32:36+08:00","sender":".....","side":"left","messageType":"文本","text":"跨对话记忆","redacted":false}
+{"sequence":15573,"id":"wx-561c40af34f60593","timestamp":"2026-08-07T01:32:40+08:00","sender":".....","side":"left","messageType":"文本","text":"官方没有做吧","redacted":false}
+{"sequence":15574,"id":"wx-29619a57578d4ad4","timestamp":"2026-08-07T01:32:41+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"codex一样自动压缩吗","redacted":false}
+{"sequence":15575,"id":"wx-2d4ebde9dd5a3fa7","timestamp":"2026-08-07T01:32:41+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"你做的记忆怎么召回的\n  ↳ 回复 凉粉: 那个我做了","redacted":false}
+{"sequence":15576,"id":"wx-1048d12cc8d9d5b4","timestamp":"2026-08-07T01:32:43+08:00","sender":".....","side":"left","messageType":"文本","text":"不知道有什么想法","redacted":false}
+{"sequence":15577,"id":"wx-f5858b649910e3ac","timestamp":"2026-08-07T01:32:49+08:00","sender":"清","side":"left","messageType":"文本","text":"gemini的记忆有人用过吗","redacted":false}
+{"sequence":15578,"id":"wx-5d863c7b2e751879","timestamp":"2026-08-07T01:32:53+08:00","sender":"清","side":"left","messageType":"文本","text":"（","redacted":false}
+{"sequence":15579,"id":"wx-7423e99c4e32d9ff","timestamp":"2026-08-07T01:33:01+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我只用过cc的memory","redacted":false}
+{"sequence":15580,"id":"wx-59ea438b1ea83b29","timestamp":"2026-08-07T01:33:04+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我很喜欢","redacted":false}
+{"sequence":15581,"id":"wx-bbb5d61cf3453dae","timestamp":"2026-08-07T01:33:05+08:00","sender":".....","side":"left","messageType":"链接/文件","text":"听说很烂\n  ↳ 回复 Laplaceyoung: gemini的记忆有人用过吗","redacted":false}
+{"sequence":15582,"id":"wx-cda3bfd7573894e7","timestamp":"2026-08-07T01:33:05+08:00","sender":"树","side":"left","messageType":"文本","text":"我做的是跨会话读取，不是memory","redacted":false}
+{"sequence":15583,"id":"wx-bbc0611391bcfaad","timestamp":"2026-08-07T01:33:15+08:00","sender":"清","side":"left","messageType":"链接/文件","text":"不用听说\n  ↳ 回复 .....: [引用] 听说很烂","redacted":true}
+{"sequence":15584,"id":"wx-b9dcf7d8db3a6eaf","timestamp":"2026-08-07T01:33:17+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"挺拉的","redacted":false}
+{"sequence":15585,"id":"wx-325242068671afbb","timestamp":"2026-08-07T01:33:19+08:00","sender":".....","side":"left","messageType":"链接/文件","text":"那还差很远\n  ↳ 回复 凉粉: 我做的是跨会话读取，不是memory","redacted":false}
+{"sequence":15586,"id":"wx-b302c65ec36aff88","timestamp":"2026-08-07T01:33:24+08:00","sender":"树","side":"left","messageType":"链接/文件","text":"cc有memory？\n  ↳ 回复 只有你不在的a10: 我只用过cc的memory","redacted":false}
+{"sequence":15587,"id":"wx-80cacbcac5a4c199","timestamp":"2026-08-07T01:33:25+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"记忆系统做好很难","redacted":false}
+{"sequence":15588,"id":"wx-3e915f6f5bef32a2","timestamp":"2026-08-07T01:33:28+08:00","sender":".....","side":"left","messageType":"文本","text":"gpt的记忆系统有时候很抽象","redacted":false}
+{"sequence":15589,"id":"wx-fc4e458cfe7d474a","timestamp":"2026-08-07T01:33:31+08:00","sender":".....","side":"left","messageType":"文本","text":"有时候很神奇","redacted":false}
+{"sequence":15590,"id":"wx-04d49a3577f8989a","timestamp":"2026-08-07T01:33:34+08:00","sender":"树","side":"left","messageType":"文本","text":"抄一个","redacted":false}
+{"sequence":15591,"id":"wx-466f73cf6a2783cc","timestamp":"2026-08-07T01:33:34+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"有的","redacted":false}
+{"sequence":15592,"id":"wx-c39d54bf64a47ce7","timestamp":"2026-08-07T01:33:36+08:00","sender":"博皞 bt.wood","side":"left","messageType":"链接/文件","text":"啊！有的有！ 5年DevRel经验[苦涩]\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: 有人想应聘 dsh 团队开发者关系/开源社区运营岗位的吗？","redacted":false}
+{"sequence":15593,"id":"wx-4bd9308e980bb143","timestamp":"2026-08-07T01:33:38+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"有的","redacted":false}
+{"sequence":15594,"id":"wx-6df71bfeafa286ff","timestamp":"2026-08-07T01:33:55+08:00","sender":"云","side":"left","messageType":"文本","text":"cc的memory很暴力","redacted":false}
+{"sequence":15595,"id":"wx-5b06161a9bef90b8","timestamp":"2026-08-07T01:33:56+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"memory在于怎么记","redacted":false}
+{"sequence":15596,"id":"wx-75e02b2f3d10669c","timestamp":"2026-08-07T01:33:56+08:00","sender":"黑","side":"left","messageType":"文本","text":"修复完毕","redacted":false}
+{"sequence":15597,"id":"wx-1282882616c18f6f","timestamp":"2026-08-07T01:33:57+08:00","sender":"黑","side":"left","messageType":"图片","text":"[图片] (local_id=15597)","redacted":false}
+{"sequence":15598,"id":"wx-7a3d54d9a06bfa98","timestamp":"2026-08-07T01:34:02+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"记忆哪些","redacted":false}
+{"sequence":15599,"id":"wx-c251e3f4166eb923","timestamp":"2026-08-07T01:34:06+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"有的有的\n  ↳ 回复: 有人想应聘 dsh 团队开发者关系/开源社区运营岗位的吗？","redacted":false}
+{"sequence":15600,"id":"wx-387df33408731ca5","timestamp":"2026-08-07T01:34:09+08:00","sender":"清","side":"left","messageType":"文本","text":"eg；在会话a说我是cs学生，在会话b询问git操作:作为一个cs等学生，学习git真的非常重要","redacted":false}
+{"sequence":15601,"id":"wx-040f4529bac0c98b","timestamp":"2026-08-07T01:34:10+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"什么时候插入","redacted":false}
+{"sequence":15602,"id":"wx-b5231b8a0cb1d295","timestamp":"2026-08-07T01:34:14+08:00","sender":".....","side":"left","messageType":"文本","text":"刚刚我叫gpt问问实现本地过时的qq服务器怎么办","redacted":false}
+{"sequence":15603,"id":"wx-496d0556c2ae43d0","timestamp":"2026-08-07T01:34:15+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"这个真挺难的","redacted":false}
+{"sequence":15604,"id":"wx-00fbfa5381220e44","timestamp":"2026-08-07T01:34:22+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"召回啥的都是很简单的","redacted":false}
+{"sequence":15605,"id":"wx-67d83f5e07d29e1f","timestamp":"2026-08-07T01:34:30+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"我来\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: 有人想应聘 dsh 团队开发者关系/开源社区运营岗位的吗？","redacted":false}
+{"sequence":15606,"id":"wx-a5111fa62906975e","timestamp":"2026-08-07T01:34:34+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"加大佬了","redacted":false}
+{"sequence":15607,"id":"wx-a3282c37412fcacb","timestamp":"2026-08-07T01:34:36+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[旺柴]","redacted":false}
+{"sequence":15608,"id":"wx-08a4e99ad2f43784","timestamp":"2026-08-07T01:34:37+08:00","sender":".....","side":"left","messageType":"图片","text":"[图片] (local_id=15608)","redacted":false}
+{"sequence":15609,"id":"wx-09063d922cfc10b3","timestamp":"2026-08-07T01:34:40+08:00","sender":"少喝凉水","side":"left","messageType":"链接/文件","text":"暴力，但是好用\n  ↳ 回复 云: cc的memory很暴力","redacted":false}
+{"sequence":15610,"id":"wx-abfa704116f996de","timestamp":"2026-08-07T01:34:49+08:00","sender":"云","side":"left","messageType":"文本","text":"嗯","redacted":false}
+{"sequence":15611,"id":"wx-297ac8a7b6f8b9fd","timestamp":"2026-08-07T01:35:09+08:00","sender":"清","side":"left","messageType":"文本","text":"Hermes的记忆最开始看还挺有新意的（）","redacted":false}
+{"sequence":15612,"id":"wx-1ace9ce2a01d87e1","timestamp":"2026-08-07T01:35:10+08:00","sender":".....","side":"left","messageType":"链接/文件","text":"她举的例子用猫老板做昵称\n  ↳ 回复 .....: [引用媒体]","redacted":true}
+{"sequence":15613,"id":"wx-15815646a3e8733b","timestamp":"2026-08-07T01:35:12+08:00","sender":"黑","side":"left","messageType":"图片","text":"[图片] (local_id=15613)","redacted":false}
+{"sequence":15614,"id":"wx-a16746cb070c09c5","timestamp":"2026-08-07T01:35:15+08:00","sender":"黑","side":"left","messageType":"文本","text":"这个记忆系统也不错","redacted":false}
+{"sequence":15615,"id":"wx-00f7250f16f7426a","timestamp":"2026-08-07T01:35:17+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"你们说的暴力是指的什么","redacted":false}
+{"sequence":15616,"id":"wx-8f37b506f0be06e7","timestamp":"2026-08-07T01:35:17+08:00","sender":"黑","side":"left","messageType":"文本","text":"就是optmem","redacted":false}
+{"sequence":15617,"id":"wx-c8d1ed2f64ad147a","timestamp":"2026-08-07T01:35:24+08:00","sender":"黑","side":"left","messageType":"文本","text":"我挺喜欢optmem的","redacted":false}
+{"sequence":15618,"id":"wx-c3e66abc2fb63cff","timestamp":"2026-08-07T01:35:30+08:00","sender":".....","side":"left","messageType":"文本","text":"猫老板是知乎答主tomaya nao","redacted":false}
+{"sequence":15619,"id":"wx-e99e45cd2e3c01c3","timestamp":"2026-08-07T01:35:30+08:00","sender":"黑","side":"left","messageType":"文本","text":"感觉有点无感说实话","redacted":false}
+{"sequence":15620,"id":"wx-9daca96a0f3eb140","timestamp":"2026-08-07T01:35:32+08:00","sender":"云","side":"left","messageType":"链接/文件","text":"本质上就是渐进式加载+AGETNS.md\n  ↳ 回复 少喝凉水: [引用] 暴力，但是好用","redacted":true}
+{"sequence":15621,"id":"wx-c6fcde9490e49e55","timestamp":"2026-08-07T01:35:34+08:00","sender":".....","side":"left","messageType":"文本","text":"我天天水群","redacted":false}
+{"sequence":15622,"id":"wx-ad54680cf6ff4a5e","timestamp":"2026-08-07T01:35:38+08:00","sender":".....","side":"left","messageType":"文本","text":"把我吓傻了","redacted":false}
+{"sequence":15623,"id":"wx-b05776fae899dd74","timestamp":"2026-08-07T01:35:42+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"666友商要跳槽了\n  ↳ 回复 mattheliu(夏目贵志)คิดถึง: 加大佬了","redacted":false}
+{"sequence":15624,"id":"wx-dca233cb38fa924c","timestamp":"2026-08-07T01:35:52+08:00","sender":".....","side":"left","messageType":"图片","text":"[图片] (local_id=15624)","redacted":false}
+{"sequence":15625,"id":"wx-743fa305667d9684","timestamp":"2026-08-07T01:36:04+08:00","sender":".....","side":"left","messageType":"文本","text":"后来发现我天天用他来画关于猫老板的漫画","redacted":false}
+{"sequence":15626,"id":"wx-82f7903215836142","timestamp":"2026-08-07T01:36:13+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"记忆以后的召回大概率会用fts5","redacted":false}
+{"sequence":15627,"id":"wx-0b379fd1222c07f9","timestamp":"2026-08-07T01:36:21+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"大佬确实很适合去做社区\n  ↳ 回复 mattheliu(夏目贵志)คิดถึง:  [引用] 我来","redacted":true}
+{"sequence":15628,"id":"wx-89ff63cab0b2d4f2","timestamp":"2026-08-07T01:36:22+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"👍","redacted":false}
+{"sequence":15629,"id":"wx-254fb5fda8eb42d7","timestamp":"2026-08-07T01:36:26+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"现在召回不是啥问题","redacted":false}
+{"sequence":15630,"id":"wx-6e92d1b598df60aa","timestamp":"2026-08-07T01:36:29+08:00","sender":".....","side":"left","messageType":"文本","text":"他举例都时候随手拿这个名字","redacted":false}
+{"sequence":15631,"id":"wx-99604b61c8af65ff","timestamp":"2026-08-07T01:36:31+08:00","sender":".....","side":"left","messageType":"文本","text":"太哈人了","redacted":false}
+{"sequence":15632,"id":"wx-5122686b6e6c8d3f","timestamp":"2026-08-07T01:36:35+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"问题还是在于时机的把握","redacted":false}
+{"sequence":15633,"id":"wx-c2cb5a9213f5b8e0","timestamp":"2026-08-07T01:36:55+08:00","sender":"树","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15634,"id":"wx-ffe9522c5efbd5c6","timestamp":"2026-08-07T01:36:56+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"但是做项目，memory意义真的不算特别大","redacted":false}
+{"sequence":15635,"id":"wx-4c2c267647d21896","timestamp":"2026-08-07T01:36:59+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\".....\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15636,"id":"wx-5eabb2977d64397f","timestamp":"2026-08-07T01:37:12+08:00","sender":".....","side":"left","messageType":"链接/文件","text":"我这个例子你觉得他是怎么做到的\n  ↳ 回复 只有你不在的a10: 问题还是在于时机的把握","redacted":false}
+{"sequence":15637,"id":"wx-f5657f9b38b22979","timestamp":"2026-08-07T01:37:24+08:00","sender":".....","side":"left","messageType":"文本","text":"在完全无关的话题中拿他做例子","redacted":false}
+{"sequence":15638,"id":"wx-4f82c68b30a4cab4","timestamp":"2026-08-07T01:37:43+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"做项目意义不大 但是对日常使用意义太大了\n  ↳ 回复: 但是做项目，memory意义真的不算特别大","redacted":false}
+{"sequence":15639,"id":"wx-886c74c94a09a189","timestamp":"2026-08-07T01:37:48+08:00","sender":"黑","side":"left","messageType":"文本","text":"节省好多复制粘贴","redacted":false}
+{"sequence":15640,"id":"wx-5f6dd8ca172433a3","timestamp":"2026-08-07T01:37:51+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"是\n  ↳ 回复 黑:  [引用] 做项目意义不大 但是对日常使用意义太大了","redacted":true}
+{"sequence":15641,"id":"wx-40e9eb8777aa713b","timestamp":"2026-08-07T01:37:59+08:00","sender":"清","side":"left","messageType":"文本","text":"日常使用不是dpsk的产品线吧（","redacted":false}
+{"sequence":15642,"id":"wx-8007ed38fc871828","timestamp":"2026-08-07T01:38:06+08:00","sender":"清","side":"left","messageType":"文本","text":"赶都赶不走（）","redacted":false}
+{"sequence":15643,"id":"wx-d840577b0493c9d8","timestamp":"2026-08-07T01:38:09+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"但是你跟他说你还是单身，然后他老提一嘴你是单身","redacted":false}
+{"sequence":15644,"id":"wx-14060fa29143a04b","timestamp":"2026-08-07T01:38:12+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"之前做过开源社区运营\n  ↳ 回复 inschrift-spruch-raum:  [引用] 大佬确实很适合去做社区","redacted":true}
+{"sequence":15645,"id":"wx-44cae461b906a536","timestamp":"2026-08-07T01:38:13+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[旺柴]","redacted":false}
+{"sequence":15646,"id":"wx-6b6de2a80af7a3fe","timestamp":"2026-08-07T01:38:16+08:00","sender":"清","side":"left","messageType":"文本","text":"不想要c端（）","redacted":false}
+{"sequence":15647,"id":"wx-e05fb2b5b4456fd3","timestamp":"2026-08-07T01:38:20+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"混迹于多个社区","redacted":false}
+{"sequence":15648,"id":"wx-60f74b9ac1182967","timestamp":"2026-08-07T01:38:22+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"这些记忆真的搞","redacted":false}
+{"sequence":15649,"id":"wx-b842d57c0e6ddf5d","timestamp":"2026-08-07T01:38:22+08:00","sender":"清","side":"left","messageType":"链接/文件","text":"gemini就这样\n  ↳ 回复 zzyzy: 但是你跟他说你还是单身，然后他老提一嘴你是单身","redacted":false}
+{"sequence":15650,"id":"wx-82acc5a0b37b8df7","timestamp":"2026-08-07T01:38:26+08:00","sender":".....","side":"left","messageType":"链接/文件","text":"说是这么说\n  ↳ 回复 Laplaceyoung: 日常使用不是dpsk的产品线吧（","redacted":false}
+{"sequence":15651,"id":"wx-2db9df6e8f34c354","timestamp":"2026-08-07T01:38:27+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"主要是我就研究rag的，所以召回真不算啥问题","redacted":false}
+{"sequence":15652,"id":"wx-a703421c5b91cb50","timestamp":"2026-08-07T01:38:33+08:00","sender":".....","side":"left","messageType":"文本","text":"但是还是想深入做的","redacted":false}
+{"sequence":15653,"id":"wx-23faa7af34de16da","timestamp":"2026-08-07T01:38:39+08:00","sender":"zzyzy","side":"left","messageType":"链接/文件","text":"所以到手都关了\n  ↳ 回复 Laplaceyoung: [引用] gemini就这样","redacted":true}
+{"sequence":15654,"id":"wx-7c8a02fdb7d89aa3","timestamp":"2026-08-07T01:38:49+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"就是memory我是没想明白","redacted":false}
+{"sequence":15655,"id":"wx-bbce7da4d586f38e","timestamp":"2026-08-07T01:38:49+08:00","sender":".....","side":"left","messageType":"链接/文件","text":"你主动去查和他主动提\n  ↳ 回复 只有你不在的a10: 主要是我就研究rag的，所以召回真不算啥问题","redacted":false}
+{"sequence":15656,"id":"wx-7da91071a60e6658","timestamp":"2026-08-07T01:38:52+08:00","sender":".....","side":"left","messageType":"文本","text":"完全是两码事","redacted":false}
+{"sequence":15657,"id":"wx-01c571a0769401f6","timestamp":"2026-08-07T01:38:53+08:00","sender":"陈超群","side":"left","messageType":"链接/文件","text":"后面应该还是开放非专业/编码人群的， codex 已经改名 chatgpt了，就是想扩展下客户群体。\n  ↳ 回复 Laplaceyoung: 日常使用不是dpsk的产品线吧（","redacted":false}
+{"sequence":15658,"id":"wx-51fd0a4fdf6cab93","timestamp":"2026-08-07T01:38:55+08:00","sender":".....","side":"left","messageType":"文本","text":"联想能力","redacted":false}
+{"sequence":15659,"id":"wx-8544e19678d850d8","timestamp":"2026-08-07T01:38:55+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"大模型这玩意应用研究一体吧","redacted":false}
+{"sequence":15660,"id":"wx-7733f57982eac74b","timestamp":"2026-08-07T01:39:01+08:00","sender":"zzyzy","side":"left","messageType":"文本","text":"没人用怎么知道后面做啥","redacted":false}
+{"sequence":15661,"id":"wx-75eed39a607c6335","timestamp":"2026-08-07T01:39:06+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"记忆和召回是两码事","redacted":false}
+{"sequence":15662,"id":"wx-1c95e1926ed27d00","timestamp":"2026-08-07T01:39:16+08:00","sender":".....","side":"left","messageType":"链接/文件","text":"deepseek甚至有人专门做roleplay的\n  ↳ 回复 陈超群:  [引用] 后面应该还是开放非专业/编码人群的， codex 已经改名 chatgpt了，就是想扩展下客户群体。","redacted":true}
+{"sequence":15663,"id":"wx-8d602e3d87ad14dc","timestamp":"2026-08-07T01:39:17+08:00","sender":"陈超群","side":"left","messageType":"文本","text":"现在都在往 通用化走","redacted":false}
+{"sequence":15664,"id":"wx-84d69a618b765461","timestamp":"2026-08-07T01:39:22+08:00","sender":"杨文峰","side":"left","messageType":"文本","text":"有没有大佬看过我写的这个记忆插件啊 https://github.com/dsh-external/dsh-memory-evolve\n我随便写的，不大懂，可能写的很差，满足自己用的。","redacted":false}
+{"sequence":15665,"id":"wx-120e70571a025beb","timestamp":"2026-08-07T01:39:24+08:00","sender":"杨文峰","side":"left","messageType":"图片","text":"[图片] (local_id=15665)","redacted":false}
+{"sequence":15666,"id":"wx-f3a2bbc19110323d","timestamp":"2026-08-07T01:39:26+08:00","sender":"保持冷静","side":"left","messageType":"链接/文件","text":"我同意\n  ↳ 回复 陈超群: [引用] 后面应该还是开放非专业/编码人群的， codex 已经改名 chatgpt了，就是想扩展下客户群体。","redacted":true}
+{"sequence":15667,"id":"wx-1a786974880133be","timestamp":"2026-08-07T01:39:28+08:00","sender":"杨文峰","side":"left","messageType":"图片","text":"[图片] (local_id=15667)","redacted":false}
+{"sequence":15668,"id":"wx-e1e7054e2eb8b59d","timestamp":"2026-08-07T01:39:31+08:00","sender":"杨文峰","side":"left","messageType":"图片","text":"[图片] (local_id=15668)","redacted":false}
+{"sequence":15669,"id":"wx-eaeca75b03a792f1","timestamp":"2026-08-07T01:39:33+08:00","sender":"杨文峰","side":"left","messageType":"图片","text":"[图片] (local_id=15669)","redacted":false}
+{"sequence":15670,"id":"wx-f44cce0cd524ca85","timestamp":"2026-08-07T01:39:43+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"你们用过好的记忆方案是什么","redacted":false}
+{"sequence":15671,"id":"wx-3afcbf698428dbe4","timestamp":"2026-08-07T01:39:50+08:00","sender":"云","side":"left","messageType":"文本","text":"Hermes 太火了","redacted":false}
+{"sequence":15672,"id":"wx-26724f108acdb688","timestamp":"2026-08-07T01:39:58+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"coding agent 很大的一个用途就是帮助完全不懂代码的人通过代码完成一些任务。","redacted":false}
+{"sequence":15673,"id":"wx-4d3a409c7cfe6554","timestamp":"2026-08-07T01:39:58+08:00","sender":"清","side":"left","messageType":"文本","text":"https://x.com/openaidevs/status/2085398373511918022?s=46","redacted":false}
+{"sequence":15674,"id":"wx-f538b39ae9eceb6b","timestamp":"2026-08-07T01:40:07+08:00","sender":"云","side":"left","messageType":"文本","text":"蛋糕太香了谁不想吃","redacted":false}
+{"sequence":15675,"id":"wx-0bcb3f75e16b838f","timestamp":"2026-08-07T01:40:09+08:00","sender":"1900","side":"left","messageType":"链接/文件","text":"sqlite\n  ↳ 回复 只有你不在的a10: 你们用过好的记忆方案是什么","redacted":false}
+{"sequence":15676,"id":"wx-7e7f8317d5bb2f11","timestamp":"2026-08-07T01:40:15+08:00","sender":"博皞 bt.wood","side":"left","messageType":"链接/文件","text":"其实我一直在用openviking\n  ↳ 回复 只有你不在的a10: 你们用过好的记忆方案是什么","redacted":false}
+{"sequence":15677,"id":"wx-f0e9abc7cf9cc7e5","timestamp":"2026-08-07T01:40:18+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"主要我觉得没那么本质，现在很多的各种什么分层啊，乱七八糟的","redacted":false}
+{"sequence":15678,"id":"wx-cda8b2a6689eec04","timestamp":"2026-08-07T01:40:19+08:00","sender":"1900","side":"left","messageType":"文本","text":"直接数据库存储查询","redacted":false}
+{"sequence":15679,"id":"wx-898136bd96e2823e","timestamp":"2026-08-07T01:40:25+08:00","sender":"清","side":"left","messageType":"文本","text":"db","redacted":false}
+{"sequence":15680,"id":"wx-e669b213877e7077","timestamp":"2026-08-07T01:40:38+08:00","sender":"1900","side":"left","messageType":"链接/文件","text":"或者看看Google那个llmWiki\n  ↳ 回复 只有你不在的a10: 主要我觉得没那么本质，现在很多的各种什么分层啊，乱七八糟的","redacted":false}
+{"sequence":15681,"id":"wx-5c43c75d723b18f3","timestamp":"2026-08-07T01:40:54+08:00","sender":"清","side":"left","messageType":"文本","text":"记忆系统需要能让用户有个aha","redacted":false}
+{"sequence":15682,"id":"wx-4b58477fe609d236","timestamp":"2026-08-07T01:40:55+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"Okf么","redacted":false}
+{"sequence":15683,"id":"wx-07fa9a4e653cd9ee","timestamp":"2026-08-07T01:40:56+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"workbuddy和codex claude code 都面临chat work coding的选择。\n三者已经趋同了","redacted":false}
+{"sequence":15684,"id":"wx-09ec210964197888","timestamp":"2026-08-07T01:40:58+08:00","sender":"清","side":"left","messageType":"文本","text":"moment","redacted":false}
+{"sequence":15685,"id":"wx-f4b22e672bd9864a","timestamp":"2026-08-07T01:41:15+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"内核一样\n  ↳ 回复 保持冷静: workbuddy和codex claude code 都面临chat work coding的选择。 三者已经趋同了","redacted":false}
+{"sequence":15686,"id":"wx-c740189d64fc1903","timestamp":"2026-08-07T01:41:31+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"外面天差地别","redacted":false}
+{"sequence":15687,"id":"wx-d25ddb212801216d","timestamp":"2026-08-07T01:41:46+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"面向的人群也不太一样","redacted":false}
+{"sequence":15688,"id":"wx-abbe7497737f430f","timestamp":"2026-08-07T01:41:53+08:00","sender":"保持冷静","side":"left","messageType":"链接/文件","text":"是的\n  ↳ 回复 只有你不在的a10: 面向的人群也不太一样","redacted":false}
+{"sequence":15689,"id":"wx-140ac1ec98dd99da","timestamp":"2026-08-07T01:42:00+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我今天和同事聊才发现","redacted":false}
+{"sequence":15690,"id":"wx-7672add8531fdc1f","timestamp":"2026-08-07T01:42:00+08:00","sender":"清","side":"left","messageType":"文本","text":"codebuddy最开始是Claudecode改的吧？","redacted":false}
+{"sequence":15691,"id":"wx-ce2a16f2489f5475","timestamp":"2026-08-07T01:42:00+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"这个最关键","redacted":false}
+{"sequence":15692,"id":"wx-7347340ebc520363","timestamp":"2026-08-07T01:42:15+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"他们居然一直认为模型是可以实时被训练的","redacted":false}
+{"sequence":15693,"id":"wx-207d07c54ff5732b","timestamp":"2026-08-07T01:42:20+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"啊？","redacted":false}
+{"sequence":15694,"id":"wx-f02fa4c12bd32dd0","timestamp":"2026-08-07T01:42:23+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"逆向\n  ↳ 回复 Laplaceyoung: codebuddy最开始是Claudecode改的吧？","redacted":false}
+{"sequence":15695,"id":"wx-d1b3512f87b06b27","timestamp":"2026-08-07T01:42:39+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"所以我很难绷","redacted":false}
+{"sequence":15696,"id":"wx-78cb95cddb201d7c","timestamp":"2026-08-07T01:42:47+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"大多数人看到tui就两眼一黑了","redacted":false}
+{"sequence":15697,"id":"wx-f67f77afd97eabd2","timestamp":"2026-08-07T01:43:02+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我们想搞一个识别，需要微调模型","redacted":false}
+{"sequence":15698,"id":"wx-760d07e24ef07c48","timestamp":"2026-08-07T01:43:10+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"但这些人也有需求呀。","redacted":false}
+{"sequence":15699,"id":"wx-1d50561bc5d0e28d","timestamp":"2026-08-07T01:43:15+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"他们觉得很简单，喂点图就行了","redacted":false}
+{"sequence":15700,"id":"wx-3b458faf7f62a264","timestamp":"2026-08-07T01:43:21+08:00","sender":"云","side":"left","messageType":"链接/文件","text":"所以我是真的觉得这三个领域不一样\n  ↳ 回复 保持冷静: workbuddy和codex claude code 都面临chat work coding的选择。 三者已经趋同了","redacted":false}
+{"sequence":15701,"id":"wx-7cf8ba1a744333ed","timestamp":"2026-08-07T01:43:22+08:00","sender":"只有你不在的a10","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15702,"id":"wx-ac2c77288bbd028a","timestamp":"2026-08-07T01:43:22+08:00","sender":"清","side":"left","messageType":"文本","text":"绷","redacted":false}
+{"sequence":15703,"id":"wx-ac064e71201481c6","timestamp":"2026-08-07T01:43:24+08:00","sender":".....","side":"left","messageType":"文本","text":"难","redacted":false}
+{"sequence":15704,"id":"wx-9170a3fe29061efa","timestamp":"2026-08-07T01:43:37+08:00","sender":"爱樰浠","side":"left","messageType":"链接/文件","text":"下一步确实是让模型可以自行迭代\n  ↳ 回复 只有你不在的a10: 他们居然一直认为模型是可以实时被训练的","redacted":false}
+{"sequence":15705,"id":"wx-4272273d54ed4b9c","timestamp":"2026-08-07T01:43:38+08:00","sender":".....","side":"left","messageType":"文本","text":"gpt每个人都维护一个记忆系统","redacted":false}
+{"sequence":15706,"id":"wx-c6f857eb9d657339","timestamp":"2026-08-07T01:43:39+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"但是目前还没有做到","redacted":false}
+{"sequence":15707,"id":"wx-75d3213933dc1433","timestamp":"2026-08-07T01:43:48+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"所以，我们认知和他们认知差的不是一点半点","redacted":false}
+{"sequence":15708,"id":"wx-e9b0865220bb00b5","timestamp":"2026-08-07T01:43:50+08:00","sender":".....","side":"left","messageType":"文本","text":"训练模型显然很难办到","redacted":false}
+{"sequence":15709,"id":"wx-63f73677384b47e4","timestamp":"2026-08-07T01:44:18+08:00","sender":"清","side":"left","messageType":"文本","text":"gpt 5.6就自己迭代了（","redacted":false}
+{"sequence":15710,"id":"wx-31d84206e057463e","timestamp":"2026-08-07T01:44:21+08:00","sender":"保持冷静","side":"left","messageType":"链接/文件","text":"这是workbuddy现在能有领先的原因\n  ↳ 回复 只有你不在的a10: 所以，我们认知和他们认知差的不是一点半点","redacted":false}
+{"sequence":15711,"id":"wx-19a1595d22711d45","timestamp":"2026-08-07T01:44:50+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"我有朋友跟我说 希望他体制内的同事永远别用上workbuddy 不然要被卷死","redacted":false}
+{"sequence":15712,"id":"wx-918db0edb7125f31","timestamp":"2026-08-07T01:44:55+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"workbuddy成功是有很强的原因的\n  ↳ 回复 保持冷静:  [引用] 这是workbuddy现在能有领先的原因","redacted":true}
+{"sequence":15713,"id":"wx-12c11345d02906be","timestamp":"2026-08-07T01:45:01+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\".....\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15714,"id":"wx-a51da0f2a9664d87","timestamp":"2026-08-07T01:45:03+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"所有的mem系统都只是在持续学习出现之前的凡夫罢了！……但是 什么时候才能有持续学习呢？\n  ↳ 回复: 就是memory我是没想明白","redacted":false}
+{"sequence":15715,"id":"wx-d4aa484b9e1227ff","timestamp":"2026-08-07T01:45:13+08:00","sender":"Jake🐬","side":"left","messageType":"链接/文件","text":"111\n  ↳ 回复 崔小天（最近消息多回复慢情见谅）: 有人想应聘 dsh 团队开发者关系/开源社区运营岗位的吗？","redacted":false}
+{"sequence":15716,"id":"wx-a7d54eb507f2ee18","timestamp":"2026-08-07T01:45:16+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\"黑\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15717,"id":"wx-589616e9a98c6851","timestamp":"2026-08-07T01:45:28+08:00","sender":"黑","side":"left","messageType":"文本","text":"从仿生的角度讲，人类的记忆不是文档化的，是参数化的","redacted":false}
+{"sequence":15718,"id":"wx-24d12f80734329a1","timestamp":"2026-08-07T01:45:38+08:00","sender":"黑","side":"left","messageType":"文本","text":"我们是根据关键词+参数重建记忆","redacted":false}
+{"sequence":15719,"id":"wx-7754d4bd0520e270","timestamp":"2026-08-07T01:45:48+08:00","sender":"清","side":"left","messageType":"文本","text":"https://mp.weixin.qq.com/s/Crbs0g0F3G1mxRaQNBZ0vA","redacted":false}
+{"sequence":15720,"id":"wx-74c712c6cc8785bc","timestamp":"2026-08-07T01:45:50+08:00","sender":".....","side":"left","messageType":"文本","text":"很难啊","redacted":false}
+{"sequence":15721,"id":"wx-b50c2e8c5a55590a","timestamp":"2026-08-07T01:45:56+08:00","sender":".....","side":"left","messageType":"文本","text":"现在显然不能实现","redacted":false}
+{"sequence":15722,"id":"wx-abb38a052aac51af","timestamp":"2026-08-07T01:46:01+08:00","sender":"黑","side":"left","messageType":"文本","text":"现在显然不能实现","redacted":false}
+{"sequence":15723,"id":"wx-ea481b85a41ccd92","timestamp":"2026-08-07T01:46:06+08:00","sender":"云","side":"left","messageType":"链接/文件","text":"到时候可能会有更底层的实现了\n  ↳ 回复 黑: 我们是根据关键词+参数重建记忆","redacted":false}
+{"sequence":15724,"id":"wx-a72771111961e018","timestamp":"2026-08-07T01:46:16+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"不能拿人的记忆去类比ai\n  ↳ 回复 黑: 从仿生的角度讲，人类的记忆不是文档化的，是参数化的","redacted":false}
+{"sequence":15725,"id":"wx-801b6a6a2b620c85","timestamp":"2026-08-07T01:46:37+08:00","sender":".....","side":"left","messageType":"文本","text":"或者说非要实现也行","redacted":false}
+{"sequence":15726,"id":"wx-a743ebaabb4239aa","timestamp":"2026-08-07T01:46:39+08:00","sender":".....","side":"left","messageType":"文本","text":"微调一下","redacted":false}
+{"sequence":15727,"id":"wx-88ee92dad41c2b2f","timestamp":"2026-08-07T01:46:41+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"AI在训练过程中和人类记忆区别不大\n  ↳ 回复: [引用] 不能拿人的记忆去类比ai","redacted":true}
+{"sequence":15728,"id":"wx-30c5c40cd1e18d63","timestamp":"2026-08-07T01:46:58+08:00","sender":"黑","side":"left","messageType":"文本","text":"甚至幻觉机制都差不多","redacted":false}
+{"sequence":15729,"id":"wx-6e8cadf96ecb3814","timestamp":"2026-08-07T01:47:03+08:00","sender":"黑","side":"left","messageType":"文本","text":"[捂脸]","redacted":false}
+{"sequence":15730,"id":"wx-b84d1c3665351ba7","timestamp":"2026-08-07T01:47:12+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"[捂脸]那也只是解释的罢了","redacted":false}
+{"sequence":15731,"id":"wx-96708e1b118da149","timestamp":"2026-08-07T01:47:31+08:00","sender":"黑","side":"left","messageType":"文本","text":"跟AI也能玩“是我是我”诈骗就很难崩吧","redacted":false}
+{"sequence":15732,"id":"wx-2ba68d3f218c2981","timestamp":"2026-08-07T01:49:18+08:00","sender":"树","side":"left","messageType":"图片","text":"[图片] (local_id=15732)","redacted":false}
+{"sequence":15733,"id":"wx-410a41716030087d","timestamp":"2026-08-07T01:49:56+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"你已经开源了？","redacted":false}
+{"sequence":15734,"id":"wx-7f2d2ac10e04d19c","timestamp":"2026-08-07T01:50:34+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我新版本居然还没跑起来","redacted":false}
+{"sequence":15735,"id":"wx-f3e973131266dcac","timestamp":"2026-08-07T01:50:52+08:00","sender":"清","side":"left","messageType":"文本","text":"不等邮件了睡觉。","redacted":false}
+{"sequence":15736,"id":"wx-1accb7ea197c93c1","timestamp":"2026-08-07T01:51:13+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"hyw\n  ↳ 回复 保持冷静: 你已经开源了？","redacted":false}
+{"sequence":15737,"id":"wx-69a4f64324539c15","timestamp":"2026-08-07T01:51:15+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"不等邮件了睡觉...","redacted":false}
+{"sequence":15738,"id":"wx-0be746314ccff274","timestamp":"2026-08-07T01:51:24+08:00","sender":"陈超群","side":"left","messageType":"文本","text":"不等邮件了睡觉...","redacted":false}
+{"sequence":15739,"id":"wx-7b142b9a80690170","timestamp":"2026-08-07T01:51:28+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"不等邮件了睡觉...","redacted":false}
+{"sequence":15740,"id":"wx-b3cb4d0d1684df81","timestamp":"2026-08-07T01:52:39+08:00","sender":"保持冷静","side":"left","messageType":"图片","text":"[图片] (local_id=15740)","redacted":false}
+{"sequence":15741,"id":"wx-e55c185093284703","timestamp":"2026-08-07T01:54:25+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"这个版本改动真的太大了","redacted":false}
+{"sequence":15742,"id":"wx-db7477aef195b679","timestamp":"2026-08-07T01:54:30+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"[苦涩]","redacted":false}
+{"sequence":15743,"id":"wx-015ee55e11446528","timestamp":"2026-08-07T01:54:41+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"原来的tui适配不上了","redacted":false}
+{"sequence":15744,"id":"wx-5282cc3d9c4465c3","timestamp":"2026-08-07T01:56:14+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"我的cctui吗","redacted":false}
+{"sequence":15745,"id":"wx-c745f2a821f75c9e","timestamp":"2026-08-07T01:56:18+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"晕死","redacted":false}
+{"sequence":15746,"id":"wx-f708d3db553becef","timestamp":"2026-08-07T01:56:23+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"官方的","redacted":false}
+{"sequence":15747,"id":"wx-e7b4a8734ec60387","timestamp":"2026-08-07T01:56:48+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"你的肯定也会有一点问题@Chimney.","redacted":false}
+{"sequence":15748,"id":"wx-8259effde9696ea0","timestamp":"2026-08-07T01:57:02+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"要改不少代码了","redacted":false}
+{"sequence":15749,"id":"wx-ecf8c1bcc15154f8","timestamp":"2026-08-07T01:57:22+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"我今天好不容易把各个方面优化好","redacted":false}
+{"sequence":15750,"id":"wx-20147598a7c157a6","timestamp":"2026-08-07T01:57:25+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"😵","redacted":false}
+{"sequence":15751,"id":"wx-a0b5d504af71d17a","timestamp":"2026-08-07T01:57:44+08:00","sender":"Chimney.","side":"left","messageType":"链接/文件","text":"盲猜问题不小\n  ↳ 回复 只有你不在的a10: 你的肯定也会有一点问题@Chimney.","redacted":false}
+{"sequence":15752,"id":"wx-4c8222b00b3c0ae4","timestamp":"2026-08-07T01:59:06+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我让v4f从1点到现在一直干","redacted":false}
+{"sequence":15753,"id":"wx-436005dbaa0eea8f","timestamp":"2026-08-07T01:59:09+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"都没搞好","redacted":false}
+{"sequence":15754,"id":"wx-40d98e86b696b336","timestamp":"2026-08-07T01:59:20+08:00","sender":"清","side":"left","messageType":"文本","text":"现在有/goal吗","redacted":false}
+{"sequence":15755,"id":"wx-0ecfc945a586686e","timestamp":"2026-08-07T01:59:21+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"接口啥的我估计改动很大","redacted":false}
+{"sequence":15756,"id":"wx-0cab5bb3ee90042e","timestamp":"2026-08-07T01:59:24+08:00","sender":"清","side":"left","messageType":"文本","text":"或者/loop","redacted":false}
+{"sequence":15757,"id":"wx-e9a1fb60a9e3eb02","timestamp":"2026-08-07T01:59:57+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"Omp用户么[旺柴]","redacted":false}
+{"sequence":15758,"id":"wx-fe13b0a8ffd58c40","timestamp":"2026-08-07T02:00:08+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"+1 我就是","redacted":false}
+{"sequence":15759,"id":"wx-4a9c6c395a6b3d38","timestamp":"2026-08-07T02:00:11+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"omp是我的主力","redacted":false}
+{"sequence":15760,"id":"wx-e2cd7bc2fb8ee821","timestamp":"2026-08-07T02:00:17+08:00","sender":"清","side":"left","messageType":"文本","text":"[旺柴]","redacted":false}
+{"sequence":15761,"id":"wx-338a1211a6ba5a53","timestamp":"2026-08-07T02:00:18+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"也是我的主力","redacted":false}
+{"sequence":15762,"id":"wx-81ea2367a7629ed3","timestamp":"2026-08-07T02:00:21+08:00","sender":"清","side":"left","messageType":"文本","text":"也是我的","redacted":false}
+{"sequence":15763,"id":"wx-f015aa3f7c10c5b8","timestamp":"2026-08-07T02:00:29+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我cc omp opencode kimicode都用","redacted":false}
+{"sequence":15764,"id":"wx-75cb16675ed0297b","timestamp":"2026-08-07T02:00:37+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"omp虽然真的很重 但是可以调用的参数很丰富","redacted":false}
+{"sequence":15765,"id":"wx-aea119a41abe41b7","timestamp":"2026-08-07T02:00:40+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"主要是cc和omp","redacted":false}
+{"sequence":15766,"id":"wx-810a4c60c0317e6d","timestamp":"2026-08-07T02:00:42+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"很方便可以改成自己的工作方式","redacted":false}
+{"sequence":15767,"id":"wx-657af3ec2719263e","timestamp":"2026-08-07T02:00:49+08:00","sender":"爱樰浠","side":"left","messageType":"链接/文件","text":"弃坑CC 使用snow cli\n  ↳ 回复 只有你不在的a10: 主要是cc和omp","redacted":false}
+{"sequence":15768,"id":"wx-43225f7b4da5f5dc","timestamp":"2026-08-07T02:00:58+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"snow我用过","redacted":false}
+{"sequence":15769,"id":"wx-76a735cfb27a9a13","timestamp":"2026-08-07T02:01:00+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"目前我是codex snow omp 作为主力","redacted":false}
+{"sequence":15770,"id":"wx-db0177345f8014f1","timestamp":"2026-08-07T02:01:03+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"也是我的","redacted":false}
+{"sequence":15771,"id":"wx-5055e8ad10f06a85","timestamp":"2026-08-07T02:01:06+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"snow完成度很高","redacted":false}
+{"sequence":15772,"id":"wx-9abe1fb326d77d01","timestamp":"2026-08-07T02:01:11+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"用了很久snow","redacted":false}
+{"sequence":15773,"id":"wx-2a1469356bac4c01","timestamp":"2026-08-07T02:01:15+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"个人开发里面应该是最高的","redacted":false}
+{"sequence":15774,"id":"wx-5663ad4d525d0720","timestamp":"2026-08-07T02:01:18+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"效果并没有那么好","redacted":false}
+{"sequence":15775,"id":"wx-0cbf5f5b2bfab135","timestamp":"2026-08-07T02:01:23+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"作者基本上一周3更","redacted":false}
+{"sequence":15776,"id":"wx-3bb0fbe42aeff699","timestamp":"2026-08-07T02:01:24+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我就换回去了","redacted":false}
+{"sequence":15777,"id":"wx-8116d1520415056c","timestamp":"2026-08-07T02:01:33+08:00","sender":"爱樰浠","side":"left","messageType":"链接/文件","text":"现在回去把，很方便\n  ↳ 回复 只有你不在的a10: 效果并没有那么好","redacted":false}
+{"sequence":15778,"id":"wx-a3717329931de162","timestamp":"2026-08-07T02:01:38+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"我已经完全脱离CC了","redacted":false}
+{"sequence":15779,"id":"wx-d132bc0e707a55eb","timestamp":"2026-08-07T02:01:46+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我是上个月用的","redacted":false}
+{"sequence":15780,"id":"wx-23e9d17d74dc3cca","timestamp":"2026-08-07T02:01:56+08:00","sender":"树","side":"left","messageType":"文本","text":"snow?","redacted":false}
+{"sequence":15781,"id":"wx-23bb1b8dd23fe8f4","timestamp":"2026-08-07T02:01:59+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我之前就在找替代","redacted":false}
+{"sequence":15782,"id":"wx-10f405bafce27400","timestamp":"2026-08-07T02:02:00+08:00","sender":"树","side":"left","messageType":"文本","text":"没听说过这个","redacted":false}
+{"sequence":15783,"id":"wx-26a072205e9a3899","timestamp":"2026-08-07T02:02:02+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"snowcli","redacted":false}
+{"sequence":15784,"id":"wx-d52436d598a00b5c","timestamp":"2026-08-07T02:02:12+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"linuxdo一个佬开发的","redacted":false}
+{"sequence":15785,"id":"wx-0e70675416c9824e","timestamp":"2026-08-07T02:02:13+08:00","sender":"清","side":"left","messageType":"文本","text":"omp 里面每个模型都极快","redacted":false}
+{"sequence":15786,"id":"wx-ca1452921505f10f","timestamp":"2026-08-07T02:02:16+08:00","sender":"清","side":"left","messageType":"文本","text":"爽","redacted":false}
+{"sequence":15787,"id":"wx-5c288569b8cd02d6","timestamp":"2026-08-07T02:02:20+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"比较轻量","redacted":false}
+{"sequence":15788,"id":"wx-67b0b75b7260cb74","timestamp":"2026-08-07T02:03:04+08:00","sender":"博皞 bt.wood","side":"left","messageType":"文本","text":"omp一天上瘾，完全停不下来","redacted":false}
+{"sequence":15789,"id":"wx-31850db04db10ce0","timestamp":"2026-08-07T02:03:54+08:00","sender":"爱樰浠","side":"left","messageType":"链接/文件","text":"哈雷姥也有一个重写的CC 我建议你用这个\n  ↳ 回复 只有你不在的a10: 我是上个月用的","redacted":false}
+{"sequence":15790,"id":"wx-9170de00c85180ca","timestamp":"2026-08-07T02:04:34+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"他开源了么","redacted":false}
+{"sequence":15791,"id":"wx-e9f46625678debe5","timestamp":"2026-08-07T02:04:41+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"没关注","redacted":false}
+{"sequence":15792,"id":"wx-6722e6ae09a39e37","timestamp":"2026-08-07T02:05:07+08:00","sender":"爱樰浠","side":"left","messageType":"文本","text":"开了","redacted":false}
+{"sequence":15793,"id":"wx-1bbdd43e69a5b60b","timestamp":"2026-08-07T02:05:41+08:00","sender":"清","side":"left","messageType":"文本","text":"商业平台还有闭源产品很多agent都用opencode","redacted":false}
+{"sequence":15794,"id":"wx-95979b3ea4de95aa","timestamp":"2026-08-07T02:05:41+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"我的主力现在是 pi","redacted":false}
+{"sequence":15795,"id":"wx-8a0be9c7ac53d123","timestamp":"2026-08-07T02:05:43+08:00","sender":"清","side":"left","messageType":"文本","text":"不知道为什么","redacted":false}
+{"sequence":15796,"id":"wx-6e74ac830652649e","timestamp":"2026-08-07T02:06:04+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"本来想用 dsh 当主力的 现在天天改动天天兼容太累了","redacted":false}
+{"sequence":15797,"id":"wx-d59f0448b2139372","timestamp":"2026-08-07T02:06:09+08:00","sender":"Chimney.","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15798,"id":"wx-29844a4dc23aa292","timestamp":"2026-08-07T02:06:24+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"内测你想稳定\n  ↳ 回复 Chimney.: 本来想用 dsh 当主力的 现在天天改动天天兼容太累了","redacted":false}
+{"sequence":15799,"id":"wx-149a592dce4a6087","timestamp":"2026-08-07T02:06:29+08:00","sender":"清","side":"left","messageType":"文本","text":"我司现在在做的项目就是pi内核然后从omp拿工具补[旺柴]","redacted":false}
+{"sequence":15800,"id":"wx-0bd4d51b3f9760f1","timestamp":"2026-08-07T02:06:30+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"等过段时间把","redacted":false}
+{"sequence":15801,"id":"wx-c206d86b2912a19d","timestamp":"2026-08-07T02:06:45+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"在搓了\n  ↳ 回复 凉粉:  [引用媒体]","redacted":true}
+{"sequence":15802,"id":"wx-b5835ae28d310d76","timestamp":"2026-08-07T02:06:47+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[旺柴]","redacted":false}
+{"sequence":15803,"id":"wx-4d6b0054e6c7ea07","timestamp":"2026-08-07T02:07:11+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"比较早\n  ↳ 回复 Laplaceyoung: 商业平台还有闭源产品很多agent都用opencode","redacted":false}
+{"sequence":15804,"id":"wx-e16434b4126a3bee","timestamp":"2026-08-07T02:07:11+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"大佬不拯救一下marisa吗","redacted":false}
+{"sequence":15805,"id":"wx-0c719269dc2b7aee","timestamp":"2026-08-07T02:07:51+08:00","sender":"清","side":"left","messageType":"文本","text":"阿里的mulerun minimax的minimaxhub之类的","redacted":false}
+{"sequence":15806,"id":"wx-05b02ca23af2c2ee","timestamp":"2026-08-07T02:08:05+08:00","sender":"清","side":"left","messageType":"文本","text":"一解包全是@opencode","redacted":false}
+{"sequence":15807,"id":"wx-2651ff0708349f0a","timestamp":"2026-08-07T02:08:12+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"我也是用自己写的","redacted":false}
+{"sequence":15808,"id":"wx-1404ebf778f461df","timestamp":"2026-08-07T02:08:18+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"但是维护得我好累","redacted":false}
+{"sequence":15809,"id":"wx-dbfe2c25549aeb9a","timestamp":"2026-08-07T02:09:00+08:00","sender":"每天都很饿","side":"left","messageType":"图片","text":"[图片] (local_id=15809)","redacted":false}
+{"sequence":15810,"id":"wx-46c25aacc440e68c","timestamp":"2026-08-07T02:09:18+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"[捂脸]\n  ↳ 回复 Laplaceyoung: 一解包全是@opencode","redacted":false}
+{"sequence":15811,"id":"wx-9677cd3a601da8b2","timestamp":"2026-08-07T02:11:42+08:00","sender":"黑","side":"left","messageType":"文本","text":"我的两个插件已经可以用了","redacted":false}
+{"sequence":15812,"id":"wx-ed1b8a81e6e513fa","timestamp":"2026-08-07T02:12:47+08:00","sender":"黑","side":"left","messageType":"文本","text":"https://github.com/dsh-external/dsh-message-edit\nhttps://github.com/dsh-external/dsh-prompt-studio","redacted":false}
+{"sequence":15813,"id":"wx-32222ab9f34e2cf9","timestamp":"2026-08-07T02:13:39+08:00","sender":"保持冷静","side":"left","messageType":"链接/文件","text":"404\n  ↳ 回复 黑: https://github.com/dsh-external/dsh-message-edit https://github.com/dsh-external/dsh-prompt-studio","redacted":false}
+{"sequence":15814,"id":"wx-906ca5032ebc2999","timestamp":"2026-08-07T02:14:06+08:00","sender":"黑","side":"left","messageType":"文本","text":"当然404","redacted":false}
+{"sequence":15815,"id":"wx-be409ad3732e50eb","timestamp":"2026-08-07T02:14:11+08:00","sender":"黑","side":"left","messageType":"文本","text":"有权就能看（","redacted":false}
+{"sequence":15816,"id":"wx-fd6e92be0726d44d","timestamp":"2026-08-07T02:14:22+08:00","sender":"黑","side":"left","messageType":"文本","text":"等着小黑鱼发权","redacted":false}
+{"sequence":15817,"id":"wx-510815df67ebdd94","timestamp":"2026-08-07T02:14:26+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"哦这是官方的吗","redacted":false}
+{"sequence":15818,"id":"wx-29b2cadf18647887","timestamp":"2026-08-07T02:14:49+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"我还以为你开源的呢。。。哈哈哈哈哈 那岂不是泄密了","redacted":false}
+{"sequence":15819,"id":"wx-97776c1aa1bca8a9","timestamp":"2026-08-07T02:15:00+08:00","sender":"只有你不在的a10","side":"left","messageType":"链接/文件","text":"通用的？\n  ↳ 回复 每天都很饿:  [引用媒体]","redacted":true}
+{"sequence":15820,"id":"wx-e1b0a9fa19d5cdce","timestamp":"2026-08-07T02:15:15+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"只要适配你自己工作流就好了","redacted":false}
+{"sequence":15821,"id":"wx-eb6f8a167b34b6eb","timestamp":"2026-08-07T02:15:52+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"通用的","redacted":false}
+{"sequence":15822,"id":"wx-f2de02217ac9d1e1","timestamp":"2026-08-07T02:16:07+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"现在进化太快了","redacted":false}
+{"sequence":15823,"id":"wx-58fa53b12792688b","timestamp":"2026-08-07T02:16:15+08:00","sender":null,"side":"system","messageType":"系统","text":"[系统] <sysmsg type=\"revokemsg\"><revokemsg><content>\"每天都很饿\" 撤回了一条消息</content><revoketime>0</revoketime></revokemsg></sysmsg>","redacted":true}
+{"sequence":15824,"id":"wx-52c0d2bc5889f8ac","timestamp":"2026-08-07T02:16:17+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"都是 tui","redacted":false}
+{"sequence":15825,"id":"wx-1cd5198ac06a3e91","timestamp":"2026-08-07T02:16:27+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"因为开源没有好的 gui  为主的 agent","redacted":false}
+{"sequence":15826,"id":"wx-93b7f1c770b1bfa7","timestamp":"2026-08-07T02:16:41+08:00","sender":"只有你不在的a10","side":"left","messageType":"文本","text":"我都是用orca啥的","redacted":false}
+{"sequence":15827,"id":"wx-8fadaa997d0f7078","timestamp":"2026-08-07T02:17:16+08:00","sender":"陈超群","side":"left","messageType":"文本","text":"这个gui感觉还不错。 https://github.com/makecindy/cindy","redacted":false}
+{"sequence":15828,"id":"wx-35d2b21dfa2df9d4","timestamp":"2026-08-07T02:17:46+08:00","sender":"清","side":"left","messageType":"文本","text":"taptap的","redacted":false}
+{"sequence":15829,"id":"wx-8ce1bc46117926f1","timestamp":"2026-08-07T02:20:41+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"有没有界面看看","redacted":false}
+{"sequence":15830,"id":"wx-d1bac5c9cb5b9eec","timestamp":"2026-08-07T02:20:44+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"不太想下","redacted":false}
+{"sequence":15831,"id":"wx-64c8ec417f42eabc","timestamp":"2026-08-07T02:21:49+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"他们 landing 页居然没有图","redacted":false}
+{"sequence":15832,"id":"wx-845938d834021ee1","timestamp":"2026-08-07T02:22:52+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"看了看，好丑","redacted":false}
+{"sequence":15833,"id":"wx-38d2a577905c7de0","timestamp":"2026-08-07T02:25:10+08:00","sender":"小庄","side":"left","messageType":"文本","text":"请教一下","redacted":false}
+{"sequence":15834,"id":"wx-7d4125d9279c7891","timestamp":"2026-08-07T02:25:22+08:00","sender":"小庄","side":"left","messageType":"文本","text":"之前群里是不是说过当 DeepSeek 出现大量感叹号","redacted":false}
+{"sequence":15835,"id":"wx-607e12f3207ef782","timestamp":"2026-08-07T02:25:27+08:00","sender":"小庄","side":"left","messageType":"文本","text":"就是降智了（","redacted":false}
+{"sequence":15836,"id":"wx-e7e60f2cde176dbc","timestamp":"2026-08-07T02:25:43+08:00","sender":"小小小小蒋","side":"left","messageType":"文本","text":"好像是","redacted":false}
+{"sequence":15837,"id":"wx-3e257224fbc3bf18","timestamp":"2026-08-07T02:25:54+08:00","sender":"Chimney.","side":"left","messageType":"链接/文件","text":"思维链出现很明显的左右脑互搏\n  ↳ 回复 小庄: 之前群里是不是说过当 DeepSeek 出现大量感叹号","redacted":false}
+{"sequence":15838,"id":"wx-2f3b955db0f43059","timestamp":"2026-08-07T02:25:59+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"加上判断力下降","redacted":false}
+{"sequence":15839,"id":"wx-888e54db5c0992d9","timestamp":"2026-08-07T02:26:13+08:00","sender":"Chimney.","side":"left","messageType":"图片","text":"[图片] (local_id=15839)","redacted":false}
+{"sequence":15840,"id":"wx-565b0f328887902c","timestamp":"2026-08-07T02:29:43+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"想问个问题 为什么你们喜欢用 tui","redacted":false}
+{"sequence":15841,"id":"wx-e5a620a69194344f","timestamp":"2026-08-07T02:30:03+08:00","sender":"清","side":"left","messageType":"文本","text":"轻","redacted":false}
+{"sequence":15842,"id":"wx-f782989ac982035b","timestamp":"2026-08-07T02:30:04+08:00","sender":"清","side":"left","messageType":"文本","text":"geek","redacted":false}
+{"sequence":15843,"id":"wx-84adc0afd190a509","timestamp":"2026-08-07T02:30:19+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"感觉并发上限没 gui 高","redacted":false}
+{"sequence":15844,"id":"wx-50b0167061f402c0","timestamp":"2026-08-07T02:30:31+08:00","sender":"云","side":"left","messageType":"文本","text":"这和并发有啥关系","redacted":false}
+{"sequence":15845,"id":"wx-9a890afdb17a2adb","timestamp":"2026-08-07T02:30:58+08:00","sender":"云","side":"left","messageType":"文本","text":"设计语言确实不一样","redacted":false}
+{"sequence":15846,"id":"wx-fe8c2d21bdd1f055","timestamp":"2026-08-07T02:31:24+08:00","sender":"云","side":"left","messageType":"文本","text":"TUI侧重信息展示 和 高效的快捷键","redacted":false}
+{"sequence":15847,"id":"wx-f9b12d93038b146c","timestamp":"2026-08-07T02:31:58+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"因为可读性等等 且如果单纯 tui 不配 cmux 这样 多窗口挺麻烦的吧","redacted":false}
+{"sequence":15848,"id":"wx-39fe8d4fd72c2c2c","timestamp":"2026-08-07T02:32:30+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"一定要配tmux","redacted":false}
+{"sequence":15849,"id":"wx-c2f7eb7602c8fcd4","timestamp":"2026-08-07T02:32:43+08:00","sender":"云","side":"left","messageType":"文本","text":"都用TUI了","redacted":false}
+{"sequence":15850,"id":"wx-c1773ec4c81af237","timestamp":"2026-08-07T02:33:05+08:00","sender":"云","side":"left","messageType":"文本","text":"大部分用户都有自己的配置啥的 而且终端是一套规范","redacted":false}
+{"sequence":15851,"id":"wx-5e866ab9c2696587","timestamp":"2026-08-07T02:33:06+08:00","sender":"清","side":"left","messageType":"文本","text":"多开几个终端页面不是什么难事吧","redacted":false}
+{"sequence":15852,"id":"wx-84d98ca6781c55aa","timestamp":"2026-08-07T02:33:11+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"Tmux的并发能力比gui高","redacted":false}
+{"sequence":15853,"id":"wx-24d8d94e865b5138","timestamp":"2026-08-07T02:33:14+08:00","sender":"云","side":"left","messageType":"文本","text":"session","redacted":false}
+{"sequence":15854,"id":"wx-c452c61a703e1f29","timestamp":"2026-08-07T02:33:18+08:00","sender":"清","side":"left","messageType":"文本","text":"kimicode 出了个/tower","redacted":false}
+{"sequence":15855,"id":"wx-077e69242c008983","timestamp":"2026-08-07T02:33:23+08:00","sender":"每天都很饿","side":"left","messageType":"链接/文件","text":"注意力太有限了\n  ↳ 回复 Laplaceyoung: 多开几个终端页面不是什么难事吧","redacted":false}
+{"sequence":15856,"id":"wx-90620a284825b15c","timestamp":"2026-08-07T02:33:27+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"几个gui支持分五六屏的","redacted":false}
+{"sequence":15857,"id":"wx-0656c7c537653fbb","timestamp":"2026-08-07T02:33:28+08:00","sender":"清","side":"left","messageType":"文本","text":"感觉本质dynamic workflow","redacted":false}
+{"sequence":15858,"id":"wx-be2aa24a033e13f3","timestamp":"2026-08-07T02:33:29+08:00","sender":"云","side":"left","messageType":"链接/文件","text":"你ssh这些呢\n  ↳ 回复 Laplaceyoung: 多开几个终端页面不是什么难事吧","redacted":false}
+{"sequence":15859,"id":"wx-e1abf01e10eb7b50","timestamp":"2026-08-07T02:33:31+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"需要减少信息","redacted":false}
+{"sequence":15860,"id":"wx-52be9f5db261edc1","timestamp":"2026-08-07T02:33:56+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"dsh现在subagent怎么实现的","redacted":false}
+{"sequence":15861,"id":"wx-62a6875ff6a765cc","timestamp":"2026-08-07T02:34:00+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"我比较关心这个","redacted":false}
+{"sequence":15862,"id":"wx-b753874142a62fc3","timestamp":"2026-08-07T02:34:02+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"一个有想象力的方向是，让agent决定你的tmux布局","redacted":false}
+{"sequence":15863,"id":"wx-0289ab170c5ff6f6","timestamp":"2026-08-07T02:34:12+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"genui青春版","redacted":false}
+{"sequence":15864,"id":"wx-c678816fd81ca5b6","timestamp":"2026-08-07T02:34:20+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"像如果用 raft tutti 并发肯定比 tui 高非常多","redacted":false}
+{"sequence":15865,"id":"wx-7f72abc676b596b8","timestamp":"2026-08-07T02:34:24+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"可惜没人做","redacted":false}
+{"sequence":15866,"id":"wx-95ee563dd71314b6","timestamp":"2026-08-07T02:34:25+08:00","sender":"云","side":"left","messageType":"文本","text":"cc很早就适配了tmux了吧","redacted":false}
+{"sequence":15867,"id":"wx-2e700e8c9cdc0761","timestamp":"2026-08-07T02:34:35+08:00","sender":"云","side":"left","messageType":"文本","text":"agent teams那时候","redacted":false}
+{"sequence":15868,"id":"wx-747efd5b3e7114fb","timestamp":"2026-08-07T02:34:51+08:00","sender":"清","side":"left","messageType":"链接/文件","text":"@卡比卡比\n  ↳ 回复 每天都很饿: 像如果用 raft tutti 并发肯定比 tui 高非常多","redacted":false}
+{"sequence":15869,"id":"wx-454ee8c4f18a3b4e","timestamp":"2026-08-07T02:35:05+08:00","sender":"Turtle🐢","side":"left","messageType":"链接/文件","text":"pi写点扩展可以实现tui raft\n  ↳ 回复 每天都很饿: 像如果用 raft tutti 并发肯定比 tui 高非常多","redacted":false}
+{"sequence":15870,"id":"wx-c720d3ac52564d71","timestamp":"2026-08-07T02:35:42+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"raft主要是一个ux上的信仰","redacted":false}
+{"sequence":15871,"id":"wx-65ebae1595075ee9","timestamp":"2026-08-07T02:35:45+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"codex也做plugins","redacted":false}
+{"sequence":15872,"id":"wx-a3a3a95936224b04","timestamp":"2026-08-07T02:35:52+08:00","sender":"Turtle🐢","side":"left","messageType":"文本","text":"并发不一定有tmux tui高","redacted":false}
+{"sequence":15873,"id":"wx-ca0ea3d8b1d3df83","timestamp":"2026-08-07T02:38:09+08:00","sender":"云","side":"left","messageType":"链接/文件","text":"tmux CLI就可以 agent框架适配一下就行 比如把subagent拉到tmux另一个panel\n  ↳ 回复 绝版小乌龟: 一个有想象力的方向是，让agent决定你的tmux布局","redacted":false}
+{"sequence":15874,"id":"wx-67a8773ef7a25450","timestamp":"2026-08-07T02:38:33+08:00","sender":"保持冷静","side":"left","messageType":"链接/文件","text":"这个好\n  ↳ 回复 云: [引用] tmux CLI就可以 agent框架适配一下就行 比如把subagent拉到tmux另一个panel","redacted":true}
+{"sequence":15875,"id":"wx-352a3ece8c529307","timestamp":"2026-08-07T02:39:06+08:00","sender":"云","side":"left","messageType":"文本","text":"甚至可以TUI自动化","redacted":false}
+{"sequence":15876,"id":"wx-faca438b1bc70f42","timestamp":"2026-08-07T02:39:37+08:00","sender":"云","side":"left","messageType":"文本","text":"自动化测试TUI 发送键盘事件 这些都是GUI不好做的东西","redacted":false}
+{"sequence":15877,"id":"wx-ff4a0dc39c72b737","timestamp":"2026-08-07T02:41:40+08:00","sender":"树","side":"left","messageType":"链接/文件","text":"是这样\n  ↳ 回复 Chimney.: 本来想用 dsh 当主力的 现在天天改动天天兼容太累了","redacted":false}
+{"sequence":15878,"id":"wx-b60674967f66d23a","timestamp":"2026-08-07T02:41:58+08:00","sender":"树","side":"left","messageType":"文本","text":"不想搞什么插件了","redacted":false}
+{"sequence":15879,"id":"wx-c2ff76138514141f","timestamp":"2026-08-07T02:42:01+08:00","sender":"云","side":"left","messageType":"文本","text":"但是服务群体确实不是一类人","redacted":false}
+{"sequence":15880,"id":"wx-7df7b4643599a451","timestamp":"2026-08-07T02:42:20+08:00","sender":"云","side":"left","messageType":"文本","text":"以后就会有DSH整合包了[奸笑]","redacted":false}
+{"sequence":15881,"id":"wx-b5a34a634059a615","timestamp":"2026-08-07T02:42:27+08:00","sender":"树","side":"left","messageType":"文本","text":"做一些简单的小修补吧","redacted":false}
+{"sequence":15882,"id":"wx-3787a57a3125360b","timestamp":"2026-08-07T02:43:17+08:00","sender":"云","side":"left","messageType":"文本","text":"在agent领域玩到MC了属于是","redacted":false}
+{"sequence":15883,"id":"wx-45adde6c25d216a9","timestamp":"2026-08-07T02:43:40+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"@云 fabric已经写好了\n  ↳ 回复 云: 在agent领域玩到MC了属于是","redacted":false}
+{"sequence":15884,"id":"wx-1d13703a6ebc04ba","timestamp":"2026-08-07T02:44:22+08:00","sender":"云","side":"left","messageType":"文本","text":"谁整一个neoforge","redacted":false}
+{"sequence":15885,"id":"wx-ec254993dcb8ddfd","timestamp":"2026-08-07T02:44:58+08:00","sender":"树","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15886,"id":"wx-202d4d7ae72553cf","timestamp":"2026-08-07T02:47:22+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"会有分家产的事情吗\n  ↳ 回复: 谁整一个neoforge","redacted":false}
+{"sequence":15887,"id":"wx-22f830c649b7d9fb","timestamp":"2026-08-07T02:47:27+08:00","sender":"黑","side":"left","messageType":"文本","text":"笑","redacted":false}
+{"sequence":15888,"id":"wx-da6a8549cf220fa5","timestamp":"2026-08-07T02:47:56+08:00","sender":"云","side":"left","messageType":"文本","text":"那我支持neoforge","redacted":false}
+{"sequence":15889,"id":"wx-02061b9bfd3ef958","timestamp":"2026-08-07T02:47:57+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"我GPU渲染网页都卡\n  ↳ 回复: 想问个问题 为什么你们喜欢用 tui","redacted":false}
+{"sequence":15890,"id":"wx-cea7e9a0c912066c","timestamp":"2026-08-07T02:48:06+08:00","sender":"黑","side":"left","messageType":"文本","text":"你说我为什么用TUI","redacted":false}
+{"sequence":15891,"id":"wx-9f5d2ecf0aed28c9","timestamp":"2026-08-07T02:48:14+08:00","sender":"云","side":"left","messageType":"文本","text":"tui还有一个点就是远程真的方便","redacted":false}
+{"sequence":15892,"id":"wx-7413729524a642c3","timestamp":"2026-08-07T02:48:16+08:00","sender":"1900","side":"left","messageType":"文本","text":"openai也出插件了","redacted":false}
+{"sequence":15893,"id":"wx-bc94d03efad74a03","timestamp":"2026-08-07T02:48:19+08:00","sender":"云","side":"left","messageType":"文本","text":"gui要客户端渲染","redacted":false}
+{"sequence":15894,"id":"wx-9f2d2d3f9b655854","timestamp":"2026-08-07T02:48:22+08:00","sender":"1900","side":"left","messageType":"链接/文件","text":"[链接] Agent Plugin标准上线","redacted":false}
+{"sequence":15895,"id":"wx-e6122eab506f5fd8","timestamp":"2026-08-07T02:48:36+08:00","sender":"黑","side":"left","messageType":"图片","text":"[图片] (local_id=15895)","redacted":false}
+{"sequence":15896,"id":"wx-f6d62a6d7bb6fe9c","timestamp":"2026-08-07T02:48:47+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"是的\n  ↳ 回复 1900: openai也出插件了","redacted":false}
+{"sequence":15897,"id":"wx-7f1916ee99e873a3","timestamp":"2026-08-07T02:49:02+08:00","sender":"保持冷静","side":"left","messageType":"链接/文件","text":"这好啊\n  ↳ 回复 1900: wxid_pm8jd7l63y2122:  [引用] Agent Plugin标准上线","redacted":true}
+{"sequence":15898,"id":"wx-1293758196faba0d","timestamp":"2026-08-07T02:49:08+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"省了太多事了","redacted":false}
+{"sequence":15899,"id":"wx-8d7d3e9ee670f3b8","timestamp":"2026-08-07T02:49:11+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"哎\n  ↳ 回复: wxid_pm8jd7l63y2122:  [引用] Agent Plugin标准上线","redacted":true}
+{"sequence":15900,"id":"wx-81db4239f6dc84f4","timestamp":"2026-08-07T02:49:23+08:00","sender":"1900","side":"left","messageType":"文本","text":"看看国内其他家会不会适配吧","redacted":false}
+{"sequence":15901,"id":"wx-a8f9c427e0023b3a","timestamp":"2026-08-07T02:49:23+08:00","sender":"云","side":"left","messageType":"链接/文件","text":"开服神器\n  ↳ 回复 黑: wxid_o39zyo52lr1w22:  [引用媒体]","redacted":true}
+{"sequence":15902,"id":"wx-133b7cbdacb41871","timestamp":"2026-08-07T02:49:25+08:00","sender":"1900","side":"left","messageType":"文本","text":"包括cc","redacted":false}
+{"sequence":15903,"id":"wx-52b092cfaf7edff3","timestamp":"2026-08-07T02:49:48+08:00","sender":"小小小小蒋","side":"left","messageType":"链接/文件","text":"有一个差不多的\n  ↳ 回复 黑: wxid_o39zyo52lr1w22:  [引用媒体]","redacted":true}
+{"sequence":15904,"id":"wx-1507bf7a06ac6ca3","timestamp":"2026-08-07T02:50:06+08:00","sender":"小小小小蒋","side":"left","messageType":"图片","text":"[图片] (local_id=15904)","redacted":false}
+{"sequence":15905,"id":"wx-db20b4ce58d2d3d6","timestamp":"2026-08-07T02:50:08+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"有没有人试过 codex 新的压缩机制","redacted":false}
+{"sequence":15906,"id":"wx-1c2363780fb887c3","timestamp":"2026-08-07T02:50:12+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"效果咋样","redacted":false}
+{"sequence":15907,"id":"wx-f0557998419ca9bb","timestamp":"2026-08-07T02:50:24+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"CC会不会跟进","redacted":false}
+{"sequence":15908,"id":"wx-0b6f8789642085fa","timestamp":"2026-08-07T02:51:25+08:00","sender":"海綿爆爆","side":"left","messageType":"文本","text":"codex属于服务端压缩吧","redacted":false}
+{"sequence":15909,"id":"wx-06c21d4b4fbabfae","timestamp":"2026-08-07T02:51:36+08:00","sender":"清","side":"left","messageType":"链接/文件","text":"yes\n  ↳ 回复 海綿爆爆: codex属于服务端压缩吧","redacted":false}
+{"sequence":15910,"id":"wx-677e504112633614","timestamp":"2026-08-07T02:51:42+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"codex 做了个不压缩的压缩","redacted":false}
+{"sequence":15911,"id":"wx-98afdee8a9fa3323","timestamp":"2026-08-07T02:52:14+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"好像是依赖 agent 边工作边写文档，到了阈值就把文档作为新窗口的初始上下文","redacted":false}
+{"sequence":15912,"id":"wx-787e89332ffd83c6","timestamp":"2026-08-07T02:52:52+08:00","sender":"Chimney.","side":"left","messageType":"链接/文件","text":"pi有个扩展和这个机制差不多\n  ↳ 回复 每天都很饿: 好像是依赖 agent 边工作边写文档，到了阈值就把文档作为新窗口的初始上下文","redacted":false}
+{"sequence":15913,"id":"wx-822324b527f9f67e","timestamp":"2026-08-07T02:53:16+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"observer什么什么的","redacted":false}
+{"sequence":15914,"id":"wx-0200bd8155352aea","timestamp":"2026-08-07T02:53:29+08:00","sender":"云","side":"left","messageType":"链接/文件","text":"这不就是handoff么\n  ↳ 回复 每天都很饿: codex 做了个不压缩的压缩","redacted":false}
+{"sequence":15915,"id":"wx-e80d02c7fa4d06ec","timestamp":"2026-08-07T02:54:23+08:00","sender":"每天都很饿","side":"left","messageType":"文本","text":"差不多","redacted":false}
+{"sequence":15916,"id":"wx-565423c268bfbf07","timestamp":"2026-08-07T02:54:31+08:00","sender":"云","side":"left","messageType":"文本","text":"cc/codex 我一般都不用自动压缩 我会自己让他handoff 这种可控一些","redacted":false}
+{"sequence":15917,"id":"wx-a0d8302f20fa8705","timestamp":"2026-08-07T02:55:22+08:00","sender":"黑","side":"left","messageType":"图片","text":"[图片] (local_id=15917)","redacted":false}
+{"sequence":15918,"id":"wx-da357fa0409573ae","timestamp":"2026-08-07T02:55:23+08:00","sender":"黑","side":"left","messageType":"文本","text":"？","redacted":false}
+{"sequence":15919,"id":"wx-db9be4aaa10fb22a","timestamp":"2026-08-07T02:55:30+08:00","sender":"黑","side":"left","messageType":"文本","text":"什么叫rate limit了","redacted":false}
+{"sequence":15920,"id":"wx-18f4383f2a85b8b4","timestamp":"2026-08-07T02:55:39+08:00","sender":"黑","side":"left","messageType":"文本","text":"不是500并发吗","redacted":false}
+{"sequence":15921,"id":"wx-e5f36078ec1cc835","timestamp":"2026-08-07T02:55:47+08:00","sender":"黑","side":"left","messageType":"文本","text":"[疑问]难道降低了？","redacted":false}
+{"sequence":15922,"id":"wx-9c841d5b965e2329","timestamp":"2026-08-07T02:55:48+08:00","sender":"云","side":"left","messageType":"文本","text":"2500","redacted":false}
+{"sequence":15923,"id":"wx-f3406322af343b65","timestamp":"2026-08-07T02:56:11+08:00","sender":"云","side":"left","messageType":"文本","text":"500是pro的","redacted":false}
+{"sequence":15924,"id":"wx-379f629eae11ddab","timestamp":"2026-08-07T02:56:28+08:00","sender":"云","side":"left","messageType":"文本","text":"你是官key还是opencode go","redacted":false}
+{"sequence":15925,"id":"wx-091a260c1097407f","timestamp":"2026-08-07T02:57:09+08:00","sender":"云","side":"left","messageType":"文本","text":"我之前见过一个网友用了半天 才发现用的是opencode内置的free的Flash","redacted":false}
+{"sequence":15926,"id":"wx-c18654b95afe910f","timestamp":"2026-08-07T03:00:18+08:00","sender":"保持冷静","side":"left","messageType":"图片","text":"[图片] (local_id=15926)","redacted":false}
+{"sequence":15927,"id":"wx-de99a5686ac886e1","timestamp":"2026-08-07T03:00:23+08:00","sender":"保持冷静","side":"left","messageType":"文本","text":"晚安💤哈哈哈","redacted":false}
+{"sequence":15928,"id":"wx-24c5238156f1eea1","timestamp":"2026-08-07T03:01:11+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"我也做过这种事情\n  ↳ 回复: 我之前见过一个网友用了半天 才发现用的是opencode内置的free的Flash","redacted":false}
+{"sequence":15929,"id":"wx-3263b759192abd1a","timestamp":"2026-08-07T03:01:13+08:00","sender":"黑","side":"left","messageType":"文本","text":"笑死我了","redacted":false}
+{"sequence":15930,"id":"wx-21f20a6a8bffd192","timestamp":"2026-08-07T03:01:17+08:00","sender":"黑","side":"left","messageType":"文本","text":"我说怎么api不扣钱","redacted":false}
+{"sequence":15931,"id":"wx-498d6b897ccc5768","timestamp":"2026-08-07T03:01:46+08:00","sender":"清","side":"left","messageType":"文本","text":"go的v4好像只有600k上下文","redacted":false}
+{"sequence":15932,"id":"wx-14fe45a45c7f9c58","timestamp":"2026-08-07T03:02:06+08:00","sender":"树","side":"left","messageType":"文本","text":"那是免费的吧","redacted":false}
+{"sequence":15933,"id":"wx-39c1884dbb524ad7","timestamp":"2026-08-07T03:02:48+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"笑死","redacted":false}
+{"sequence":15934,"id":"wx-690021453e96f580","timestamp":"2026-08-07T03:03:20+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"链接/文件","text":"来自上天的token馈赠\n  ↳ 回复 黑: 我说怎么api不扣钱","redacted":false}
+{"sequence":15935,"id":"wx-4d85ae94c7cdb948","timestamp":"2026-08-07T03:04:13+08:00","sender":"云","side":"left","messageType":"文本","text":"opencode那个模型配置真的逆天","redacted":false}
+{"sequence":15936,"id":"wx-1365d3f4174aab02","timestamp":"2026-08-07T03:04:20+08:00","sender":"云","side":"left","messageType":"文本","text":"我承认我自己配置不明白","redacted":false}
+{"sequence":15937,"id":"wx-fc1a7972b9457c2c","timestamp":"2026-08-07T03:04:36+08:00","sender":"云","side":"left","messageType":"文本","text":"特别是模型选择的时候","redacted":false}
+{"sequence":15938,"id":"wx-4fe7f8ccaebff7b4","timestamp":"2026-08-07T03:09:30+08:00","sender":"黑","side":"left","messageType":"视频","text":"[视频]\n[引用媒体]","redacted":true}
+{"sequence":15939,"id":"wx-ca6dc1d3f354d5bd","timestamp":"2026-08-07T03:09:36+08:00","sender":"黑","side":"left","messageType":"文本","text":"太奶了","redacted":false}
+{"sequence":15940,"id":"wx-3204360b6a50d413","timestamp":"2026-08-07T03:09:38+08:00","sender":"黑","side":"left","messageType":"文本","text":"deepseek","redacted":false}
+{"sequence":15941,"id":"wx-4ba5f33737110a72","timestamp":"2026-08-07T03:10:02+08:00","sender":"黑","side":"left","messageType":"文本","text":"deepsuck都来了","redacted":false}
+{"sequence":15942,"id":"wx-422ae998c6dd2c17","timestamp":"2026-08-07T03:12:33+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[捂脸]","redacted":false}
+{"sequence":15943,"id":"wx-54087f3cbd95d894","timestamp":"2026-08-07T03:12:39+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"怎么反应这么慢","redacted":false}
+{"sequence":15944,"id":"wx-15b4fc1ffc15736e","timestamp":"2026-08-07T03:12:54+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"[旺柴]第一声没有识别吗","redacted":false}
+{"sequence":15945,"id":"wx-acb42d241c925db9","timestamp":"2026-08-07T03:13:31+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"用的那个语音项目怪怪的\n  ↳ 回复 mattheliu(夏目贵志)คิดถึง: [旺柴]第一声没有识别吗","redacted":false}
+{"sequence":15946,"id":"wx-46d2759558cea9b8","timestamp":"2026-08-07T03:13:39+08:00","sender":"黑","side":"left","messageType":"文本","text":"修了好久","redacted":false}
+{"sequence":15947,"id":"wx-b65666ede6a48b21","timestamp":"2026-08-07T03:13:48+08:00","sender":"黑","side":"left","messageType":"文本","text":"树莓派感觉不太行","redacted":false}
+{"sequence":15948,"id":"wx-b5ac473e4c3d70d7","timestamp":"2026-08-07T03:13:56+08:00","sender":"黑","side":"left","messageType":"文本","text":"按理说算力溢出了","redacted":false}
+{"sequence":15949,"id":"wx-6ad9c66b21cc1381","timestamp":"2026-08-07T03:14:09+08:00","sender":"夏目贵志 คิดถึง","side":"left","messageType":"文本","text":"dsh重写一个[旺柴]","redacted":false}
+{"sequence":15950,"id":"wx-a9fd2cec68b2b023","timestamp":"2026-08-07T03:21:01+08:00","sender":"黑","side":"left","messageType":"图片","text":"[图片] (local_id=15950)","redacted":false}
+{"sequence":15951,"id":"wx-ea7daffc3488fcdb","timestamp":"2026-08-07T03:21:07+08:00","sender":"黑","side":"left","messageType":"文本","text":"人类要完蛋了","redacted":false}
+{"sequence":15952,"id":"wx-ef1a011bdf28b5ca","timestamp":"2026-08-07T03:21:07+08:00","sender":"黑","side":"left","messageType":"图片","text":"[图片] (local_id=15952)","redacted":false}
+{"sequence":15953,"id":"wx-83300b89cba4af94","timestamp":"2026-08-07T03:29:27+08:00","sender":"Chimney.","side":"left","messageType":"文本","text":"我服了 新版本之后 dsh-cc 打不开了","redacted":false}
+{"sequence":15954,"id":"wx-873461f4afa9866b","timestamp":"2026-08-07T03:29:30+08:00","sender":"Chimney.","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15955,"id":"wx-0dc266f28a559e1d","timestamp":"2026-08-07T03:31:09+08:00","sender":"黑","side":"left","messageType":"链接/文件","text":"插件注册表系统换了\n  ↳ 回复: 我服了 新版本之后 dsh-cc 打不开了","redacted":false}
+{"sequence":15956,"id":"wx-582c9761babb63dd","timestamp":"2026-08-07T03:56:50+08:00","sender":"nɘƨoЯ","side":"left","messageType":"图片","text":"[图片] (local_id=15956)","redacted":false}
+{"sequence":15957,"id":"wx-38a55a66929e500d","timestamp":"2026-08-07T03:57:00+08:00","sender":"nɘƨoЯ","side":"left","messageType":"文本","text":"我也收到了","redacted":false}
+{"sequence":15958,"id":"wx-e230add4e9791da4","timestamp":"2026-08-07T03:57:07+08:00","sender":"Starduster","side":"left","messageType":"文本","text":"v4p","redacted":false}
+{"sequence":15959,"id":"wx-5e4e45871a034851","timestamp":"2026-08-07T03:57:10+08:00","sender":"Starduster","side":"left","messageType":"文本","text":"when","redacted":false}
+{"sequence":15960,"id":"wx-bfe0bb13fe8d7d39","timestamp":"2026-08-07T04:14:05+08:00","sender":"云","side":"left","messageType":"链接/文件","text":"maybe not today maybe not tomorrow maybe not next mouth but one day\n  ↳ 回复 Starduster: when","redacted":false}
+{"sequence":15961,"id":"wx-188384c0320d3aa9","timestamp":"2026-08-07T04:20:50+08:00","sender":"Kevin 汉堡 🍔","side":"left","messageType":"表情","text":"[表情]","redacted":false}
+{"sequence":15962,"id":"wx-3760e2c77ddbcac5","timestamp":"2026-08-07T06:10:03+08:00","sender":"树","side":"left","messageType":"表情","text":"[表情]","redacted":false}

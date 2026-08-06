@@ -78,8 +78,10 @@ for (const name of snapshotNames) {
 }
 
 const sitePath = path.join(siteDir, "index.html");
+const faviconPath = path.join(siteDir, "favicon.png");
 const guidePath = path.join(contentDir, "newcomer-guide.json");
 await assertReadable(sitePath, "缺少唯一站点外壳 site/index.html");
+await assertReadable(faviconPath, "缺少站点图标 site/favicon.png");
 await assertReadable(guidePath, "缺少新人导引数据 content/newcomer-guide.json");
 const siteHtml = await readFile(sitePath, "utf8");
 const guideText = await readFile(guidePath, "utf8");
@@ -87,6 +89,9 @@ assertPublishable(siteHtml, "site/index.html");
 assertPublishable(guideText, "content/newcomer-guide.json");
 if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide"') || !siteHtml.includes("/data/manifest.json")) {
   throw new Error("站点外壳缺少日期切换或新人导引入口");
+}
+if (!siteHtml.includes('rel="icon"') || !siteHtml.includes('/favicon.png?v=20260806')) {
+  throw new Error("站点外壳缺少指定 favicon");
 }
 if (!siteHtml.includes('fetch("/data/newcomer-guide.json"') || !siteHtml.includes("固定内容 · 不随日期切换")) {
   throw new Error("新人导引必须使用独立的全局内容源，并明确不随日期切换");
@@ -122,6 +127,7 @@ if (process.argv.includes("--check")) {
 await rm(output, { recursive: true, force: true });
 await mkdir(dataOutput, { recursive: true });
 await copyFile(sitePath, path.join(output, "index.html"));
+await copyFile(faviconPath, path.join(output, "favicon.png"));
 for (const name of snapshotNames) await copyFile(path.join(snapshotsDir, name), path.join(dataOutput, name));
 await copyFile(guidePath, path.join(dataOutput, "newcomer-guide.json"));
 

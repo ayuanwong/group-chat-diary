@@ -1,3 +1,5 @@
+import { handleQaAsk, qaStatus, type ModelFetch } from "./qa";
+
 const SESSION_COOKIE = "__Host-portal_session";
 const STATE_COOKIE = "__Host-portal_oauth_state";
 const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
@@ -8,6 +10,9 @@ type GitHubFetch = (input: RequestInfo | URL, init?: RequestInit) => Promise<Res
 
 export interface WorkerEnv extends Env {
   ASSETS: Fetcher;
+  QA_DB: D1Database;
+  DEEPSEEK_API_KEY: string;
+  DEEPSEEK_MODEL?: string;
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
   GITHUB_WEBHOOK_SECRET: string;
@@ -373,7 +378,10 @@ async function handleOAuthCallback(request: Request, env: WorkerEnv, githubFetch
   return redirect(`${origin}/`, 303, [clearState, cookie(SESSION_COOKIE, session, SESSION_TTL_SECONDS)]);
 }
 
-export function createHandler(githubFetch: GitHubFetch = fetch): (request: Request, env: WorkerEnv) => Promise<Response> {
+export function createHandler(
+  githubFetch: GitHubFetch = fetch,
+  modelFetch: ModelFetch = fetch,
+): (request: Request, env: WorkerEnv) => Promise<Response> {
   return async (request: Request, env: WorkerEnv): Promise<Response> => {
     const url = new URL(request.url);
     const origin = siteOrigin(env);
@@ -414,10 +422,6 @@ export function createHandler(githubFetch: GitHubFetch = fetch): (request: Reque
       ]);
     }
 
-    if (request.method !== "GET" && request.method !== "HEAD") {
-      return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
-    }
-
     const sessionToken = parseCookies(request).get(SESSION_COOKIE);
     const session = sessionToken ? await verifySession(sessionToken, env.SESSION_SECRET) : null;
     if (!session) return redirect(`${origin}/login`);
@@ -432,7 +436,19 @@ export function createHandler(githubFetch: GitHubFetch = fetch): (request: Reque
       return loginPage("当前 GitHub 账户已不在获准成员名单中。", [cookie(SESSION_COOKIE, "", 0)]);
     }
 
-    if (url.pathname === "/api/me") return jsonResponse({ login: session.login });
+    if (url.pathname === "/api/me") {
+      if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+      return jsonResponse({ login: session.login });
+    }
+    if (url.pathname === "/api/qa/status") {
+      if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+      return qaStatus(env);
+    }
+    if (url.pathname === "/api/ask") return handleQaAsk(request, env, session.githubId, modelFetch);
+
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+    }
 
     const assetResponse = await env.ASSETS.fetch(request);
     const headers = securityHeaders(new Headers(assetResponse.headers));

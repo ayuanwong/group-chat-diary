@@ -15,12 +15,83 @@ function makeAccessDb(allowedIds = [123], writes: unknown[][] = []): D1Database 
   } as unknown as D1Database;
 }
 
-function makeEnv(assetBody = "SECRET ARCHIVE", allowedIds = [123]): WorkerEnv {
+function makeQaDb(requestCount = 1): D1Database {
+  const meta = [
+    { key: "active_sync_id", value: "test-sync" },
+    { key: "message_count", value: "13078" },
+    { key: "issue_count", value: "357" },
+    { key: "group_date_count", value: "7" },
+    { key: "latest_group_date", value: "2026-08-06" },
+    { key: "latest_issue_date", value: "2026-08-06" },
+    { key: "synced_at", value: "2026-08-06T08:00:00.000Z" },
+  ];
+  const group = {
+    document_key: "test-sync:g:message-1",
+    kind: "group",
+    source_date: "2026-08-06",
+    position: 13_077,
+    occurred_at: "2026-08-06T00:18:00+08:00",
+    sender: "Baymax",
+    title: null,
+    url: null,
+    state: null,
+    category: null,
+    priority: null,
+    is_changelog: 1,
+    excerpt: "DeepSeek Harness Changelog 2026-08-05",
+    content: "DeepSeek Harness Changelog 2026-08-05 ✨ 新增 🐛 修复 🎨 优化",
+    fts_rank: -1,
+  };
+  const issue = {
+    document_key: "test-sync:i:357",
+    kind: "issue",
+    source_date: "2026-08-06",
+    position: 356,
+    occurred_at: "2026-08-06T06:43:00Z",
+    sender: null,
+    title: "#357 · 停止生成时引导消息被静默销毁",
+    url: "https://github.com/dsh-external/issues/issues/357",
+    state: "open",
+    category: "bug修复",
+    priority: 5,
+    is_changelog: 0,
+    excerpt: "停止生成时引导消息无法找回。",
+    content: "#357 停止生成 引导消息 静默销毁",
+    fts_rank: -0.5,
+  };
+  return {
+    prepare: vi.fn((sql: string) => {
+      let values: unknown[] = [];
+      const statement = {
+        bind: vi.fn((...nextValues: unknown[]) => {
+          values = nextValues;
+          return statement;
+        }),
+        first: vi.fn(async () => sql.includes("qa_rate_limits") ? { request_count: requestCount } : null),
+        all: vi.fn(async () => {
+          if (sql.includes("qa_corpus_meta")) return { results: meta };
+          if (sql.includes("qa_corpus_fts")) return { results: values[2] === "group" ? [group] : [issue] };
+          if (sql.includes("is_changelog = 1")) return { results: [group] };
+          if (sql.includes("position BETWEEN")) {
+            return { results: [{ occurred_at: group.occurred_at, sender: group.sender, content: group.content }] };
+          }
+          return { results: [] };
+        }),
+      };
+      return statement;
+    }),
+  } as unknown as D1Database;
+}
+
+function makeEnv(assetBody = "SECRET ARCHIVE", allowedIds = [123], requestCount = 1): WorkerEnv {
   return {
     ACCESS_DB: makeAccessDb(allowedIds),
+    QA_DB: makeQaDb(requestCount),
     ASSETS: {
       fetch: vi.fn(async () => new Response(assetBody, { headers: { "Cache-Control": "public" } })),
     } as unknown as Fetcher,
+    DEEPSEEK_API_KEY: "test-deepseek-key",
+    DEEPSEEK_MODEL: "deepseek-v4-flash",
     GITHUB_CLIENT_ID: "test-client-id",
     GITHUB_CLIENT_SECRET: "test-client-secret",
     GITHUB_WEBHOOK_SECRET: "test-webhook-secret",
@@ -98,6 +169,18 @@ describe("archive gate", () => {
     expect(env.ASSETS.fetch).not.toHaveBeenCalled();
   });
 
+  it("keeps the Q&A routes behind the same signed member session", async () => {
+    const modelFetch = vi.fn();
+    const env = makeEnv();
+    const response = await createHandler(fetch, modelFetch)(
+      new Request(`${env.SITE_ORIGIN}/api/ask`, { method: "POST", body: "{}" }),
+      env,
+    );
+    expect(response.status).toBe(302);
+    expect(response.headers.get("Location")).toBe(`${env.SITE_ORIGIN}/login`);
+    expect(modelFetch).not.toHaveBeenCalled();
+  });
+
   it("revokes an existing session when the member leaves the allowlist", async () => {
     const env = makeEnv("SECRET ARCHIVE", []);
     const token = await signSession(
@@ -111,6 +194,76 @@ describe("archive gate", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("Set-Cookie")).toContain("Max-Age=0");
     expect(env.ASSETS.fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("protected DeepSeek Q&A", () => {
+  async function authenticatedRequest(env: WorkerEnv, pathname: string, init?: RequestInit): Promise<Request> {
+    const token = await signSession(
+      { version: 2, githubId: 123, login: "member", exp: Math.floor(Date.now() / 1000) + 300 },
+      env.SESSION_SECRET,
+    );
+    const headers = new Headers(init?.headers);
+    headers.set("Cookie", `__Host-portal_session=${token}`);
+    return new Request(`${env.SITE_ORIGIN}${pathname}`, { ...init, headers });
+  }
+
+  it("reports only private group and Issue corpus readiness", async () => {
+    const env = makeEnv();
+    const response = await createHandler()(await authenticatedRequest(env, "/api/qa/status"), env);
+    expect(response.status).toBe(200);
+    const body = await response.json() as Record<string, unknown>;
+    expect(body).toMatchObject({
+      deepseekReady: true,
+      model: "deepseek-v4-flash",
+      corpus: { messageCount: 13_078, issueCount: 357 },
+      localOnly: false,
+    });
+    expect(body).not.toHaveProperty("webReady");
+  });
+
+  it("streams a cited answer from DeepSeek without exposing the API key", async () => {
+    const env = makeEnv();
+    const upstream = [
+      'data: {"choices":[{"delta":{"content":"已完成更新 [G1]"}}]}',
+      'data: {"choices":[],"usage":{"total_tokens":42}}',
+      "data: [DONE]",
+      "",
+    ].join("\n\n");
+    const modelFetch = vi.fn(async () => new Response(upstream, {
+      status: 200,
+      headers: { "Content-Type": "text/event-stream" },
+    }));
+    const request = await authenticatedRequest(env, "/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: "最近版本更新", history: [] }),
+    });
+    const response = await createHandler(fetch, modelFetch)(request, env);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Content-Type")).toContain("text/event-stream");
+    const body = await response.text();
+    expect(body).toContain("event: meta");
+    expect(body).toContain('"kind":"group"');
+    expect(body).toContain('"kind":"issue"');
+    expect(body).toContain("已完成更新 [G1]");
+    expect(body).toContain("event: done");
+    expect(body).not.toContain(env.DEEPSEEK_API_KEY);
+    expect(modelFetch).toHaveBeenCalledOnce();
+  });
+
+  it("rate-limits an authenticated member before contacting DeepSeek", async () => {
+    const env = makeEnv("SECRET ARCHIVE", [123], 21);
+    const modelFetch = vi.fn();
+    const request = await authenticatedRequest(env, "/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: "最近版本更新" }),
+    });
+    const response = await createHandler(fetch, modelFetch)(request, env);
+    expect(response.status).toBe(429);
+    expect(response.headers.get("Retry-After")).toBe("600");
+    expect(modelFetch).not.toHaveBeenCalled();
   });
 });
 

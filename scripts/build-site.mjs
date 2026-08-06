@@ -109,7 +109,7 @@ if (!siteHtml.includes('id="accountLogin"') || !siteHtml.includes('fetch("/api/m
   throw new Error("顶部导航必须显示当前 GitHub 账户并提供退出入口");
 }
 if (!siteHtml.includes('id="qaConsole"') || !siteHtml.includes('id="qaForm"') || !siteHtml.includes('fetch("/api/ask"')) {
-  throw new Error("今日最新顶部必须保留本地检索问答入口");
+  throw new Error("今日最新顶部必须保留检索问答入口");
 }
 if (!siteHtml.includes('[...(state.group?.chronicles ?? [])].sort((left, right) =>')) {
   throw new Error("纪事必须按时间倒序渲染");

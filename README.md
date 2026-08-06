@@ -140,7 +140,14 @@
 - 问答框位于“今日最新”顶部，先在私有 `corpus/` 中检索完整群聊和最新 Issue，再把本轮命中的少量片段交给 DeepSeek；
 - 复制 `.qa.local.env.example` 为不会被 Git 提交的 `.qa.local.env`，填写 `DEEPSEEK_API_KEY`；
 - 当前默认模型为 `deepseek-v4-flash`，可通过 `DEEPSEEK_MODEL` 覆盖；Key 只由绑定在 `127.0.0.1` 的本机服务读取，不会进入浏览器、构建产物或仓库；
-- 执行 `npm run dev:qa` 后访问终端显示的本地地址。此分支只用于本地验收，不会自动部署到 Cloudflare Pages。
+- 执行 `npm run dev:qa` 后访问终端显示的本地地址；该命令只启动本地预览，不会触发 Cloudflare 部署。
+
+## 线上问答
+
+- 线上 `/api/qa/status` 与 `/api/ask` 复用 GitHub 身份和组织成员白名单门禁，匿名请求无法读取状态、语料或调用模型；
+- 完整群聊与 Issue 由 `npm run sync:qa-corpus` 原子同步到独立的私有 D1 `QA_DB`，不会进入 `dist`，也不会作为静态文件提供下载；
+- DeepSeek Key 只以 Cloudflare Pages 加密 Secret `DEEPSEEK_API_KEY` 保存。Worker 每轮只发送检索命中的少量片段，并按 GitHub 用户限制为每 10 分钟 20 次提问；
+- 首次部署先执行 `npm run migrate:qa` 与 `npm run sync:qa-corpus`，之后每日语料刷新完成后再次运行 `npm run sync:qa-corpus`。
 
 ## 文件命名与保留
 

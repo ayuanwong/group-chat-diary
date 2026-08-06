@@ -47,4 +47,10 @@ if [[ -f "$PREVIOUS_FILE" ]]; then
 fi
 python3 "$SITE_REPO/scripts/build_snapshot_json.py" "${snapshot_args[@]}"
 
+cd "$SITE_REPO"
+npm run export:corpus -- \
+  --group "$RAW_MESSAGES" \
+  --issues "$SOURCE_REPO/issues.json" \
+  --date "$BEIJING_DATE"
+
 echo "已生成待发布网站快照：$OUTPUT_FILE"

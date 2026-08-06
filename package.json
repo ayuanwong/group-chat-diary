@@ -7,6 +7,7 @@
     "build": "node scripts/build-site.mjs",
     "migrate:legacy": "node scripts/migrate-legacy-site.mjs",
     "refresh:snapshot": "bash scripts/refresh_site_snapshot.sh",
+    "export:corpus": "node scripts/export_private_corpus.mjs",
     "sync:members": "node scripts/sync_members_allowlist.mjs",
     "migrate:access": "wrangler d1 migrations apply ACCESS_DB --remote",
     "check": "node scripts/build-site.mjs --check",

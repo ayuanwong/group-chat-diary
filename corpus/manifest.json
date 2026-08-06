@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "group": "【官方】DSH内测群",
+  "access": "private-repository-only",
+  "updatedAt": "2026-08-06T07:42:41.855Z",
+  "groupChat": {
+    "format": "jsonl",
+    "dates": [
+      {
+        "date": "2026-07-31",
+        "messageCount": 187,
+        "redactedMessages": 10
+      },
+      {
+        "date": "2026-08-01",
+        "messageCount": 205,
+        "redactedMessages": 14
+      },
+      {
+        "date": "2026-08-02",
+        "messageCount": 373,
+        "redactedMessages": 29
+      },
+      {
+        "date": "2026-08-03",
+        "messageCount": 2840,
+        "redactedMessages": 261
+      },
+      {
+        "date": "2026-08-04",
+        "messageCount": 4447,
+        "redactedMessages": 454
+      },
+      {
+        "date": "2026-08-05",
+        "messageCount": 3634,
+        "redactedMessages": 429
+      },
+      {
+        "date": "2026-08-06",
+        "messageCount": 1392,
+        "redactedMessages": 134
+      }
+    ],
+    "totalMessages": 13078
+  },
+  "issues": {
+    "format": "json",
+    "dates": [
+      {
+        "date": "2026-08-04",
+        "issueCount": 217,
+        "redactedFields": 0
+      },
+      {
+        "date": "2026-08-05",
+        "issueCount": 309,
+        "redactedFields": 0
+      },
+      {
+        "date": "2026-08-06",
+        "issueCount": 357,
+        "redactedFields": 0
+      }
+    ]
+  }
+}

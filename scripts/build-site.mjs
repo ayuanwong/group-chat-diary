@@ -108,6 +108,9 @@ if (siteHtml.includes("refreshBtn") || siteHtml.includes("检查更新")) {
 if (!siteHtml.includes('id="accountLogin"') || !siteHtml.includes('fetch("/api/me"') || !siteHtml.includes('action="/auth/logout"')) {
   throw new Error("顶部导航必须显示当前 GitHub 账户并提供退出入口");
 }
+if (!siteHtml.includes('id="qaConsole"') || !siteHtml.includes('id="qaForm"') || !siteHtml.includes('fetch("/api/ask"')) {
+  throw new Error("今日最新顶部必须保留本地检索问答入口");
+}
 if (!siteHtml.includes("@少女阿原")) {
   throw new Error("页脚必须保留内容疑问联系人");
 }

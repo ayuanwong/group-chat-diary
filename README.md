@@ -135,6 +135,13 @@
 - 只在专用仓库工作区干净且可快进同步时，直接提交并推送到 `main`；
 - 任一数据、结构、隐私或 Git 校验失败即停止，不强推、不覆盖仓库中的其他改动。
 
+## 本地问答预览
+
+- 问答框位于“今日最新”顶部，先在私有 `corpus/` 中检索完整群聊和最新 Issue，再把本轮命中的少量片段交给 DeepSeek；
+- 复制 `.qa.local.env.example` 为不会被 Git 提交的 `.qa.local.env`，填写 `DEEPSEEK_API_KEY`；如需同时检索公开网页，再填写可选的 `TAVILY_API_KEY`；
+- 当前默认模型为 `deepseek-v4-flash`，可通过 `DEEPSEEK_MODEL` 覆盖；Key 只由绑定在 `127.0.0.1` 的本机服务读取，不会进入浏览器、构建产物或仓库；
+- 执行 `npm run dev:qa` 后访问终端显示的本地地址。此分支只用于本地验收，不会自动部署到 Cloudflare Pages。
+
 ## 文件命名与保留
 
 每日数据使用 `snapshots/YYYY-MM-DD.json`，例如 2026 年 8 月 5 日为 `snapshots/2026-08-05.json`。历史日期分别保留，不覆盖旧快照。仓库根目录的两份按日 HTML 仅作为首轮迁移来源保留；后续自动任务不会再创建新的按日 HTML。

@@ -249,6 +249,70 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 .account-logout:hover,.account-logout:focus-visible{color:var(--gr);border-color:var(--gr);outline:none}
 @media(max-width:860px){.nav{height:auto;min-height:50px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}.nav .tabs{order:3;flex-basis:100%}.date-switch{margin-left:auto}.nav .meta{display:none}}
 @media(max-width:520px){.date-switch .label{display:none}.date-switch select{width:116px}.account-login{max-width:92px}.guide-empty{min-height:340px}}
+
+.qa-console{position:relative;isolation:isolate;margin:-4px 0 30px;border:1px solid rgba(51,255,102,.42);background:linear-gradient(135deg,rgba(6,28,12,.97),rgba(3,10,6,.96) 48%,rgba(4,21,20,.94));box-shadow:0 24px 80px rgba(0,0,0,.34),inset 0 0 48px rgba(51,255,102,.035);overflow:hidden}
+.qa-console::before{content:"";position:absolute;z-index:-1;inset:-45% -20%;background:linear-gradient(105deg,transparent 41%,rgba(91,238,255,.07) 48%,rgba(51,255,102,.13) 50%,transparent 57%);transform:translateX(-42%);animation:qaSweep 8s ease-in-out infinite}
+.qa-console::after{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;background:linear-gradient(rgba(51,255,102,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(51,255,102,.028) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(to bottom,black,transparent 76%)}
+@keyframes qaSweep{0%,24%{transform:translateX(-44%)}70%,100%{transform:translateX(45%)}}
+.qa-inner{padding:20px 20px 17px}
+.qa-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding-bottom:15px;border-bottom:1px solid rgba(51,255,102,.18)}
+.qa-kicker{font-size:9px;color:#5beeff;letter-spacing:.25em;text-transform:uppercase}
+.qa-title{display:flex;align-items:center;gap:10px;margin-top:4px;color:var(--ink);font-size:18px;letter-spacing:.04em}
+.qa-title .orb{width:9px;height:9px;border-radius:50%;background:var(--gr);box-shadow:0 0 8px var(--gr),0 0 24px rgba(51,255,102,.65);animation:qaOrb 1.8s ease-in-out infinite}
+@keyframes qaOrb{50%{opacity:.48;transform:scale(.72)}}
+.qa-subtitle{margin-top:5px;color:var(--mut);font-size:11px;line-height:1.65}
+.qa-statuses{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;max-width:470px}
+.qa-status{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--dim);padding:4px 8px;color:var(--faint);font-size:9px;letter-spacing:.07em;background:rgba(1,7,3,.72);white-space:nowrap}
+.qa-status::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--faint)}
+.qa-status[data-state="ready"]{color:var(--mut);border-color:rgba(51,255,102,.32)}
+.qa-status[data-state="ready"]::before{background:var(--gr);box-shadow:0 0 7px rgba(51,255,102,.8)}
+.qa-status[data-state="waiting"]{color:var(--amber);border-color:rgba(255,179,71,.3)}
+.qa-status[data-state="waiting"]::before{background:var(--amber)}
+.qa-transcript{display:grid;gap:10px;max-height:480px;overflow-y:auto;scrollbar-color:var(--dim) transparent;padding:16px 2px 4px}
+.qa-empty{min-height:88px;display:flex;align-items:center;justify-content:center;gap:14px;text-align:left;color:var(--mut);font-size:11.5px}
+.qa-empty .core{display:grid;place-items:center;width:42px;height:42px;border:1px solid var(--gr2);border-radius:50%;color:#5beeff;font-size:19px;box-shadow:inset 0 0 16px rgba(91,238,255,.08),0 0 22px rgba(51,255,102,.08)}
+.qa-empty b{display:block;color:var(--ink);font-size:12.5px;margin-bottom:3px}
+.qa-turn{display:grid;grid-template-columns:28px minmax(0,1fr);gap:9px;align-items:flex-start;animation:qaTurnIn .22s ease both}
+@keyframes qaTurnIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.qa-turn.user{grid-template-columns:minmax(0,1fr) 28px}
+.qa-avatar{display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--dim);color:var(--gr);font-size:9px;background:#061009}
+.qa-turn.user .qa-avatar{grid-column:2;color:#5beeff;border-color:rgba(91,238,255,.28)}
+.qa-bubble{min-width:0;border:1px solid rgba(51,255,102,.18);background:rgba(2,10,5,.78);padding:11px 13px;color:var(--ink);font-size:12.5px;line-height:1.8}
+.qa-turn.user .qa-bubble{grid-column:1;grid-row:1;border-color:rgba(91,238,255,.2);background:rgba(5,20,22,.72);color:#c9fbff}
+.qa-answer{white-space:pre-wrap;overflow-wrap:anywhere}
+.qa-answer.streaming::after{content:"▊";margin-left:2px;color:var(--gr);animation:blink .75s steps(1) infinite}
+.qa-answer .qa-cite{display:inline;border:0;border-bottom:1px dotted var(--gr);padding:0 1px;color:var(--gr);background:none;font:inherit;cursor:pointer}
+.qa-answer .qa-cite:hover{color:#5beeff;border-color:#5beeff}
+.qa-source-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}
+.qa-source{border-left:2px solid var(--dim);background:rgba(51,255,102,.035);padding:7px 9px;min-width:0}
+.qa-source:target,.qa-source.flash{border-color:#5beeff;background:rgba(91,238,255,.08)}
+.qa-source .id{color:var(--gr);font-size:9px;letter-spacing:.08em}
+.qa-source .label{color:var(--ink);font-size:10.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qa-source .excerpt{color:var(--faint);font-size:9.5px;line-height:1.55;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.qa-source a{color:#5beeff;text-decoration:none}
+.qa-notice{min-height:18px;color:var(--amber);font-size:9.5px;margin-top:6px}
+.qa-prompts{display:flex;gap:6px;flex-wrap:wrap;padding:12px 0 10px}
+.qa-prompt{font:inherit;font-size:10.5px;color:var(--mut);background:rgba(3,13,7,.72);border:1px solid var(--dim);padding:5px 9px;cursor:pointer;transition:transform .15s,border-color .15s,color .15s}
+.qa-prompt:hover,.qa-prompt:focus-visible{transform:translateY(-1px);color:var(--ink);border-color:var(--gr);outline:none}
+.qa-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:stretch}
+.qa-input-wrap{position:relative;border:1px solid var(--dim);background:rgba(0,5,2,.78);transition:border-color .18s,box-shadow .18s}
+.qa-input-wrap:focus-within{border-color:var(--gr);box-shadow:0 0 0 1px rgba(51,255,102,.08),0 0 26px rgba(51,255,102,.07)}
+.qa-input{display:block;width:100%;min-height:54px;max-height:150px;resize:vertical;border:0;outline:0;background:transparent;color:var(--ink);font:12.5px/1.65 var(--mono);padding:10px 12px 22px}
+.qa-input::placeholder{color:var(--faint)}
+.qa-hint{position:absolute;right:9px;bottom:5px;color:#316f42;font-size:8.5px;letter-spacing:.06em;pointer-events:none}
+.qa-send{min-width:112px;border:1px solid var(--gr);background:var(--gr);color:#021006;font:700 11px var(--mono);letter-spacing:.1em;padding:0 16px;cursor:pointer;transition:transform .15s,box-shadow .15s,opacity .15s}
+.qa-send:hover:not(:disabled),.qa-send:focus-visible:not(:disabled){transform:translateY(-1px);box-shadow:0 0 24px rgba(51,255,102,.2);outline:none}
+.qa-send:disabled{cursor:not-allowed;opacity:.38}
+.qa-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px;color:var(--faint);font-size:9px;line-height:1.55}
+.qa-web-toggle{display:inline-flex;align-items:center;gap:7px;cursor:pointer;color:var(--mut);white-space:nowrap}
+.qa-web-toggle input{position:absolute;opacity:0;pointer-events:none}
+.qa-switch{position:relative;width:27px;height:14px;border:1px solid var(--dim);background:#030904}
+.qa-switch::after{content:"";position:absolute;left:2px;top:2px;width:8px;height:8px;background:var(--faint);transition:transform .18s,background .18s,box-shadow .18s}
+.qa-web-toggle input:checked+.qa-switch::after{transform:translateX(13px);background:#5beeff;box-shadow:0 0 8px rgba(91,238,255,.7)}
+.qa-web-toggle input:focus-visible+.qa-switch{outline:1px solid var(--gr);outline-offset:2px}
+.qa-web-toggle input:disabled+.qa-switch{opacity:.42}
+@media(max-width:760px){.qa-top{display:block}.qa-statuses{justify-content:flex-start;max-width:none;margin-top:12px}.qa-source-list{grid-template-columns:1fr}}
+@media(max-width:560px){.qa-inner{padding:16px 13px 13px}.qa-form{grid-template-columns:1fr}.qa-send{min-height:42px}.qa-controls{align-items:flex-start;flex-direction:column}.qa-empty{justify-content:flex-start}.qa-prompt{flex:1 1 46%;text-align:left}}
 </style>
 </head>
 <body class="flicker">
@@ -281,6 +345,47 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
     <div class="wrap">
       <div class="p-head"><div class="k">00 // DAILY DELTA</div><h2>今日最新</h2>
       <p class="desc" id="deltaDesc">正在读取当天与前一日快照的差异。</p></div>
+
+      <section class="qa-console" id="qaConsole" aria-labelledby="qaTitle">
+        <div class="qa-inner">
+          <div class="qa-top">
+            <div>
+              <div class="qa-kicker">ASK DSH // RETRIEVAL ONLINE</div>
+              <h3 class="qa-title" id="qaTitle"><span class="orb" aria-hidden="true"></span>直接问档案</h3>
+              <p class="qa-subtitle">不用逐个翻 Tab。问题会先检索完整群聊与 Issue，再由 DeepSeek 组织带来源的回答。</p>
+            </div>
+            <div class="qa-statuses" aria-live="polite">
+              <span class="qa-status" id="qaCorpusStatus" data-state="waiting">语料连接中</span>
+              <span class="qa-status" id="qaModelStatus" data-state="waiting">DeepSeek 待检测</span>
+              <span class="qa-status" id="qaWebStatus" data-state="waiting">公开网络待检测</span>
+            </div>
+          </div>
+
+          <div class="qa-transcript" id="qaTranscript" aria-live="polite">
+            <div class="qa-empty" id="qaEmpty"><div class="core" aria-hidden="true">⌁</div><div><b>从一个具体问题开始</b>群聊用 G、Issue 用 I、公开网页用 W 标注，点引用即可回看命中来源。</div></div>
+          </div>
+          <div class="qa-notice" id="qaNotice" role="status"></div>
+
+          <div class="qa-prompts" aria-label="推荐问题">
+            <button type="button" class="qa-prompt" data-question="最近群里最关心的三个问题是什么？">最近大家关心什么？</button>
+            <button type="button" class="qa-prompt" data-question="目前有哪些高优先级 Bug Issue 值得关注？">高优先级 Bug</button>
+            <button type="button" class="qa-prompt" data-question="内测版本最近有哪些明确完成的更新？">最近版本更新</button>
+          </div>
+
+          <form class="qa-form" id="qaForm">
+            <div class="qa-input-wrap">
+              <textarea class="qa-input" id="qaInput" rows="2" maxlength="1000" placeholder="输入你想了解的 DSH 问题…" aria-label="向 DSH 档案提问"></textarea>
+              <span class="qa-hint">ENTER 发送 · SHIFT+ENTER 换行</span>
+            </div>
+            <button class="qa-send" id="qaSend" type="submit" disabled>等待模型</button>
+          </form>
+          <div class="qa-controls">
+            <label class="qa-web-toggle" for="qaUseWeb"><input id="qaUseWeb" type="checkbox" disabled><span class="qa-switch" aria-hidden="true"></span><span id="qaWebLabel">同时检索公开网页（待配置）</span></label>
+            <span>完整语料留在本机 / 私有仓库；只把本轮命中的少量片段送往模型。</span>
+          </div>
+        </div>
+      </section>
+
       <div class="delta-stats">
         <button type="button" class="delta-stat" data-delta-view="topics"><span class="go">查看主题 ↓</span><div class="n" id="deltaMessageNum">0</div><div class="l">新增有效群消息</div></button>
         <button type="button" class="delta-stat" data-delta-view="issues"><span class="go">查看清单 ↓</span><div class="n" id="deltaIssueNum">0</div><div class="l">新增 ISSUE</div></button>
@@ -438,6 +543,260 @@ const escapeHtml = (value) => String(value ?? "")
   .replaceAll(">", "&gt;")
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#39;");
+
+const qaState = {
+  ready: false,
+  busy: false,
+  history: [],
+  controller: null,
+  sources: [],
+};
+
+function qaSetStatus(id, label, ready) {
+  const element = $(id);
+  if (!element) return;
+  element.textContent = label;
+  element.dataset.state = ready ? "ready" : "waiting";
+}
+
+function qaModelLabel(model) {
+  return String(model || "DeepSeek").replaceAll("-", " ").toUpperCase();
+}
+
+async function refreshQaStatus() {
+  try {
+    const response = await fetch("/api/qa/status", { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const status = await response.json();
+    const messages = Number(status.corpus?.messageCount || 0).toLocaleString("zh-CN");
+    const issues = Number(status.corpus?.issueCount || 0).toLocaleString("zh-CN");
+    qaSetStatus("qaCorpusStatus", `群聊 ${messages} · Issue ${issues}`, Boolean(status.corpus?.messageCount && status.corpus?.issueCount));
+    qaSetStatus("qaModelStatus", status.deepseekReady ? qaModelLabel(status.model) : "等待 DEEPSEEK KEY", Boolean(status.deepseekReady));
+    qaSetStatus("qaWebStatus", status.webReady ? "公开网络 READY" : "公开网络可选", Boolean(status.webReady));
+    qaState.ready = Boolean(status.deepseekReady);
+    $("qaSend").disabled = !qaState.ready || qaState.busy;
+    $("qaSend").textContent = qaState.busy ? "停止生成" : qaState.ready ? "发送问题 ↗" : "等待模型";
+    $("qaUseWeb").disabled = !status.webReady;
+    if (!status.webReady) $("qaUseWeb").checked = false;
+    $("qaWebLabel").textContent = status.webReady ? "同时检索公开网页" : "同时检索公开网页（待配置）";
+    $("qaNotice").textContent = status.deepseekReady ? "" : "在本地 .qa.local.env 填入 DEEPSEEK_API_KEY 后，这里会自动变为可提问状态。";
+  } catch {
+    qaState.ready = false;
+    qaSetStatus("qaCorpusStatus", "本地问答服务未连接", false);
+    qaSetStatus("qaModelStatus", "DEEPSEEK OFFLINE", false);
+    qaSetStatus("qaWebStatus", "公开网络 OFFLINE", false);
+    $("qaSend").disabled = true;
+    $("qaSend").textContent = "等待服务";
+    $("qaNotice").textContent = "请使用本地问答预览服务打开此页面。";
+  }
+}
+
+function qaTurn(role) {
+  $("qaEmpty")?.remove();
+  const turn = document.createElement("div");
+  turn.className = `qa-turn ${role}`;
+  const avatar = document.createElement("div");
+  avatar.className = "qa-avatar";
+  avatar.textContent = role === "user" ? "YOU" : "DSH";
+  const bubble = document.createElement("div");
+  bubble.className = "qa-bubble";
+  const answer = document.createElement("div");
+  answer.className = role === "assistant" ? "qa-answer streaming" : "qa-answer";
+  bubble.appendChild(answer);
+  turn.append(avatar, bubble);
+  $("qaTranscript").appendChild(turn);
+  $("qaTranscript").scrollTop = $("qaTranscript").scrollHeight;
+  return { turn, bubble, answer };
+}
+
+function qaRenderAnswer(element, answer) {
+  element.classList.remove("streaming");
+  element.textContent = "";
+  const parts = String(answer || "").split(/(\[[GIW]\d+\])/gu);
+  for (const part of parts) {
+    const citation = part.match(/^\[([GIW]\d+)\]$/u)?.[1];
+    if (!citation) {
+      element.appendChild(document.createTextNode(part));
+      continue;
+    }
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "qa-cite";
+    button.textContent = `[${citation}]`;
+    button.addEventListener("click", () => {
+      const source = $(`qaSource-${citation}`);
+      if (!source) return;
+      source.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      source.classList.add("flash");
+      setTimeout(() => source.classList.remove("flash"), 1000);
+    });
+    element.appendChild(button);
+  }
+}
+
+function qaRenderSources(bubble, sources) {
+  if (!Array.isArray(sources) || !sources.length) return;
+  const list = document.createElement("div");
+  list.className = "qa-source-list";
+  for (const source of sources) {
+    const card = document.createElement("article");
+    card.className = "qa-source";
+    card.id = `qaSource-${source.citation}`;
+    const id = document.createElement("div");
+    id.className = "id";
+    id.textContent = `${source.citation} // ${source.kind === "group" ? "群聊" : source.kind === "issue" ? "ISSUE" : "WEB"}`;
+    const label = document.createElement("div");
+    label.className = "label";
+    const safeUrl = typeof source.url === "string" && /^https:\/\//u.test(source.url) ? source.url : null;
+    if (safeUrl) {
+      const link = document.createElement("a");
+      link.href = safeUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = source.label || source.citation;
+      label.appendChild(link);
+    } else {
+      label.textContent = source.label || source.citation;
+    }
+    const excerpt = document.createElement("div");
+    excerpt.className = "excerpt";
+    excerpt.textContent = source.excerpt || "";
+    card.append(id, label, excerpt);
+    list.appendChild(card);
+  }
+  bubble.appendChild(list);
+}
+
+async function qaReadEvents(response, onEvent) {
+  if (!response.body) throw new Error("回答流不可读取");
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    buffer += decoder.decode(value || new Uint8Array(), { stream: !done }).replaceAll("\r\n", "\n");
+    let boundary;
+    while ((boundary = buffer.indexOf("\n\n")) >= 0) {
+      const block = buffer.slice(0, boundary);
+      buffer = buffer.slice(boundary + 2);
+      let event = "message";
+      const data = [];
+      for (const line of block.split("\n")) {
+        if (line.startsWith("event:")) event = line.slice(6).trim();
+        if (line.startsWith("data:")) data.push(line.slice(5).trim());
+      }
+      if (!data.length) continue;
+      let payload;
+      try {
+        payload = JSON.parse(data.join("\n"));
+      } catch {
+        continue;
+      }
+      onEvent(event, payload);
+    }
+    if (done) break;
+  }
+}
+
+async function qaAsk(question) {
+  if (!qaState.ready || qaState.busy) return;
+  qaState.busy = true;
+  qaState.controller = new AbortController();
+  $("qaSend").disabled = false;
+  $("qaSend").textContent = "停止生成";
+  $("qaInput").disabled = true;
+  $("qaNotice").textContent = "正在检索完整群聊与 Issue…";
+
+  const userTurn = qaTurn("user");
+  userTurn.answer.textContent = question;
+  const assistantTurn = qaTurn("assistant");
+  assistantTurn.answer.textContent = "";
+  let answer = "";
+  let eventError = null;
+  qaState.sources = [];
+
+  try {
+    const response = await fetch("/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question,
+        history: qaState.history,
+        useWeb: $("qaUseWeb").checked,
+      }),
+      signal: qaState.controller.signal,
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(payload.error || `问答请求失败（HTTP ${response.status}）`);
+    }
+    await qaReadEvents(response, (event, payload) => {
+      if (event === "meta") {
+        qaState.sources = Array.isArray(payload.sources) ? payload.sources : [];
+        $("qaNotice").textContent = payload.warning || `已命中 ${qaState.sources.length} 个来源，${qaModelLabel(payload.model)} 正在生成…`;
+      } else if (event === "token") {
+        answer += String(payload.text || "");
+        assistantTurn.answer.textContent = answer;
+        $("qaTranscript").scrollTop = $("qaTranscript").scrollHeight;
+      } else if (event === "error") {
+        eventError = new Error(payload.error || "生成失败");
+      }
+    });
+    if (eventError) throw eventError;
+    if (!answer.trim()) throw new Error("模型没有返回可显示的回答");
+    qaRenderAnswer(assistantTurn.answer, answer);
+    qaRenderSources(assistantTurn.bubble, qaState.sources);
+    qaState.history.push({ role: "user", content: question }, { role: "assistant", content: answer });
+    qaState.history = qaState.history.slice(-6);
+    $("qaNotice").textContent = `回答完成 · ${qaState.sources.length} 个可核对来源`;
+  } catch (error) {
+    const aborted = error.name === "AbortError";
+    const message = aborted ? "已停止生成。" : String(error.message || error);
+    qaRenderAnswer(assistantTurn.answer, answer ? `${answer}\n\n${message}` : message);
+    if (qaState.sources.length) qaRenderSources(assistantTurn.bubble, qaState.sources);
+    $("qaNotice").textContent = aborted ? "已停止，可继续输入新问题。" : message;
+  } finally {
+    qaState.busy = false;
+    qaState.controller = null;
+    $("qaInput").disabled = false;
+    $("qaSend").disabled = !qaState.ready;
+    $("qaSend").textContent = qaState.ready ? "发送问题 ↗" : "等待模型";
+    $("qaInput").focus();
+    $("qaTranscript").scrollTop = $("qaTranscript").scrollHeight;
+  }
+}
+
+function initQa() {
+  const form = $("qaForm");
+  const input = $("qaInput");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (qaState.busy) {
+      qaState.controller?.abort();
+      return;
+    }
+    if (!qaState.ready) {
+      $("qaNotice").textContent = "请先在本地 .qa.local.env 填入 DEEPSEEK_API_KEY。";
+      return;
+    }
+    const question = input.value.trim();
+    if (!question) return;
+    input.value = "";
+    qaAsk(question);
+  });
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      form.requestSubmit();
+    }
+  });
+  document.querySelectorAll(".qa-prompt").forEach((button) => button.addEventListener("click", () => {
+    input.value = button.dataset.question || button.textContent;
+    form.requestSubmit();
+  }));
+  refreshQaStatus();
+  setInterval(refreshQaStatus, 5_000);
+}
 
 async function fetchJson(url) {
   if (EMBEDDED_SNAPSHOT) {
@@ -1118,6 +1477,7 @@ async function refreshAll({ initial = false } = {}) {
 }
 
 initAccount();
+initQa();
 initDatePicker();
 renderGuide();
 initTabs();

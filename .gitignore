@@ -5,6 +5,7 @@ __pycache__/
 .wrangler/
 .dev.vars*
 !.dev.vars.example
+.qa.local.env
 worker-configuration.d.ts
 .work-env/
 .DS_Store

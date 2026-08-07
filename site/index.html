@@ -26,18 +26,25 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:91;bac
 #warp canvas{position:absolute;inset:0}
 #warp .warp-txt{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);font-size:12px;letter-spacing:.4em;color:var(--gr);text-shadow:0 0 12px rgba(51,255,102,.7);white-space:nowrap}
 #warp .warp-skip{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);font-size:10px;color:var(--faint);letter-spacing:.2em;cursor:pointer}
-header{position:relative;z-index:1;background:rgba(2,6,3,.92);border-bottom:1px solid var(--dim)}
-.nav{display:flex;align-items:center;gap:4px;max-width:1060px;margin:0 auto;padding:0 20px;height:50px}
-.nav .logo{font-size:14px;font-weight:700;letter-spacing:.06em;margin-right:18px;color:var(--ink);white-space:nowrap}
-.nav .logo em{font-style:normal;color:var(--gr)}
-.nav .tabs{display:flex;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
-.nav .tabs::-webkit-scrollbar{display:none}
-.nav .tabs button{font:inherit;font-size:13px;color:var(--mut);background:none;border:1px solid transparent;padding:6px 13px;cursor:pointer;letter-spacing:.1em;transition:all .15s}
-.nav .tabs button:hover{color:var(--ink);border-color:var(--dim)}
-.nav .tabs button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
-.nav .meta{font-size:10.5px;color:var(--faint);letter-spacing:.12em;white-space:nowrap}
-@media(max-width:700px){.nav .meta{display:none}.nav .logo{margin-right:8px}.nav .tabs button{padding:6px 8px;font-size:12px}}
-main{position:relative;z-index:2;min-height:80vh}
+header.sidebar{position:fixed;inset:0 auto 0 0;width:220px;z-index:10;display:flex;flex-direction:column;gap:14px;padding:18px 12px 14px;background:rgba(2,6,3,.97);border-right:1px solid var(--dim);overflow-y:auto}
+.side-logo{font-size:15px;font-weight:700;letter-spacing:.06em;color:var(--ink);white-space:nowrap;padding:0 8px}
+.side-logo em{font-style:normal;color:var(--gr)}
+.side-tabs{display:flex;flex-direction:column;gap:2px}
+.side-tabs button{font:inherit;font-size:13px;text-align:left;color:var(--mut);background:none;border:1px solid transparent;border-radius:8px;padding:8px 12px;cursor:pointer;letter-spacing:.08em;transition:all .15s;white-space:nowrap}
+.side-tabs button:hover{color:var(--ink);border-color:var(--dim)}
+.side-tabs button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:1px solid var(--dim)}
+.side-foot .meta{font-size:10.5px;color:var(--faint);letter-spacing:.12em;line-height:1.6}
+main{position:relative;z-index:2;min-height:80vh;margin-left:220px}
+@media(max-width:900px){
+  header.sidebar{position:static;width:auto;border-right:none;border-bottom:1px solid var(--dim);padding:10px 12px;gap:8px}
+  .side-tabs{flex-direction:row;overflow-x:auto;scrollbar-width:none}
+  .side-tabs::-webkit-scrollbar{display:none}
+  .side-tabs button{flex:0 0 auto;padding:6px 12px;font-size:12px}
+  .side-foot{flex-direction:row;flex-wrap:wrap;align-items:center;margin-top:0;padding-top:0;border-top:none}
+  .side-foot .meta{display:none}
+  main{margin-left:0}
+}
 .panel{padding:46px 0 80px;animation:panelIn .35s ease both}
 @keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .p-head{margin-bottom:30px}
@@ -245,7 +252,8 @@ body[data-panel="data"] footer{display:none}
 #refreshBar .line .dim{color:var(--faint)}
 #refreshBar .bar{width:100%;max-width:480px;height:8px;border:1px solid var(--dim);margin-top:6px;padding:1px}
 #refreshBar .bar i{display:block;height:100%;width:0;background:var(--gr)}
-footer{border-top:1px solid var(--dim);padding:36px 0 54px;position:relative;z-index:2}
+footer{border-top:1px solid var(--dim);padding:36px 0 54px;position:relative;z-index:2;margin-left:220px}
+@media(max-width:900px){footer{margin-left:0}}
 footer .f-in{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
 footer .closing{font-size:13px;color:var(--mut);line-height:1.9}
 footer .closing b{color:var(--ink)}
@@ -255,14 +263,12 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
   #warp{display:none}
 }
 
-.date-switch{display:flex;align-items:center;gap:7px;margin-right:8px;color:var(--faint);font-size:10px;letter-spacing:.1em;white-space:nowrap}
-.nav{max-width:1400px}
-.nav .tabs button{white-space:nowrap;flex:0 0 auto}
-.date-switch select{width:128px;max-width:100%;font:inherit;font-size:11px;color:var(--ink);background:#071008;border:1px solid var(--dim);padding:5px 24px 5px 9px;outline:none;cursor:pointer;color-scheme:dark}
+.date-switch{display:flex;align-items:center;gap:7px;color:var(--faint);font-size:10px;letter-spacing:.1em;white-space:nowrap}
+.date-switch select{width:128px;max-width:100%;font:inherit;font-size:11px;color:var(--ink);background:var(--panel);border:1px solid var(--dim);padding:5px 24px 5px 9px;outline:none;cursor:pointer}
 .date-switch select:hover,.date-switch select:focus{border-color:var(--gr)}
-.nav .tabs button.guide-tab{color:var(--amber);border-color:rgba(255,179,71,.28);position:relative}
-.nav .tabs button.guide-tab::before{content:"🔥";display:inline-block;margin-right:5px;filter:drop-shadow(0 0 5px rgba(255,179,71,.7));animation:guidePulse 1.8s ease-in-out infinite}
-.nav .tabs button.guide-tab.on{background:var(--amber);border-color:var(--amber);color:#160b00}
+.side-tabs button.guide-tab{color:var(--amber);border-color:rgba(255,179,71,.28);position:relative}
+.side-tabs button.guide-tab::before{content:"🔥";display:inline-block;margin-right:5px;filter:drop-shadow(0 0 5px rgba(255,179,71,.7));animation:guidePulse 1.8s ease-in-out infinite}
+.side-tabs button.guide-tab.on{background:var(--amber);border-color:var(--amber);color:#160b00}
 @keyframes guidePulse{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.12)}}
 .guide-empty{min-height:420px;display:grid;place-items:center;text-align:center;border:1px solid var(--dim);background:radial-gradient(circle at 50% 35%,rgba(255,179,71,.09),transparent 34%),var(--panel);padding:48px 24px}
 .guide-empty .icon{font-size:54px;line-height:1;filter:drop-shadow(0 0 16px rgba(255,179,71,.55));animation:guidePulse 1.8s ease-in-out infinite}
@@ -305,12 +311,11 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 .guide-link b{color:var(--ink);font-size:10.5px;overflow-wrap:anywhere}
 .guide-link span{color:var(--faint);font-size:10px;line-height:1.6}
 .guide-scope{display:inline-flex;align-items:center;gap:6px;margin-top:10px;border:1px solid rgba(255,179,71,.28);padding:4px 8px;color:var(--amber);font-size:9px;letter-spacing:.12em}
-.account-menu{display:flex;align-items:center;gap:6px;margin-left:4px;white-space:nowrap}
+.account-menu{display:flex;align-items:center;gap:6px;white-space:nowrap;flex-wrap:wrap}
 .account-login{max-width:116px;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-size:10.5px;letter-spacing:.03em}
 .account-menu form{margin:0}
 .account-logout{font:inherit;font-size:10px;color:var(--faint);background:none;border:1px solid var(--dim);padding:4px 8px;cursor:pointer;letter-spacing:.06em}
 .account-logout:hover,.account-logout:focus-visible{color:var(--gr);border-color:var(--gr);outline:none}
-@media(max-width:860px){.nav{height:auto;min-height:50px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}.nav .tabs{order:3;flex-basis:100%}.date-switch{margin-left:auto}.nav .meta{display:none}}
 @media(max-width:520px){.date-switch .label{display:none}.date-switch select{width:116px}.account-login{max-width:92px}.guide-empty{min-height:340px}.guide-hero,.guide-section{padding:15px}.guide-link{grid-template-columns:1fr}}
 
 .qa-console{position:relative;isolation:isolate;margin:-4px 0 30px;border:1px solid rgba(51,255,102,.42);background:linear-gradient(135deg,rgba(6,28,12,.97),rgba(3,10,6,.96) 48%,rgba(4,21,20,.94));box-shadow:0 24px 80px rgba(0,0,0,.34),inset 0 0 48px rgba(51,255,102,.035);overflow:hidden}
@@ -403,7 +408,7 @@ html[data-theme="loserfox"] body{background:var(--bg);color:var(--ink)}
 html[data-theme="loserfox"] .flicker{animation:none}
 html[data-theme="loserfox"] header{background:var(--bg)}
 html[data-theme="loserfox"] #warp .warp-txt{text-shadow:none}
-html[data-theme="loserfox"] .nav .tabs button.on,
+html[data-theme="loserfox"] .side-tabs button.on,
 html[data-theme="loserfox"] .filters button.on{color:#fff;background:var(--gr);border-color:var(--gr)}
 html[data-theme="loserfox"] .iss .mi:hover{background:var(--panel)}
 html[data-theme="loserfox"] .repo-item{border-color:var(--dim);background:var(--panel)}
@@ -554,10 +559,10 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
 </head>
 <body class="flicker">
 <div id="warp"><canvas id="warpCv"></canvas><div class="warp-txt">HYPERSPACE // WARP</div><div class="warp-skip" id="warpSkip">点击跳过 ▸</div></div>
-<header>
-  <div class="nav">
-    <div class="logo">DSH <em>//</em> 档案馆</div>
-    <div class="tabs" id="tabs"></div>
+<header class="sidebar">
+  <div class="side-logo">DSH <em>//</em> 档案馆</div>
+  <nav class="side-tabs" id="tabs" aria-label="主导航"></nav>
+  <div class="side-foot">
     <label class="date-switch" for="datePicker"><span class="label">群聊日期</span><select id="datePicker" aria-label="切换群聊自然日"></select></label>
     <button type="button" id="themeBtn" class="theme-toggle" title="切换主题（终端绿 / LoserFox）" aria-label="切换主题">🌓 主题</button>
     <div class="meta" id="snapshotMeta">读取快照…</div>

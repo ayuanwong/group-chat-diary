@@ -251,8 +251,8 @@ main{position:relative;z-index:2;min-height:80vh;margin-left:220px}
 .cloud .wd.hot{font-size:11px!important;color:var(--gr)}
 .cloud .wd:hover{color:var(--gr);text-shadow:0 0 10px rgba(51,255,102,.55)}
 .note{font-size:10.5px;color:var(--faint);letter-spacing:.03em;margin-top:14px;line-height:1.65}
-@media(min-width:900px){#panel-data{padding:26px 0 38px}#panel-data .p-head{margin-bottom:18px}}
-body[data-panel="data"] footer{display:none}
+.overview-sec{max-width:1060px;margin:0 auto;padding:46px 20px 0}
+.overview-sec .p-head{margin-bottom:22px}
 @media(max-width:900px){.data-grid{grid-template-columns:1fr 1fr}.data-grid>div:first-child{grid-column:1/-1}}
 @media(max-width:760px){.delta-insights{grid-template-columns:1fr}}
 @media(max-width:700px){.delta-stats{grid-template-columns:1fr 1fr}.delta-stat:last-child{grid-column:1/-1}.delta-topic-list,.delta-signals,.delta-issue-list{grid-template-columns:1fr}.delta-subtabs{overflow-x:auto;scrollbar-width:none}.delta-subtabs::-webkit-scrollbar{display:none}.delta-subtabs button{white-space:nowrap}}
@@ -683,9 +683,9 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
     </div>
   </section>
 
-  <section class="panel" id="panel-delta" hidden>
+  <section class="panel" id="panel-overview" hidden>
     <div class="wrap">
-      <div class="p-head"><div class="k">00 // DAILY DELTA</div><h2>今日最新</h2>
+      <div class="p-head"><div class="k">00 // OVERVIEW</div><h2>数据总览</h2>
       <p class="desc" id="deltaDesc">正在读取当天与前一日快照的差异。</p></div>
 
       <div class="delta-stats">
@@ -737,6 +737,32 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
       </section>
     </div>
   </section>
+
+  <div class="overview-sec">
+    <div class="p-head"><div class="k">07 // SNAPSHOT DIFF</div><h2>快照跟踪</h2>
+    <p class="desc" id="sdDesc">加载中…</p></div>
+    <div class="sd-list" id="sdList"></div>
+  </div>
+
+  <div class="overview-sec">
+    <div class="p-head"><div class="k">08 // STAR DATA</div><h2>星域数据</h2>
+    <p class="desc">一屏查看群聊活跃时段、Issue 主题和群聊高频词。</p></div>
+    <div class="data-grid">
+      <div>
+        <p class="data-title">GROUP ACTIVITY · 群聊活跃时段</p>
+        <div class="hours" id="hours"></div>
+      </div>
+      <div>
+        <p class="data-title">ISSUE TOPICS · 大家在反馈什么</p>
+        <div class="cloud" id="issueCloud"></div>
+      </div>
+      <div>
+        <p class="data-title">GROUP WORDS · 群里反复讨论什么</p>
+        <div class="cloud" id="groupCloud"></div>
+      </div>
+    </div>
+    <p class="note" id="dataNote">群聊旧数据已作废；新数据必须来自【官方】DSH内测群的本机数据库证据。</p>
+  </div>
 
   <section class="panel" id="panel-chronicle" hidden>
     <div class="wrap">
@@ -846,35 +872,6 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
     </div>
   </section>
 
-  <section class="panel" id="panel-snapshots" hidden>
-    <div class="wrap">
-      <div class="p-head"><div class="k">07 // SNAPSHOT DIFF</div><h2>每日快照跟踪</h2>
-      <p class="desc" id="sdDesc">加载中…</p></div>
-      <div class="sd-list" id="sdList"></div>
-    </div>
-  </section>
-
-  <section class="panel" id="panel-data" hidden>
-    <div class="wrap">
-      <div class="p-head"><div class="k">05 // STAR DATA</div><h2>星域数据</h2>
-      <p class="desc">一屏查看群聊活跃时段、Issue 主题和群聊高频词。</p></div>
-      <div class="data-grid">
-        <div>
-          <p class="data-title">GROUP ACTIVITY · 群聊活跃时段</p>
-          <div class="hours" id="hours"></div>
-        </div>
-        <div>
-          <p class="data-title">ISSUE TOPICS · 大家在反馈什么</p>
-          <div class="cloud" id="issueCloud"></div>
-        </div>
-        <div>
-          <p class="data-title">GROUP WORDS · 群里反复讨论什么</p>
-          <div class="cloud" id="groupCloud"></div>
-        </div>
-      </div>
-      <p class="note" id="dataNote">群聊旧数据已作废；新数据必须来自【官方】DSH内测群的本机数据库证据。</p>
-    </div>
-  </section>
 </main>
 
 <div class="an-modal" id="anModal" hidden role="dialog" aria-modal="true" aria-label="Agent Note 摘要详情">
@@ -1629,11 +1626,11 @@ function switchTab(key) {
   history.replaceState({}, "", next);
   window.scrollTo({ top: 0, behavior: "instant" });
   if (key === "agentnotes") window.loadAgentNotes?.();
-  if (key === "snapshots") window.loadSnapshotDiffs?.();
+  if (key === "overview") window.loadSnapshotDiffs?.();
 }
 
 function initTabs() {
-  const tabs = [["home", "首页"], ["delta", "今日最新"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue / Repo"], ["agentnotes", "Agent Notes"], ["snapshots", "快照 Diff"], ["data", "数据"]];
+  const tabs = [["home", "首页"], ["overview", "数据总览"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue / Repo"], ["agentnotes", "Agent Notes"]];
   const nav = $("tabs");
   const requestedTab = new URL(location.href).searchParams.get("tab");
   const current = tabs.some(([key]) => key === requestedTab) ? requestedTab : "home";
@@ -1659,17 +1656,14 @@ function renderHome() {
   const fmt = (n) => Number(n || 0).toLocaleString("zh-CN");
   const topTopic = cmp?.topicDeltas?.[0];
   const cards = [
-    { key: "delta", k: "01 // TODAY", title: "今日动态", desc: "今日新增群消息、精选信号与讨论主题；也可以直接向档案提问。",
-      stats: cmp ? `新增消息 ${fmt(cmp.newMessageCount)} · 信号 ${cmp.newSignalMessageIds?.length ?? 0}${topTopic ? ` · ${topTopic.label} +${topTopic.delta}` : ""}` : "加载中…" },
+    { key: "overview", k: "01 // OVERVIEW", title: "数据总览", desc: "今日增量、逐日快照跟踪与星域数据（活跃时段、Issue 主题、高频词）。",
+      stats: cmp ? `今日新增消息 ${fmt(cmp.newMessageCount)} · 信号 ${cmp.newSignalMessageIds?.length ?? 0}${topTopic ? ` · ${topTopic.label} +${topTopic.delta}` : ""}` : "加载中…" },
     { key: "guide", k: "02 // GUIDE", title: "新人导引", desc: "《DSH 内测安装指南》等固定入门内容，不随日期切换。", stats: "固定内容 · 随时可读" },
     { key: "cards", k: "03 // CARDS", title: "成员星卡", desc: "跨全部自然日累计的成员发言与精选表现，不推断真实身份。", stats: `${fmt(history.members?.length)} 位成员` },
     { key: "signals", k: "04 // SIGNALS", title: "信号收录", desc: "可行动的问题、建议、实测与明确完成态事件，按类别筛选。", stats: `${fmt(history.signals?.length)} 条精选信号` },
     { key: "chronicle", k: "05 // CHRONICLE", title: "事件纪事", desc: "产品方完成态更新与来源明确的公告。", stats: `${fmt(history.chronicles?.length)} 条纪事` },
     { key: "agentnotes", k: "06 // AGENT NOTES", title: "Agent Notes", desc: "dsh 仓库决策记录全量清单，含摘要详情、TODO 与变更追踪。",
       stats: SITE_MANIFEST?.agentNotes ? `${fmt(SITE_MANIFEST.agentNotes.total)} 篇 · ${fmt(SITE_MANIFEST.agentNotes.proposed)} 计划中` : "" },
-    { key: "snapshots", k: "07 // SNAPSHOT", title: "快照 Diff", desc: "每日快照跟踪：消息、信号、成员、Issue 的逐日增量与明细。",
-      stats: `${SITE_MANIFEST?.dates?.length ?? 0} 份快照 · 最新 ${SITE_MANIFEST?.latest ?? "--"}` },
-    { key: "data", k: "08 // DATA", title: "星域数据", desc: "群聊活跃时段、Issue 主题与群聊高频词一屏总览。", stats: "数据视图" },
   ];
   grid.innerHTML = cards.map(c => `
     <button type="button" class="home-card" data-tab="${c.key}">
@@ -2425,7 +2419,7 @@ renderHome();
 initAgentNotes();
 initSnapshotDiffs();
 if (document.body.dataset.panel === "agentnotes") window.loadAgentNotes?.();
-if (document.body.dataset.panel === "snapshots") window.loadSnapshotDiffs?.();
+if (document.body.dataset.panel === "overview") window.loadSnapshotDiffs?.();
 initWarp();
 refreshAll({ initial: true });
 </script>

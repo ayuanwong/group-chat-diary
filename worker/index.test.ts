@@ -113,6 +113,13 @@ function makeQaDb(requestCount = 1): D1Database {
     content: "DeepSeek Harness Changelog 2026-08-05 ✨ 新增 🐛 修复 🎨 优化",
     fts_rank: -1,
   };
+  const liveChronicle = {
+    document_key: "test-sync:g:message-live",
+    source_date: "2026-08-07",
+    occurred_at: "2026-08-07T09:00:00+08:00",
+    sender: "Baymax",
+    content: "Changelog 2026-08-07\n✨ 新增\n新增当日实时纪事",
+  };
   const issue = {
     document_key: "test-sync:i:357",
     kind: "issue",
@@ -163,6 +170,7 @@ function makeQaDb(requestCount = 1): D1Database {
         }),
         first: vi.fn(async () => sql.includes("qa_rate_limits") ? { request_count: requestCount } : null),
         all: vi.fn(async () => {
+          if (sql.includes("FROM qa_group_documents") && sql.includes("source_date >")) return { results: [liveChronicle] };
           if (sql.includes("qa_corpus_meta")) return { results: meta };
           if (sql.includes("PARTITION BY d.sender")) return { results: speakerRows };
           if (sql.includes("qa_group_fts")) return { results: [group] };
@@ -439,10 +447,10 @@ describe("archive gate", () => {
     await expect(history.json()).resolves.toMatchObject({
       version: 1,
       scope: "all-active-group-days",
-      dates: ["2026-08-05", "2026-08-06"],
-      stats: { days: 2, source_messages: 9, accepted_messages: 7, signal_count: 2, participant_count: 2, chronicle_count: 2 },
+      dates: ["2026-08-05", "2026-08-06", "2026-08-07"],
+      stats: { days: 2, live_chronicle_dates: 1, source_messages: 9, accepted_messages: 7, signal_count: 2, participant_count: 2, chronicle_count: 3 },
       signals: [{ message_id: "signal-2" }, { message_id: "signal-1" }],
-      chronicles: [{ message_id: "event-2" }, { message_id: "event-1" }],
+      chronicles: [{ message_id: "message-live" }, { message_id: "event-2" }, { message_id: "event-1" }],
       members: [
         { name: "成员甲", count: 5, signals: 1, activeDays: 2 },
         { name: "成员乙", count: 1, signals: 1, activeDays: 1 },

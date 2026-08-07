@@ -71,7 +71,10 @@ export function officialChronicles(items) {
 
 export function chronicleReleaseKey(item) {
   const date = changelogDate(item);
-  return date ? `changelog:${date}` : null;
+  if (date) return `changelog:${date}`;
+  const evidence = [item?.title, item?.quote, item?.detail].map((part) => String(part ?? "")).join("\n");
+  const snapshot = evidence.match(/snapshot-\d{8}T\d{6}Z-[a-z0-9]+/iu)?.[0]?.toLowerCase();
+  return snapshot ? `snapshot:${snapshot}` : null;
 }
 
 export function mergeOfficialChronicles(items, records) {

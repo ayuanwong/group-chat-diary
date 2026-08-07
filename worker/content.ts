@@ -1,5 +1,6 @@
 export interface ContentRuntimeEnv {
   CONTENT_DB: D1Database;
+  QA_DB: D1Database;
 }
 
 interface GroupVersionRow {
@@ -28,6 +29,14 @@ interface GroupPayloadRow {
   date: string;
   generated_at: string;
   payload: string;
+}
+
+interface LiveChronicleRow {
+  document_key: string;
+  source_date: string;
+  occurred_at: string;
+  sender: string;
+  content: string;
 }
 
 type JsonRecord = Record<string, unknown>;
@@ -61,7 +70,9 @@ function itemIdentity(item: JsonRecord, date: string, index: number): string {
 function chronicleIdentity(item: JsonRecord, date: string, index: number): string {
   const evidence = [item.title, item.quote, item.detail].map((part) => String(part ?? "")).join("\n");
   const releaseDate = evidence.match(/changelog\s+(\d{4}-\d{2}-\d{2})/iu)?.[1];
-  return releaseDate ? `changelog:${releaseDate}` : itemIdentity(item, date, index);
+  if (releaseDate) return `changelog:${releaseDate}`;
+  const snapshot = evidence.match(/snapshot-\d{8}T\d{6}Z-[a-z0-9]+/iu)?.[0]?.toLowerCase();
+  return snapshot ? `snapshot:${snapshot}` : itemIdentity(item, date, index);
 }
 
 function newestFirst(left: JsonRecord, right: JsonRecord): number {
@@ -79,6 +90,37 @@ export function isOfficialChronicle(value: unknown): value is JsonRecord {
 
 function officialChronicles(value: unknown): JsonRecord[] {
   return Array.isArray(value) ? value.filter(isOfficialChronicle) : [];
+}
+
+function liveChronicle(row: LiveChronicleRow): JsonRecord | null {
+  if (!OFFICIAL_PRODUCT_SENDERS.has(String(row.sender ?? "").trim())) return null;
+  const text = String(row.content ?? "").split("↳ 回复", 1)[0].trim();
+  const releaseDate = text.match(/changelog\s+(\d{4}-\d{2}-\d{2})/iu)?.[1];
+  if (!releaseDate) return null;
+  const groups: Record<string, string[]> = { "新增": [], "修复": [], "调整": [], "优化": [] };
+  let section = "";
+  for (const rawLine of text.split("\n")) {
+    const line = rawLine.replace(/^[-*•\s]+/u, "").trim();
+    if (!line || /^changelog\s+/iu.test(line)) continue;
+    const heading = line.match(/^(?:✨|🐛|⚠️?|🎨)?\s*(新增|修复|调整|优化)\s*[:：]?$/u)?.[1];
+    if (heading) section = heading;
+    else if (section) groups[section].push(line);
+  }
+  const limits: Record<string, number> = { "新增": 2, "修复": 2, "调整": 1, "优化": 1 };
+  const parts = Object.entries(groups).flatMap(([label, lines]) => lines.length
+    ? [`${label}：${lines.slice(0, limits[label]).join("；")}`]
+    : []);
+  return {
+    message_id: String(row.document_key).split(":g:").at(-1) ?? row.document_key,
+    title: "内测版本更新",
+    time: String(row.occurred_at).slice(0, 16).replace("T", " "),
+    timestamp: row.occurred_at,
+    sender: row.sender,
+    quote: `Changelog ${releaseDate}`,
+    detail: parts.length ? `Changelog ${releaseDate}｜${parts.join("；")}。` : `Changelog ${releaseDate}｜官方已发布该版本更新。`,
+    confidence: "candidate",
+    basis: "官方账号完成态 Changelog 原话",
+  };
 }
 
 function sanitizedGroupSnapshot(value: unknown): unknown | null {
@@ -281,6 +323,27 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
     });
   }
 
+  const latestCompletedDate = active.at(-1)?.date ?? "";
+  const liveRows = await env.QA_DB.prepare(`
+    SELECT document_key, source_date, occurred_at, sender, content
+    FROM qa_group_documents
+    WHERE sync_id = (SELECT value FROM qa_corpus_meta WHERE key = 'active_group_sync_id' LIMIT 1)
+      AND source_date > ?1
+      AND sender IN ('Baymax', '崔小天')
+      AND is_changelog = 1
+    ORDER BY occurred_at ASC
+  `).bind(latestCompletedDate).all<LiveChronicleRow>();
+  const liveDates = new Set<string>();
+  for (const row of liveRows.results ?? []) {
+    const item = liveChronicle(row);
+    if (!item) continue;
+    const key = chronicleIdentity(item, row.source_date, 0);
+    if (chronicles.has(key)) continue;
+    chronicles.set(key, item);
+    liveDates.add(row.source_date);
+    if (row.occurred_at > dateEnd) dateEnd = row.occurred_at;
+  }
+
   const signalList = [...signals.values()].sort(newestFirst);
   const chronicleList = [...chronicles.values()].sort(newestFirst);
   const memberList = [...members.values()].map((member) => {
@@ -306,10 +369,11 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
     scope: "all-active-group-days",
     group: "【官方】DSH内测群",
     timeZone: "Asia/Shanghai",
-    dates: active.map((row) => row.date),
+    dates: [...active.map((row) => row.date), ...liveDates].filter((date, index, dates) => dates.indexOf(date) === index),
     generatedAt,
     stats: {
       days: active.length,
+      live_chronicle_dates: liveDates.size,
       source_messages: sourceMessages,
       accepted_messages: acceptedMessages,
       excluded_messages: excludedMessages,

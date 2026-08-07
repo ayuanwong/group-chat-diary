@@ -629,24 +629,6 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
     <div class="wrap">
       <div class="p-head"><div class="k">00 // HOME</div><h2>DSH 档案馆</h2>
       <p class="desc">选择一个你感兴趣的区域进入。数据来自内测群与 dsh-external 私有仓库，仅限授权成员查看。</p></div>
-      <div class="home-grid" id="homeGrid"></div>
-    </div>
-  </section>
-
-  <section class="panel" id="panel-guide" hidden>
-    <div class="wrap">
-      <div class="p-head"><div class="k">00 // NEWCOMER GUIDE</div><h2>新人导引</h2>
-      <p class="desc">给第一次进入 DSH 内测群的成员准备的起步信息。</p><span class="guide-scope">固定内容 · 不随日期切换</span></div>
-      <div class="guide-empty" id="guideContent">
-        <div><div class="icon" aria-hidden="true">🔥</div><h3>新人导引正在整理</h3><p>这里已经预留为独立内容入口。后续资料上传到私有 GitHub 仓库后，会自动同步到这个位置。</p><span class="status">COMING SOON</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="panel" id="panel-delta" hidden>
-    <div class="wrap">
-      <div class="p-head"><div class="k">00 // DAILY DELTA</div><h2>今日最新</h2>
-      <p class="desc" id="deltaDesc">正在读取当天与前一日快照的差异。</p></div>
 
       <section class="qa-console" id="qaConsole" aria-labelledby="qaTitle">
         <div class="qa-inner">
@@ -686,6 +668,25 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
           </div>
         </div>
       </section>
+
+      <div class="home-grid" id="homeGrid"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-guide" hidden>
+    <div class="wrap">
+      <div class="p-head"><div class="k">00 // NEWCOMER GUIDE</div><h2>新人导引</h2>
+      <p class="desc">给第一次进入 DSH 内测群的成员准备的起步信息。</p><span class="guide-scope">固定内容 · 不随日期切换</span></div>
+      <div class="guide-empty" id="guideContent">
+        <div><div class="icon" aria-hidden="true">🔥</div><h3>新人导引正在整理</h3><p>这里已经预留为独立内容入口。后续资料上传到私有 GitHub 仓库后，会自动同步到这个位置。</p><span class="status">COMING SOON</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-delta" hidden>
+    <div class="wrap">
+      <div class="p-head"><div class="k">00 // DAILY DELTA</div><h2>今日最新</h2>
+      <p class="desc" id="deltaDesc">正在读取当天与前一日快照的差异。</p></div>
 
       <div class="delta-stats">
         <button type="button" class="delta-stat" data-delta-view="topics"><span class="go">查看主题 ↓</span><div class="n" id="deltaMessageNum">0</div><div class="l">新增有效群消息</div></button>

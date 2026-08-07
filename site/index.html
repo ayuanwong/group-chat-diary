@@ -529,6 +529,27 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
 .an-none{color:var(--faint);font-size:12.5px}
 .an-full-note{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--dim);color:var(--faint);font-size:12px}
 .an-full-note code{font-family:var(--mono);color:var(--mut)}
+.sd-list{display:flex;flex-direction:column;gap:10px}
+.sd-day{background:var(--panel);border:1px solid var(--dim);border-radius:12px;overflow:hidden}
+.sd-day summary{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:12px 16px;cursor:pointer;list-style:none;user-select:none}
+.sd-day summary::-webkit-details-marker{display:none}
+.sd-day summary:hover{background:var(--panel2)}
+.sd-date{font-weight:700;color:var(--ink);font-size:14px;min-width:96px}
+.sd-stats{font-size:12px;color:var(--mut);flex:1;min-width:200px}
+.sd-stats b{color:var(--ink);font-weight:600}
+.sd-deltas{font-size:11.5px;color:var(--gr);white-space:nowrap}
+.sd-day[data-base="1"] .sd-deltas{color:var(--faint)}
+.sd-detail{padding:4px 16px 14px;border-top:1px solid var(--dim);font-size:12.5px;color:var(--ink)}
+.sd-sec{margin-top:12px}
+.sd-sec h4{font-size:11px;color:var(--gr);letter-spacing:.14em;margin:0 0 6px}
+.sd-sec ul{margin:0;padding-left:20px}
+.sd-sec li{margin:3px 0;line-height:1.6}
+.sd-sec a{color:var(--gr);text-decoration:none}
+.sd-sec a:hover{text-decoration:underline}
+.sd-sec .sd-cat{color:var(--faint);font-size:11px;margin-left:6px;border:1px solid var(--dim);border-radius:999px;padding:0 7px}
+.sd-sec .sd-sig-time{color:var(--faint);font-size:11px;margin-right:8px}
+.sd-sec .sd-topic{font-variant-numeric:tabular-nums}
+.sd-none{color:var(--faint)}
 </style>
 </head>
 <body class="flicker">
@@ -750,6 +771,14 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
           </table>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-snapshots" hidden>
+    <div class="wrap">
+      <div class="p-head"><div class="k">07 // SNAPSHOT DIFF</div><h2>每日快照跟踪</h2>
+      <p class="desc" id="sdDesc">加载中…</p></div>
+      <div class="sd-list" id="sdList"></div>
     </div>
   </section>
 
@@ -1295,6 +1324,53 @@ function renderGuide() {
       (Array.isArray(section.blocks) ? section.blocks.map(renderBlock).join("") : "") + `</article>`).join("");
 }
 
+function initSnapshotDiffs() {
+  const list = $("sdList");
+  const desc = $("sdDesc");
+  const fmt = (n) => Number(n || 0).toLocaleString("zh-CN");
+  const renderDay = (d) => {
+    const s = d.stats || {};
+    const delta = d.delta;
+    const base = !delta;
+    const deltas = delta
+      ? `+${fmt(delta.newMessages)} 消息 · +${delta.newIssues.length} Issue · +${delta.newSignals.length} 信号 · +${delta.newMembers} 成员 · +${delta.newChronicles} 纪事`
+      : "基线（首份快照，无前日对比）";
+    let detail = "";
+    if (delta) {
+      const issues = delta.newIssues.map(i =>
+        `<li><a href="${escapeHtml(i.url)}" target="_blank" rel="noopener">#${i.n} ${escapeHtml(i.title)}</a><span class="sd-cat">${escapeHtml(i.cat)}</span></li>`).join("");
+      const signals = delta.newSignals.map(sg =>
+        `<li><span class="sd-sig-time">${escapeHtml(sg.time ?? "")}</span><b>${escapeHtml(sg.sender ?? "?")}</b>：${escapeHtml((sg.text ?? "").slice(0, 90))}</li>`).join("");
+      const topics = (delta.topicDeltas || []).slice(0, 6).map(t =>
+        `<li class="sd-topic">${escapeHtml(t.label)} <b>+${t.delta}</b></li>`).join("");
+      detail =
+        `<div class="sd-sec"><h4>新增 Issue（${delta.newIssues.length}）</h4>${issues ? `<ul>${issues}</ul>` : '<p class="sd-none">无</p>'}</div>` +
+        `<div class="sd-sec"><h4>新增精选信号（${delta.newSignals.length}）</h4>${signals ? `<ul>${signals}</ul>` : '<p class="sd-none">无</p>'}</div>` +
+        `<div class="sd-sec"><h4>主题增量 TOP</h4>${topics ? `<ul>${topics}</ul>` : '<p class="sd-none">无</p>'}</div>`;
+    } else {
+      detail = `<div class="sd-sec"><p class="sd-none">首份快照作为后续对比的基线；「今日最新」tab 展示最新一日的增量。</p></div>`;
+    }
+    return `<details class="sd-day" data-base="${base ? 1 : 0}">
+      <summary><span class="sd-date">${escapeHtml(d.date)}</span><span class="sd-stats">消息 <b>${fmt(s.messages)}</b> · 信号 <b>${s.signals}</b> · 成员 <b>${s.members}</b> · Issue <b>${s.issues}</b> · 纪事 <b>${s.chronicles}</b></span><span class="sd-deltas">${escapeHtml(deltas)}</span></summary>
+      <div class="sd-detail">${detail}</div>
+    </details>`;
+  };
+  window.loadSnapshotDiffs = () => {
+    if (window.__sdLoaded) return;
+    window.__sdLoaded = true;
+    fetch("/data/snapshot-diffs.json", { cache: "no-store" })
+      .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(days => {
+        desc.textContent = `共 ${days.length} 份快照 · ${days[0]?.date ?? "--"} → ${days[days.length - 1]?.date ?? "--"} · 点击日期展开当日增量`;
+        list.innerHTML = days.slice().reverse().map(renderDay).join("");
+      })
+      .catch(error => {
+        window.__sdLoaded = false;
+        desc.textContent = `快照数据加载失败：${String(error.message || error).slice(0, 120)}`;
+      });
+  };
+}
+
 function initAgentNotes() {
   const LC_LABEL = { implemented: "已实现", proposed: "计划中", rejected: "已否决", archived: "已封存" };
   const CLS_LABEL = { architecture: "架构", feature: "功能", "bug-fix": "缺陷修复", process: "流程", simplification: "简化", testing: "测试" };
@@ -1438,7 +1514,7 @@ function initAgentNotes() {
 }
 
 function initTabs() {
-  const tabs = [["delta", "今日最新"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue / Repo"], ["agentnotes", "Agent Notes"], ["data", "数据"]];
+  const tabs = [["delta", "今日最新"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue / Repo"], ["agentnotes", "Agent Notes"], ["snapshots", "快照 Diff"], ["data", "数据"]];
   const nav = $("tabs");
   const requestedTab = new URL(location.href).searchParams.get("tab");
   let current = tabs.some(([key]) => key === requestedTab) ? requestedTab : "delta";
@@ -1461,6 +1537,7 @@ function initTabs() {
       history.replaceState({}, "", next);
       window.scrollTo({ top: 0, behavior: "instant" });
       if (key === "agentnotes") window.loadAgentNotes?.();
+      if (key === "snapshots") window.loadSnapshotDiffs?.();
     });
     nav.appendChild(button);
   }
@@ -2207,7 +2284,9 @@ renderGuide();
 initTabs();
 initBoardTabs();
 initAgentNotes();
+initSnapshotDiffs();
 if (document.body.dataset.panel === "agentnotes") window.loadAgentNotes?.();
+if (document.body.dataset.panel === "snapshots") window.loadSnapshotDiffs?.();
 initWarp();
 refreshAll({ initial: true });
 </script>

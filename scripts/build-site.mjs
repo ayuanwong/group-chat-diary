@@ -107,6 +107,40 @@ for (const name of snapshotNames) {
   });
 }
 
+// Consecutive-day snapshot diffs for the 快照 Diff tab (newest snapshot last).
+const datesAsc = [...publishableSnapshots.keys()].sort();
+const snapshotDiffs = datesAsc.map((name, index) => {
+  const snap = publishableSnapshots.get(name);
+  const group = snap.group ?? {};
+  const issues = snap.issues?.issues ?? [];
+  const cmp = snap.comparison;
+  const previous = index > 0 ? publishableSnapshots.get(datesAsc[index - 1]) : null;
+  const issueByNumber = Object.fromEntries(issues.map((issue) => [issue.n, issue]));
+  const signalById = new Map((group.signals ?? []).map((signal) => [signal.message_id, signal]));
+  return {
+    date: name.replace(/\.json$/, ""),
+    previousLabel: cmp?.previousLabel ?? null,
+    stats: {
+      messages: group.stats?.accepted_messages ?? 0,
+      signals: group.signals?.length ?? 0,
+      members: group.members?.length ?? 0,
+      issues: issues.length,
+      chronicles: group.chronicles?.length ?? 0,
+    },
+    delta: cmp && cmp.status === "ready" ? {
+      newMessages: cmp.newMessageCount ?? 0,
+      newIssues: (cmp.newIssueNumbers ?? []).map((number) => issueByNumber[number]).filter(Boolean)
+        .map((issue) => ({ n: issue.n, title: issue.title, cat: issue.cat ?? "其他", url: issue.url })),
+      newSignals: (cmp.newSignalMessageIds ?? []).map((id) => signalById.get(id)).filter(Boolean)
+        .map((signal) => ({ sender: signal.sender, time: signal.time, cat: signal.cat ?? "", text: signal.text })),
+      newMembers: Math.max(0, (group.members?.length ?? 0) - (previous?.group?.members?.length ?? 0)),
+      newChronicles: Math.max(0, (group.chronicles?.length ?? 0) - (previous?.group?.chronicles?.length ?? 0)),
+      topicDeltas: cmp.topicDeltas ?? [],
+    } : null,
+  };
+});
+assertPublishable(JSON.stringify(snapshotDiffs), "snapshot-diffs 数据");
+
 const sitePath = path.join(siteDir, "index.html");
 const faviconPath = path.join(siteDir, "favicon.png");
 const guidePath = path.join(contentDir, "newcomer-guide.json");
@@ -199,6 +233,7 @@ for (const name of snapshotNames) {
 }
 await copyFile(guidePath, path.join(dataOutput, "newcomer-guide.json"));
 await copyFile(agentNotesPath, path.join(dataOutput, "agent-notes.json"));
+await writeFile(path.join(dataOutput, "snapshot-diffs.json"), `${JSON.stringify(snapshotDiffs)}\n`, "utf8");
 
 await writeFile(path.join(dataOutput, "manifest.json"), `${JSON.stringify({
   version: 1,

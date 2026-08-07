@@ -91,7 +91,7 @@ function walk(root) {
       }
     }
   }
-  notes.sort((a, b) => a.d.localeCompare(b.d) || CLASSES.indexOf(a.c) - CLASSES.indexOf(b.c))
+  notes.sort((a, b) => b.d.localeCompare(a.d) || CLASSES.indexOf(a.c) - CLASSES.indexOf(b.c))
   return { notes, errors }
 }
 

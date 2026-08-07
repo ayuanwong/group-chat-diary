@@ -593,6 +593,15 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
 .an-h-cls.simplification{color:#e87ba4}
 .an-h-cls.testing{color:#008300}
 .an-h-path{color:var(--faint);font-size:10.5px;font-family:var(--mono)}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.home-card{display:flex;flex-direction:column;gap:8px;text-align:left;font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--dim);border-radius:14px;padding:18px 20px;cursor:pointer;transition:all .15s}
+.home-card:hover{border-color:var(--gr2);transform:translateY(-2px);background:var(--panel2)}
+.home-k{font-size:10px;letter-spacing:.22em;color:var(--faint)}
+.home-title{font-size:16px;font-weight:700;letter-spacing:.04em;color:var(--ink)}
+.home-arrow{color:var(--gr);margin-left:8px;opacity:0;transition:opacity .15s}
+.home-card:hover .home-arrow{opacity:1}
+.home-desc{font-size:12px;color:var(--mut);line-height:1.65}
+.home-stats{font-size:11.5px;color:var(--gr);margin-top:auto;padding-top:4px}
 </style>
 </head>
 <body class="flicker">
@@ -616,6 +625,14 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
 <button type="button" id="sideExpandBtn" class="side-expand" title="展开侧边栏" aria-label="展开侧边栏">☰</button>
 
 <main id="main">
+  <section class="panel" id="panel-home">
+    <div class="wrap">
+      <div class="p-head"><div class="k">00 // HOME</div><h2>DSH 档案馆</h2>
+      <p class="desc">选择一个你感兴趣的区域进入。数据来自内测群与 dsh-external 私有仓库，仅限授权成员查看。</p></div>
+      <div class="home-grid" id="homeGrid"></div>
+    </div>
+  </section>
+
   <section class="panel" id="panel-guide" hidden>
     <div class="wrap">
       <div class="p-head"><div class="k">00 // NEWCOMER GUIDE</div><h2>新人导引</h2>
@@ -1601,12 +1618,24 @@ function initAgentNotes() {
   };
 }
 
+function switchTab(key) {
+  document.body.dataset.panel = key;
+  document.querySelectorAll("#tabs button").forEach((item) => item.classList.toggle("on", item.dataset.tab === key));
+  document.querySelectorAll(".panel").forEach((panel) => { panel.hidden = panel.id !== `panel-${key}`; });
+  const next = new URL(location.href);
+  if (key === "home") next.searchParams.delete("tab");
+  else next.searchParams.set("tab", key);
+  history.replaceState({}, "", next);
+  window.scrollTo({ top: 0, behavior: "instant" });
+  if (key === "agentnotes") window.loadAgentNotes?.();
+  if (key === "snapshots") window.loadSnapshotDiffs?.();
+}
+
 function initTabs() {
-  const tabs = [["delta", "今日最新"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue / Repo"], ["agentnotes", "Agent Notes"], ["snapshots", "快照 Diff"], ["data", "数据"]];
+  const tabs = [["home", "首页"], ["delta", "今日最新"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue / Repo"], ["agentnotes", "Agent Notes"], ["snapshots", "快照 Diff"], ["data", "数据"]];
   const nav = $("tabs");
   const requestedTab = new URL(location.href).searchParams.get("tab");
-  let current = tabs.some(([key]) => key === requestedTab) ? requestedTab : "delta";
-  document.body.dataset.panel = current;
+  const current = tabs.some(([key]) => key === requestedTab) ? requestedTab : "home";
   nav.innerHTML = "";
   for (const [key, label] of tabs) {
     const button = document.createElement("button");
@@ -1614,22 +1643,41 @@ function initTabs() {
     button.dataset.tab = key;
     button.classList.toggle("guide-tab", key === "guide");
     button.classList.toggle("on", key === current);
-    button.addEventListener("click", () => {
-      current = key;
-      document.body.dataset.panel = current;
-      nav.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
-      document.querySelectorAll(".panel").forEach((panel) => { panel.hidden = panel.id !== `panel-${key}`; });
-      const next = new URL(location.href);
-      if (key === "delta") next.searchParams.delete("tab");
-      else next.searchParams.set("tab", key);
-      history.replaceState({}, "", next);
-      window.scrollTo({ top: 0, behavior: "instant" });
-      if (key === "agentnotes") window.loadAgentNotes?.();
-      if (key === "snapshots") window.loadSnapshotDiffs?.();
-    });
+    button.addEventListener("click", () => switchTab(key));
     nav.appendChild(button);
   }
+  document.body.dataset.panel = current;
   document.querySelectorAll(".panel").forEach((panel) => { panel.hidden = panel.id !== `panel-${current}`; });
+}
+
+function renderHome() {
+  const grid = $("homeGrid");
+  if (!grid) return;
+  const cmp = state.comparison;
+  const history = state.history ?? {};
+  const fmt = (n) => Number(n || 0).toLocaleString("zh-CN");
+  const topTopic = cmp?.topicDeltas?.[0];
+  const cards = [
+    { key: "delta", k: "01 // TODAY", title: "今日动态", desc: "今日新增群消息、精选信号与讨论主题；也可以直接向档案提问。",
+      stats: cmp ? `新增消息 ${fmt(cmp.newMessageCount)} · 信号 ${cmp.newSignalMessageIds?.length ?? 0}${topTopic ? ` · ${topTopic.label} +${topTopic.delta}` : ""}` : "加载中…" },
+    { key: "guide", k: "02 // GUIDE", title: "新人导引", desc: "《DSH 内测安装指南》等固定入门内容，不随日期切换。", stats: "固定内容 · 随时可读" },
+    { key: "cards", k: "03 // CARDS", title: "成员星卡", desc: "跨全部自然日累计的成员发言与精选表现，不推断真实身份。", stats: `${fmt(history.members?.length)} 位成员` },
+    { key: "signals", k: "04 // SIGNALS", title: "信号收录", desc: "可行动的问题、建议、实测与明确完成态事件，按类别筛选。", stats: `${fmt(history.signals?.length)} 条精选信号` },
+    { key: "chronicle", k: "05 // CHRONICLE", title: "事件纪事", desc: "产品方完成态更新与来源明确的公告。", stats: `${fmt(history.chronicles?.length)} 条纪事` },
+    { key: "agentnotes", k: "06 // AGENT NOTES", title: "Agent Notes", desc: "dsh 仓库决策记录全量清单，含摘要详情、TODO 与变更追踪。",
+      stats: SITE_MANIFEST?.agentNotes ? `${fmt(SITE_MANIFEST.agentNotes.total)} 篇 · ${fmt(SITE_MANIFEST.agentNotes.proposed)} 计划中` : "" },
+    { key: "snapshots", k: "07 // SNAPSHOT", title: "快照 Diff", desc: "每日快照跟踪：消息、信号、成员、Issue 的逐日增量与明细。",
+      stats: `${SITE_MANIFEST?.dates?.length ?? 0} 份快照 · 最新 ${SITE_MANIFEST?.latest ?? "--"}` },
+    { key: "data", k: "08 // DATA", title: "星域数据", desc: "群聊活跃时段、Issue 主题与群聊高频词一屏总览。", stats: "数据视图" },
+  ];
+  grid.innerHTML = cards.map(c => `
+    <button type="button" class="home-card" data-tab="${c.key}">
+      <span class="home-k">${c.k}</span>
+      <span class="home-title">${c.title}<span class="home-arrow">→</span></span>
+      <span class="home-desc">${c.desc}</span>
+      <span class="home-stats">${c.stats}</span>
+    </button>`).join("");
+  grid.querySelectorAll(".home-card").forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
 }
 
 function initWarp() {
@@ -2312,6 +2360,7 @@ function renderFooter() {
 }
 
 function renderAll() {
+  renderHome();
   renderDelta();
   renderChronicle();
   renderSignals();
@@ -2371,6 +2420,7 @@ initDatePicker();
 renderGuide();
 initTabs();
 initBoardTabs();
+renderHome();
 initAgentNotes();
 initSnapshotDiffs();
 if (document.body.dataset.panel === "agentnotes") window.loadAgentNotes?.();

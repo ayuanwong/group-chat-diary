@@ -240,6 +240,7 @@ await writeFile(path.join(dataOutput, "manifest.json"), `${JSON.stringify({
   latest: latestMatch[1],
   dates: entries.map((entry) => entry.date),
   entries,
+  agentNotes: JSON.parse(agentNotesText)?.counts ?? null,
 })}\n`, "utf8");
 
 await writeFile(path.join(output, "robots.txt"), "User-agent: *\nDisallow: /\n", "utf8");

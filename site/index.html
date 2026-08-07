@@ -787,16 +787,9 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
     <div class="wrap">
       <div class="p-head"><div class="k">06 // AGENT NOTES</div><h2>Agent Notes 全量清单</h2>
       <p class="desc" id="anDesc">加载中…</p></div>
-      <div class="an-card">
-        <h3>按日发布节奏</h3>
-        <div id="anTimeline"></div>
-        <div class="an-legend">
-          <span><span class="sw" style="background:var(--gr)"></span>已实现</span>
-          <span><span class="sw" style="background:var(--amber)"></span>计划中</span>
-          <span><span class="sw" style="background:#d03b3b"></span>已否决</span>
-          <span><span class="sw" style="background:var(--faint);opacity:.55"></span>已封存</span>
-          <span style="margin-left:auto">横条宽度 = 当日 note 数</span>
-        </div>
+      <div class="an-card an-stats-card">
+        <h3>📊 统计</h3>
+        <div class="an-tiles" id="anTiles"></div>
       </div>
       <div class="an-card">
         <h3>🕘 变更追踪 <span class="an-h-meta" id="anHistoryMeta"></span></h3>
@@ -821,9 +814,16 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
           </table>
         </div>
       </div>
-      <div class="an-card an-stats-card">
-        <h3>📊 统计</h3>
-        <div class="an-tiles" id="anTiles"></div>
+      <div class="an-card">
+        <h3>按日发布节奏</h3>
+        <div id="anTimeline"></div>
+        <div class="an-legend">
+          <span><span class="sw" style="background:var(--gr)"></span>已实现</span>
+          <span><span class="sw" style="background:var(--amber)"></span>计划中</span>
+          <span><span class="sw" style="background:#d03b3b"></span>已否决</span>
+          <span><span class="sw" style="background:var(--faint);opacity:.55"></span>已封存</span>
+          <span style="margin-left:auto">横条宽度 = 当日 note 数</span>
+        </div>
       </div>
     </div>
   </section>

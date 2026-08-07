@@ -251,7 +251,7 @@ main{position:relative;z-index:2;min-height:80vh;margin-left:220px}
 .cloud .wd.hot{font-size:11px!important;color:var(--gr)}
 .cloud .wd:hover{color:var(--gr);text-shadow:0 0 10px rgba(51,255,102,.55)}
 .note{font-size:10.5px;color:var(--faint);letter-spacing:.03em;margin-top:14px;line-height:1.65}
-.overview-sec{max-width:1060px;margin:0 auto;padding:46px 20px 0}
+.overview-sec{margin-top:44px;padding-top:38px;border-top:1px solid var(--dim)}
 .overview-sec .p-head{margin-bottom:22px}
 @media(max-width:900px){.data-grid{grid-template-columns:1fr 1fr}.data-grid>div:first-child{grid-column:1/-1}}
 @media(max-width:760px){.delta-insights{grid-template-columns:1fr}}
@@ -735,34 +735,34 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
         </div>
         <div class="delta-signals" id="deltaSignalList"></div>
       </section>
+
+      <div class="overview-sec">
+        <div class="p-head"><div class="k">07 // SNAPSHOT DIFF</div><h2>快照跟踪</h2>
+        <p class="desc" id="sdDesc">加载中…</p></div>
+        <div class="sd-list" id="sdList"></div>
+      </div>
+
+      <div class="overview-sec">
+        <div class="p-head"><div class="k">08 // STAR DATA</div><h2>星域数据</h2>
+        <p class="desc">一屏查看群聊活跃时段、Issue 主题和群聊高频词。</p></div>
+        <div class="data-grid">
+          <div>
+            <p class="data-title">GROUP ACTIVITY · 群聊活跃时段</p>
+            <div class="hours" id="hours"></div>
+          </div>
+          <div>
+            <p class="data-title">ISSUE TOPICS · 大家在反馈什么</p>
+            <div class="cloud" id="issueCloud"></div>
+          </div>
+          <div>
+            <p class="data-title">GROUP WORDS · 群里反复讨论什么</p>
+            <div class="cloud" id="groupCloud"></div>
+          </div>
+        </div>
+        <p class="note" id="dataNote">群聊旧数据已作废；新数据必须来自【官方】DSH内测群的本机数据库证据。</p>
+      </div>
     </div>
   </section>
-
-  <div class="overview-sec">
-    <div class="p-head"><div class="k">07 // SNAPSHOT DIFF</div><h2>快照跟踪</h2>
-    <p class="desc" id="sdDesc">加载中…</p></div>
-    <div class="sd-list" id="sdList"></div>
-  </div>
-
-  <div class="overview-sec">
-    <div class="p-head"><div class="k">08 // STAR DATA</div><h2>星域数据</h2>
-    <p class="desc">一屏查看群聊活跃时段、Issue 主题和群聊高频词。</p></div>
-    <div class="data-grid">
-      <div>
-        <p class="data-title">GROUP ACTIVITY · 群聊活跃时段</p>
-        <div class="hours" id="hours"></div>
-      </div>
-      <div>
-        <p class="data-title">ISSUE TOPICS · 大家在反馈什么</p>
-        <div class="cloud" id="issueCloud"></div>
-      </div>
-      <div>
-        <p class="data-title">GROUP WORDS · 群里反复讨论什么</p>
-        <div class="cloud" id="groupCloud"></div>
-      </div>
-    </div>
-    <p class="note" id="dataNote">群聊旧数据已作废；新数据必须来自【官方】DSH内测群的本机数据库证据。</p>
-  </div>
 
   <section class="panel" id="panel-chronicle" hidden>
     <div class="wrap">

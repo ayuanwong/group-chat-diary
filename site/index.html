@@ -428,6 +428,85 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
   html[data-theme="loserfox"] .guide-code{background:#141414;color:var(--ink)}
 }
 </style>
+<style id="agentNotesStyles">
+/* ── Agent Notes tab（组件与 dsh-archive-theme 一致，变量驱动随主题切换）── */
+.chip-group{display:flex;gap:6px;flex-wrap:wrap}
+.an-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 20px}
+.an-tile{background:var(--panel);border:1px solid var(--dim);border-radius:12px;padding:14px 16px}
+.an-tile .num{font-size:30px;font-weight:700;line-height:1.1;color:var(--ink)}
+.an-tile .num.implemented{color:var(--gr)}
+.an-tile .num.proposed{color:var(--amber)}
+.an-tile .num.rejected{color:#d03b3b}
+.an-tile .num.archived{color:var(--faint)}
+.an-tile.total .num{color:var(--gr)}
+.an-tile .lbl{font-size:12px;color:var(--faint);margin-top:2px}
+.an-card{background:var(--panel);border:1px solid var(--dim);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+.an-card h3{font-size:14px;margin:0 0 12px;color:var(--ink);font-weight:700;letter-spacing:.04em}
+.an-row{display:grid;grid-template-columns:62px 1fr 34px;align-items:center;gap:10px;margin-bottom:7px}
+.an-row .mk{font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;text-align:right}
+.an-row .bar{height:14px;border-radius:4px;display:flex;overflow:hidden;background:var(--dim)}
+.an-row .bar span{height:100%}
+.an-row .bar .implemented{background:var(--gr)}
+.an-row .bar .proposed{background:var(--amber)}
+.an-row .bar .rejected{background:#d03b3b}
+.an-row .bar .archived{background:var(--faint);opacity:.55}
+.an-row .cnt{font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums}
+.an-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--mut)}
+.an-legend .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.an-filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.an-filters input[type="search"]{flex:1;min-width:220px;font:inherit;font-size:14px;padding:8px 12px;border:1px solid var(--dim);border-radius:8px;background:var(--bg);color:var(--ink)}
+.an-filters input[type="search"]:focus{outline:2px solid var(--gr);outline-offset:1px;border-color:transparent}
+.an-chip{font:inherit;font-size:12.5px;color:var(--mut);background:var(--bg);border:1px solid var(--dim);border-radius:999px;padding:5px 12px;cursor:pointer;user-select:none}
+.an-chip:hover{border-color:var(--faint)}
+.an-chip.active{border-color:transparent;color:#fff}
+.an-chip.lc-implemented.active{background:var(--gr)}
+.an-chip.lc-proposed.active{background:var(--amber);color:#3a2c00}
+.an-chip.lc-rejected.active{background:#d03b3b}
+.an-chip.lc-archived.active{background:var(--faint)}
+.an-chip.cls-architecture.active{background:#2a78d6}
+.an-chip.cls-feature.active{background:#eb6834}
+.an-chip.cls-bug-fix.active{background:#1baf7a}
+.an-chip.cls-process.active{background:#eda100;color:#3a2c00}
+.an-chip.cls-simplification.active{background:#e87ba4}
+.an-chip.cls-testing.active{background:#008300}
+.an-count{font-size:12.5px;color:var(--faint);margin-bottom:10px}
+.an-table-wrap{overflow-x:auto;border:1px solid var(--dim);border-radius:12px;background:var(--panel)}
+.an-table-wrap table{width:100%;border-collapse:collapse;font-size:13.5px}
+.an-table-wrap thead th{position:sticky;top:0;background:var(--panel);z-index:1;text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);padding:10px 14px;border-bottom:1px solid var(--dim);font-weight:600;white-space:nowrap}
+.an-table-wrap tbody td{padding:8px 14px;border-bottom:1px solid var(--dim);vertical-align:top;color:var(--ink)}
+.an-table-wrap tbody tr:last-child td{border-bottom:none}
+.an-table-wrap tbody tr:hover{background:var(--panel2)}
+.an-table-wrap td.an-date{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--mut)}
+.an-table-wrap .t-zh{font-weight:600}
+.an-table-wrap .t-en{color:var(--faint);font-size:12px;margin-top:1px}
+.an-dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
+.an-dot.implemented{background:var(--gr)}
+.an-dot.proposed{background:var(--amber)}
+.an-dot.rejected{background:#d03b3b}
+.an-dot.archived{background:var(--faint)}
+.an-lifecycle{white-space:nowrap;color:var(--mut)}
+.an-cls{white-space:nowrap}
+.an-cls-tag{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.an-cls-tag.architecture{color:#2a78d6}
+.an-cls-tag.feature{color:#eb6834}
+.an-cls-tag.bug-fix{color:#1baf7a}
+.an-cls-tag.process{color:#eda100}
+.an-cls-tag.simplification{color:#e87ba4}
+.an-cls-tag.testing{color:#008300}
+.an-todo{border-left:3px solid var(--amber)}
+.an-todo ol{margin:0;padding-left:22px;font-size:13.5px}
+.an-todo li{margin-bottom:7px;color:var(--ink)}
+.an-todo .d{color:var(--faint);font-variant-numeric:tabular-nums;font-size:12.5px;margin-right:8px}
+.an-todo .t-zh{display:block;font-weight:600}
+.an-todo .t-en{display:block;color:var(--faint);font-size:12px}
+.an-todo .ct{font-size:11.5px;margin-left:8px;padding:1px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.an-todo .ct.architecture{color:#2a78d6}
+.an-todo .ct.feature{color:#eb6834}
+.an-todo .ct.process{color:#eda100}
+.an-todo .ct.simplification{color:#e87ba4}
+.an-todo .ct.testing{color:#008300}
+.an-empty td{text-align:center;color:var(--faint);padding:28px}
+</style>
 </head>
 <body class="flicker">
 <div id="warp"><canvas id="warpCv"></canvas><div class="warp-txt">HYPERSPACE // WARP</div><div class="warp-skip" id="warpSkip">点击跳过 ▸</div></div>
@@ -610,6 +689,44 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
         </div>
         <div class="repo-groups" id="repoList"></div>
       </section>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-agentnotes" hidden>
+    <div class="wrap">
+      <div class="p-head"><div class="k">06 // AGENT NOTES</div><h2>Agent Notes 全量清单</h2>
+      <p class="desc" id="anDesc">加载中…</p></div>
+      <div class="an-tiles" id="anTiles"></div>
+      <div class="an-card">
+        <h3>按日发布节奏</h3>
+        <div id="anTimeline"></div>
+        <div class="an-legend">
+          <span><span class="sw" style="background:var(--gr)"></span>已实现</span>
+          <span><span class="sw" style="background:var(--amber)"></span>计划中</span>
+          <span><span class="sw" style="background:#d03b3b"></span>已否决</span>
+          <span><span class="sw" style="background:var(--faint);opacity:.55"></span>已封存</span>
+          <span style="margin-left:auto">横条宽度 = 当日 note 数</span>
+        </div>
+      </div>
+      <div class="an-card an-todo">
+        <h3>🟡 计划清单（TODO · <span id="anTodoCount">0</span>）</h3>
+        <ol id="anTodoList"></ol>
+      </div>
+      <div class="an-card">
+        <h3>全量清单</h3>
+        <div class="an-filters">
+          <input type="search" id="anQ" placeholder="搜索中文标题、英文标题、日期…">
+          <div class="chip-group" id="anLcFilters"></div>
+          <div class="chip-group" id="anClsFilters"></div>
+        </div>
+        <div class="an-count" id="anResultCount"></div>
+        <div class="an-table-wrap">
+          <table>
+            <thead><tr><th>日期</th><th>状态</th><th>类别</th><th>标题</th></tr></thead>
+            <tbody id="anRows"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1137,8 +1254,94 @@ function renderGuide() {
       (Array.isArray(section.blocks) ? section.blocks.map(renderBlock).join("") : "") + `</article>`).join("");
 }
 
+function initAgentNotes() {
+  const LC_LABEL = { implemented: "已实现", proposed: "计划中", rejected: "已否决", archived: "已封存" };
+  const CLS_LABEL = { architecture: "架构", feature: "功能", "bug-fix": "缺陷修复", process: "流程", simplification: "简化", testing: "测试" };
+  const CLS_ORDER = ["architecture", "feature", "bug-fix", "process", "simplification", "testing"];
+  const LC_ORDER = ["implemented", "proposed", "rejected", "archived"];
+  const tiles = $("anTiles");
+  const timeline = $("anTimeline");
+  const rows = $("anRows");
+  const todoList = $("anTodoList");
+  let NOTES = [];
+  let lcActive = new Set();
+  let clsActive = new Set();
+  let query = "";
+
+  const renderTiles = () => {
+    const counts = {};
+    NOTES.forEach(n => counts[n.l] = (counts[n.l] || 0) + 1);
+    const defs = [{ key: "total", cls: "total", num: NOTES.length, lbl: "总计" },
+      ...LC_ORDER.map(l => ({ key: l, cls: l, num: counts[l] || 0, lbl: LC_LABEL[l] }))];
+    tiles.innerHTML = defs.map(t => `<div class="an-tile"><div class="num ${t.cls}">${t.num}</div><div class="lbl">${t.lbl}</div></div>`).join("");
+  };
+  const renderTimeline = () => {
+    const byDate = {};
+    NOTES.forEach(n => { (byDate[n.d] = byDate[n.d] || []).push(n); });
+    const dates = Object.keys(byDate).sort();
+    const maxDay = Math.max(1, ...dates.map(d => byDate[d].length));
+    timeline.innerHTML = dates.map(d => {
+      const segs = LC_ORDER.map(lc => {
+        const c = byDate[d].filter(n => n.l === lc).length;
+        return c ? `<span class="${lc}" style="width:${(c / maxDay * 100).toFixed(1)}%"></span>` : "";
+      }).join("");
+      return `<div class="an-row" title="${d} · ${byDate[d].length} 篇"><div class="mk">${d.slice(5)}</div><div class="bar">${segs}</div><div class="cnt">${byDate[d].length}</div></div>`;
+    }).join("");
+  };
+  const renderTodo = () => {
+    const todo = NOTES.filter(n => n.l === "proposed").sort((a, b) => a.d.localeCompare(b.d));
+    $("anTodoCount").textContent = todo.length;
+    todoList.innerHTML = todo.map((n, i) =>
+      `<li><span class="d">${n.d}</span><span class="ct ${n.c}">${CLS_LABEL[n.c]}</span><span class="t-zh">${i + 1}. ${escapeHtml(n.tz)}</span><span class="t-en">${escapeHtml(n.te)}</span></li>`).join("");
+  };
+  const render = () => {
+    const visible = NOTES.filter(n => {
+      if (lcActive.size && !lcActive.has(n.l)) return false;
+      if (clsActive.size && !clsActive.has(n.c)) return false;
+      if (query) {
+        const hay = (n.tz + " " + n.te + " " + n.d + " " + n.c).toLowerCase();
+        if (!hay.includes(query)) return false;
+      }
+      return true;
+    });
+    rows.innerHTML = visible.length ? visible.map(n =>
+      `<tr><td class="an-date">${n.d}</td><td class="an-lifecycle"><span class="an-dot ${n.l}"></span>${LC_LABEL[n.l]}</td><td class="an-cls"><span class="an-cls-tag ${n.c}">${CLS_LABEL[n.c]}</span></td><td><div class="t-zh">${escapeHtml(n.tz)}</div><div class="t-en">${escapeHtml(n.te)}</div></td></tr>`).join("")
+      : `<tr class="an-empty"><td colspan="4">没有匹配的记录</td></tr>`;
+    $("anResultCount").textContent = `显示 ${visible.length} / ${NOTES.length} 篇`;
+  };
+  const makeChips = (container, keys, activeSet, prefix, labels) => {
+    container.innerHTML = keys.map(k => `<button type="button" class="an-chip ${prefix}${k}" data-k="${k}">${labels[k]}</button>`).join("");
+    container.querySelectorAll("button").forEach(btn => btn.addEventListener("click", () => {
+      const k = btn.dataset.k;
+      if (activeSet.has(k)) activeSet.delete(k); else activeSet.add(k);
+      btn.classList.toggle("active", activeSet.has(k));
+      render();
+    }));
+  };
+
+  fetch("/data/agent-notes.json", { cache: "no-store" })
+    .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+    .then(data => {
+      NOTES = Array.isArray(data.notes) ? data.notes : [];
+      $("anDesc").textContent = `数据来源 ${data.source ?? "?"} · 快照 ${data.generatedAt ?? "--"} · ${NOTES.length} 篇（中英双语）`;
+      renderTiles();
+      renderTimeline();
+      renderTodo();
+      makeChips($("anLcFilters"), LC_ORDER, lcActive, "lc-", LC_LABEL);
+      makeChips($("anClsFilters"), CLS_ORDER, clsActive, "cls-", CLS_LABEL);
+      $("anQ").addEventListener("input", e => { query = e.target.value.toLowerCase(); render(); });
+      render();
+    })
+    .catch(error => {
+      $("anDesc").textContent = `Agent Notes 数据加载失败：${String(error.message || error).slice(0, 120)}`;
+      tiles.innerHTML = "";
+      timeline.innerHTML = "";
+      todoList.innerHTML = "";
+    });
+}
+
 function initTabs() {
-  const tabs = [["delta", "今日最新"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue / Repo"], ["data", "数据"]];
+  const tabs = [["delta", "今日最新"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue / Repo"], ["agentnotes", "Agent Notes"], ["data", "数据"]];
   const nav = $("tabs");
   const requestedTab = new URL(location.href).searchParams.get("tab");
   let current = tabs.some(([key]) => key === requestedTab) ? requestedTab : "delta";
@@ -1905,6 +2108,7 @@ initDatePicker();
 renderGuide();
 initTabs();
 initBoardTabs();
+initAgentNotes();
 initWarp();
 refreshAll({ initial: true });
 </script>

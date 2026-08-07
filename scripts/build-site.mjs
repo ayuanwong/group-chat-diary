@@ -110,13 +110,17 @@ for (const name of snapshotNames) {
 const sitePath = path.join(siteDir, "index.html");
 const faviconPath = path.join(siteDir, "favicon.png");
 const guidePath = path.join(contentDir, "newcomer-guide.json");
+const agentNotesPath = path.join(contentDir, "agent-notes.json");
 await assertReadable(sitePath, "缺少唯一站点外壳 site/index.html");
 await assertReadable(faviconPath, "缺少站点图标 site/favicon.png");
 await assertReadable(guidePath, "缺少新人导引数据 content/newcomer-guide.json");
+await assertReadable(agentNotesPath, "缺少 Agent Notes 数据 content/agent-notes.json");
 const siteHtml = await readFile(sitePath, "utf8");
 const guideText = await readFile(guidePath, "utf8");
+const agentNotesText = await readFile(agentNotesPath, "utf8");
 assertPublishable(siteHtml, "site/index.html");
 assertPublishable(guideText, "content/newcomer-guide.json");
+assertPublishable(agentNotesText, "content/agent-notes.json");
 if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide"') || !siteHtml.includes("/data/manifest.json")) {
   throw new Error("站点外壳缺少日期切换或新人导引入口");
 }
@@ -194,6 +198,7 @@ for (const name of snapshotNames) {
   await writeFile(path.join(dataOutput, name), `${JSON.stringify(publishableSnapshots.get(name))}\n`, "utf8");
 }
 await copyFile(guidePath, path.join(dataOutput, "newcomer-guide.json"));
+await copyFile(agentNotesPath, path.join(dataOutput, "agent-notes.json"));
 
 await writeFile(path.join(dataOutput, "manifest.json"), `${JSON.stringify({
   version: 1,

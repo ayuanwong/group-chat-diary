@@ -506,6 +506,29 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
 .an-todo .ct.simplification{color:#e87ba4}
 .an-todo .ct.testing{color:#008300}
 .an-empty td{text-align:center;color:var(--faint);padding:28px}
+.an-clickable{cursor:pointer}
+.an-clickable:hover .an-more{opacity:1}
+.an-more{opacity:0;margin-left:8px;color:var(--gr);font-size:11px;white-space:nowrap}
+.an-modal{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;padding:20px}
+.an-modal[hidden]{display:none}
+.an-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.an-modal-panel{position:relative;width:min(860px,100%);max-height:82vh;display:flex;flex-direction:column;background:var(--bg);border:1px solid var(--dim);border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+.an-modal-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--dim)}
+.an-modal-meta{display:flex;align-items:center;gap:10px;flex:1;min-width:0;font-size:12px;color:var(--mut)}
+.an-modal-actions{display:flex;gap:8px}
+.an-lang-btn,.an-close-btn{font:inherit;font-size:12px;color:var(--mut);background:none;border:1px solid var(--dim);border-radius:8px;padding:4px 10px;cursor:pointer}
+.an-lang-btn:hover,.an-close-btn:hover{color:var(--ink);border-color:var(--gr2)}
+.an-modal-panel h3{font-size:16px;margin:0;padding:14px 16px 0;color:var(--ink)}
+.an-modal-panel h3 .t-en{color:var(--faint);font-size:12.5px;margin-top:3px;font-weight:400}
+.an-modal-body{overflow-y:auto;padding:12px 16px 20px;font-size:13.5px;line-height:1.75;color:var(--ink)}
+.an-sec{margin-bottom:14px}
+.an-sec h4{font-size:11px;color:var(--gr);letter-spacing:.14em;margin:0 0 6px}
+.an-sec p{margin:0}
+.an-sec ul{margin:0;padding-left:22px}
+.an-sec li{margin:4px 0}
+.an-none{color:var(--faint);font-size:12.5px}
+.an-full-note{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--dim);color:var(--faint);font-size:12px}
+.an-full-note code{font-family:var(--mono);color:var(--mut)}
 </style>
 </head>
 <body class="flicker">
@@ -752,6 +775,24 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
     </div>
   </section>
 </main>
+
+<div class="an-modal" id="anModal" hidden role="dialog" aria-modal="true" aria-label="Agent Note 摘要详情">
+  <div class="an-modal-backdrop" id="anModalBackdrop"></div>
+  <div class="an-modal-panel">
+    <div class="an-modal-head">
+      <div class="an-modal-meta">
+        <span class="an-cls-tag" id="anModalCls"></span>
+        <span class="an-lifecycle" id="anModalLc"></span>
+      </div>
+      <div class="an-modal-actions">
+        <button type="button" class="an-lang-btn" id="anLangBtn">EN</button>
+        <button type="button" class="an-close-btn" id="anModalClose" aria-label="关闭">✕</button>
+      </div>
+    </div>
+    <h3 id="anModalTitle"></h3>
+    <div class="an-modal-body" id="anModalBody"></div>
+  </div>
+</div>
 
 <div id="refreshBar"><div class="line" id="refreshLine"></div><div class="bar"><i id="refreshFill"></i></div></div>
 <footer>
@@ -1263,10 +1304,16 @@ function initAgentNotes() {
   const timeline = $("anTimeline");
   const rows = $("anRows");
   const todoList = $("anTodoList");
+  const modal = $("anModal");
+  const modalBody = $("anModalBody");
+  const modalTitle = $("anModalTitle");
   let NOTES = [];
+  let loaded = false;
   let lcActive = new Set();
   let clsActive = new Set();
   let query = "";
+  let currentNote = null;
+  let currentLang = "zh";
 
   const renderTiles = () => {
     const counts = {};
@@ -1295,7 +1342,7 @@ function initAgentNotes() {
       `<li><span class="d">${n.d}</span><span class="ct ${n.c}">${CLS_LABEL[n.c]}</span><span class="t-zh">${i + 1}. ${escapeHtml(n.tz)}</span><span class="t-en">${escapeHtml(n.te)}</span></li>`).join("");
   };
   const render = () => {
-    const visible = NOTES.filter(n => {
+    const visible = NOTES.map((n, i) => ({ n, i })).filter(({ n }) => {
       if (lcActive.size && !lcActive.has(n.l)) return false;
       if (clsActive.size && !clsActive.has(n.c)) return false;
       if (query) {
@@ -1304,8 +1351,8 @@ function initAgentNotes() {
       }
       return true;
     });
-    rows.innerHTML = visible.length ? visible.map(n =>
-      `<tr><td class="an-date">${n.d}</td><td class="an-lifecycle"><span class="an-dot ${n.l}"></span>${LC_LABEL[n.l]}</td><td class="an-cls"><span class="an-cls-tag ${n.c}">${CLS_LABEL[n.c]}</span></td><td><div class="t-zh">${escapeHtml(n.tz)}</div><div class="t-en">${escapeHtml(n.te)}</div></td></tr>`).join("")
+    rows.innerHTML = visible.length ? visible.map(({ n, i }) =>
+      `<tr data-i="${i}" class="an-clickable"><td class="an-date">${n.d}</td><td class="an-lifecycle"><span class="an-dot ${n.l}"></span>${LC_LABEL[n.l]}</td><td class="an-cls"><span class="an-cls-tag ${n.c}">${CLS_LABEL[n.c]}</span></td><td><div class="t-zh">${escapeHtml(n.tz)}<span class="an-more">详情 ›</span></div><div class="t-en">${escapeHtml(n.te)}</div></td></tr>`).join("")
       : `<tr class="an-empty"><td colspan="4">没有匹配的记录</td></tr>`;
     $("anResultCount").textContent = `显示 ${visible.length} / ${NOTES.length} 篇`;
   };
@@ -1319,25 +1366,75 @@ function initAgentNotes() {
     }));
   };
 
-  fetch("/data/agent-notes.json", { cache: "no-store" })
-    .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
-    .then(data => {
-      NOTES = Array.isArray(data.notes) ? data.notes : [];
-      $("anDesc").textContent = `数据来源 ${data.source ?? "?"} · 快照 ${data.generatedAt ?? "--"} · ${NOTES.length} 篇（中英双语）`;
-      renderTiles();
-      renderTimeline();
-      renderTodo();
-      makeChips($("anLcFilters"), LC_ORDER, lcActive, "lc-", LC_LABEL);
-      makeChips($("anClsFilters"), CLS_ORDER, clsActive, "cls-", CLS_LABEL);
-      $("anQ").addEventListener("input", e => { query = e.target.value.toLowerCase(); render(); });
-      render();
-    })
-    .catch(error => {
-      $("anDesc").textContent = `Agent Notes 数据加载失败：${String(error.message || error).slice(0, 120)}`;
-      tiles.innerHTML = "";
-      timeline.innerHTML = "";
-      todoList.innerHTML = "";
-    });
+  // ── 摘要详情 ──
+  const escList = (items) => items.length
+    ? `<ul>${items.map(t => `<li>${escapeHtml(t)}</li>`).join("")}</ul>`
+    : `<p class="an-none">无</p>`;
+  const renderModalBody = () => {
+    const n = currentNote;
+    if (!n) return;
+    const zh = currentLang === "zh";
+    modalBody.innerHTML =
+      `<div class="an-sec"><h4>摘要</h4><p>${escapeHtml(zh ? n.sum : n.sume)}</p></div>` +
+      `<div class="an-sec"><h4>要点</h4>${escList(zh ? n.pts : n.ptse)}</div>` +
+      `<div class="an-sec"><h4>替代方案</h4>${escList(zh ? n.alt : n.alte)}</div>` +
+      `<p class="an-full-note">完整正文见 dsh 仓库 <code>.agents/notes/${n.l}/${n.c}/${n.d}-….md</code>（此处为自动摘要）</p>`;
+  };
+  const openNote = (note) => {
+    currentNote = note;
+    currentLang = note.bi ? "zh" : "en";
+    $("anModalCls").textContent = CLS_LABEL[note.c];
+    $("anModalCls").className = `an-cls-tag ${note.c}`;
+    $("anModalLc").textContent = `${LC_LABEL[note.l]} · ${note.d}`;
+    modalTitle.innerHTML = `<div class="t-zh">${escapeHtml(note.tz)}</div><div class="t-en">${escapeHtml(note.te)}</div>`;
+    $("anLangBtn").style.display = note.bi ? "" : "none";
+    $("anLangBtn").textContent = "EN";
+    renderModalBody();
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+  };
+  const closeModal = () => {
+    modal.hidden = true;
+    document.body.style.overflow = "";
+  };
+  $("anModalClose").addEventListener("click", closeModal);
+  $("anModalBackdrop").addEventListener("click", closeModal);
+  $("anLangBtn").addEventListener("click", () => {
+    currentLang = currentLang === "zh" ? "en" : "zh";
+    $("anLangBtn").textContent = currentLang === "zh" ? "EN" : "中文";
+    renderModalBody();
+  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !modal.hidden) closeModal(); });
+  rows.addEventListener("click", e => {
+    const tr = e.target.closest("tr[data-i]");
+    if (tr) openNote(NOTES[Number(tr.dataset.i)]);
+  });
+
+  // ── 懒加载（首次打开 tab 才拉取，数据约 2MB）──
+  window.loadAgentNotes = () => {
+    if (loaded) return;
+    loaded = true;
+    fetch("/data/agent-notes.json", { cache: "no-store" })
+      .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(data => {
+        NOTES = Array.isArray(data.notes) ? data.notes : [];
+        $("anDesc").textContent = `数据来源 ${data.source ?? "?"} · 快照 ${data.generatedAt ?? "--"} · ${NOTES.length} 篇 · 点击任意行查看摘要详情`;
+        renderTiles();
+        renderTimeline();
+        renderTodo();
+        makeChips($("anLcFilters"), LC_ORDER, lcActive, "lc-", LC_LABEL);
+        makeChips($("anClsFilters"), CLS_ORDER, clsActive, "cls-", CLS_LABEL);
+        $("anQ").addEventListener("input", e => { query = e.target.value.toLowerCase(); render(); });
+        render();
+      })
+      .catch(error => {
+        loaded = false;
+        $("anDesc").textContent = `Agent Notes 数据加载失败：${String(error.message || error).slice(0, 120)}`;
+        tiles.innerHTML = "";
+        timeline.innerHTML = "";
+        todoList.innerHTML = "";
+      });
+  };
 }
 
 function initTabs() {
@@ -1363,6 +1460,7 @@ function initTabs() {
       else next.searchParams.set("tab", key);
       history.replaceState({}, "", next);
       window.scrollTo({ top: 0, behavior: "instant" });
+      if (key === "agentnotes") window.loadAgentNotes?.();
     });
     nav.appendChild(button);
   }
@@ -2109,6 +2207,7 @@ renderGuide();
 initTabs();
 initBoardTabs();
 initAgentNotes();
+if (document.body.dataset.panel === "agentnotes") window.loadAgentNotes?.();
 initWarp();
 refreshAll({ initial: true });
 </script>

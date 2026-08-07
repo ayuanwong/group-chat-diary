@@ -555,6 +555,32 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
 .sd-sec .sd-sig-time{color:var(--faint);font-size:11px;margin-right:8px}
 .sd-sec .sd-topic{font-variant-numeric:tabular-nums}
 .sd-none{color:var(--faint)}
+.an-h-meta{font-size:11px;color:var(--faint);font-weight:400;letter-spacing:.02em;margin-left:8px}
+.an-h-day{border:1px solid var(--dim);border-radius:10px;margin-bottom:8px;overflow:hidden;background:var(--panel)}
+.an-h-day summary{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:9px 14px;cursor:pointer;list-style:none;user-select:none}
+.an-h-day summary::-webkit-details-marker{display:none}
+.an-h-day summary:hover{background:var(--panel2)}
+.an-h-date{font-weight:700;color:var(--ink);font-size:12.5px;min-width:82px}
+.an-h-counts{font-size:11px;color:var(--faint);flex:1;min-width:150px}
+.an-h-badges{display:flex;gap:6px;flex-wrap:wrap}
+.an-h-badge{font-size:10.5px;padding:1px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.an-h-badge.add{color:var(--gr)}
+.an-h-badge.arch{color:var(--amber)}
+.an-h-badge.del{color:#d03b3b}
+.an-h-badge.mv{color:#2a78d6}
+.an-h-detail{padding:2px 14px 12px;border-top:1px solid var(--dim);font-size:12px}
+.an-h-sec{margin-top:10px}
+.an-h-sec h5{font-size:10.5px;color:var(--gr);letter-spacing:.13em;margin:0 0 5px}
+.an-h-sec ul{margin:0;padding-left:20px}
+.an-h-sec li{margin:2px 0;line-height:1.55}
+.an-h-cls{font-size:10px;padding:0 7px;border-radius:999px;border:1px solid currentColor;margin-right:7px}
+.an-h-cls.architecture{color:#2a78d6}
+.an-h-cls.feature{color:#eb6834}
+.an-h-cls.bug-fix{color:#1baf7a}
+.an-h-cls.process{color:#eda100}
+.an-h-cls.simplification{color:#e87ba4}
+.an-h-cls.testing{color:#008300}
+.an-h-path{color:var(--faint);font-size:10.5px;font-family:var(--mono)}
 </style>
 </head>
 <body class="flicker">
@@ -756,6 +782,10 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
           <span><span class="sw" style="background:var(--faint);opacity:.55"></span>已封存</span>
           <span style="margin-left:auto">横条宽度 = 当日 note 数</span>
         </div>
+      </div>
+      <div class="an-card">
+        <h3>🕘 变更追踪 <span class="an-h-meta" id="anHistoryMeta"></span></h3>
+        <div id="anHistory"></div>
       </div>
       <div class="an-card an-todo">
         <h3>🟡 计划清单（TODO · <span id="anTodoCount">0</span>）</h3>
@@ -1491,6 +1521,38 @@ function initAgentNotes() {
     if (tr) openNote(NOTES[Number(tr.dataset.i)]);
   });
 
+  const renderHistory = (history) => {
+    const box = $("anHistory");
+    const meta = $("anHistoryMeta");
+    if (!history || !history.length) {
+      meta.textContent = "";
+      box.innerHTML = '<p class="an-none">无可用快照历史（需要 git 快照分支）</p>';
+      return;
+    }
+    meta.textContent = `${history[0].date} → ${history[history.length - 1].date} · ${history.length} 个快照`;
+    box.innerHTML = history.slice().reverse().map(h => {
+      const badges = [
+        h.added.length ? `<span class="an-h-badge add">+${h.added.length} 新增</span>` : "",
+        h.archived.length ? `<span class="an-h-badge arch">📦${h.archived.length} 封存</span>` : "",
+        h.removed.length ? `<span class="an-h-badge del">✖${h.removed.length} 删除</span>` : "",
+        h.moved.length ? `<span class="an-h-badge mv">⇄${h.moved.length} 迁移</span>` : "",
+      ].filter(Boolean).join("");
+      const rows = [
+        h.added.length ? `<div class="an-h-sec"><h5>新增（${h.added.length}）</h5><ul>${h.added.map(n => `<li><span class="an-h-cls ${n.c}">${CLS_LABEL[n.c]}</span>${escapeHtml(n.t)}</li>`).join("")}</ul></div>` : "",
+        h.archived.length ? `<div class="an-h-sec"><h5>封存（${h.archived.length}）</h5><ul>${h.archived.map(n => `<li>${escapeHtml(n.t)}</li>`).join("")}</ul></div>` : "",
+        h.moved.length ? `<div class="an-h-sec"><h5>迁移（${h.moved.length}）</h5><ul>${h.moved.map(n => `<li>${escapeHtml(n.t)} <span class="an-h-path">${escapeHtml(n.from.split("/").slice(0, 2).join("/"))} → ${escapeHtml(n.to.split("/").slice(0, 2).join("/"))}</span></li>`).join("")}</ul></div>` : "",
+        h.removed.length ? `<div class="an-h-sec"><h5>删除（${h.removed.length}）</h5><ul>${h.removed.map(n => `<li>${escapeHtml(n.t)}</li>`).join("")}</ul></div>` : "",
+      ].join("");
+      const counts = h.counts
+        ? `已实现 ${h.counts.implemented ?? 0} · 计划 ${h.counts.proposed ?? 0} · 否决 ${h.counts.rejected ?? 0} · 封存 ${h.counts.archived ?? 0} · 共 ${h.counts.total ?? 0}`
+        : "";
+      return `<details class="an-h-day">
+        <summary><span class="an-h-date">${escapeHtml(h.date)}</span><span class="an-h-counts">${escapeHtml(counts)}</span><span class="an-h-badges">${badges}</span></summary>
+        <div class="an-h-detail">${rows || '<p class="an-none">无变化</p>'}</div>
+      </details>`;
+    }).join("");
+  };
+
   // ── 懒加载（首次打开 tab 才拉取，数据约 2MB）──
   window.loadAgentNotes = () => {
     if (loaded) return;
@@ -1507,6 +1569,7 @@ function initAgentNotes() {
         makeChips($("anClsFilters"), CLS_ORDER, clsActive, "cls-", CLS_LABEL);
         $("anQ").addEventListener("input", e => { query = e.target.value.toLowerCase(); render(); });
         render();
+        renderHistory(data.history || []);
       })
       .catch(error => {
         loaded = false;

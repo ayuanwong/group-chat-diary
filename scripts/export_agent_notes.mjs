@@ -16,6 +16,7 @@
 
 import { readdirSync, readFileSync, writeFileSync, existsSync, statSync } from 'node:fs'
 import { join, resolve, basename } from 'node:path'
+import { execFileSync } from 'node:child_process'
 
 const LIFECYCLES = ['proposed', 'implemented', 'rejected', 'archived']
 const CLASSES = ['feature', 'bug-fix', 'simplification', 'architecture', 'process', 'testing']
@@ -143,6 +144,133 @@ function walk(root) {
   return { notes, errors }
 }
 
+// ── history tracking ─────────────────────────────────────────────────
+// Snapshot refs (e.g. refs/remotes/origin/snapshots/20260803T142347Z-…) carry
+// the notes tree at different dates; consecutive inventories give per-day
+// added / removed / archived (implemented→archived) / moved diffs.
+
+function git(repo, args) {
+  return execFileSync('git', ['-C', repo, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
+}
+
+function refDate(name) {
+  const m = name.match(/(\d{4})(\d{2})(\d{2})T/)
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : null
+}
+
+function discoverSnapshotRefs(repo, notesRel) {
+  // Curated daily snapshots only; dsh-staging/* branches are WIP states.
+  const patterns = [
+    'refs/remotes/origin/snapshots/*', 'refs/heads/snapshots/*',
+  ]
+  let refs = []
+  try {
+    refs = git(repo, ['for-each-ref', '--format=%(refname:short)|%(creatordate:unix)', ...patterns])
+      .split('\n').filter(Boolean)
+      .map(line => { const [name, ts] = line.split('|'); return { name, ts: Number(ts || 0) } })
+  } catch { return [] }
+  const ok = []
+  for (const r of refs) {
+    try {
+      const files = git(repo, ['ls-tree', '-r', '--name-only', r.name, '--', notesRel])
+      if (files.split('\n').filter(Boolean).some(p => p.includes(`${notesRel}/`))) ok.push(r)
+    } catch { /* ref without the notes subtree */ }
+  }
+  // oldest first by the date encoded in the ref name (creatordate can be
+  // shared across refs pointing at the same commit), dedupe per date.
+  ok.sort((a, b) => {
+    const da = refDate(a.name) ?? ''
+    const db = refDate(b.name) ?? ''
+    return da.localeCompare(db) || a.ts - b.ts
+  })
+  const seen = new Set()
+  const unique = []
+  for (const r of ok) {
+    const d = refDate(r.name) ?? ''
+    if (seen.has(d)) continue
+    seen.add(d)
+    unique.push(r)
+  }
+  return unique.slice(-14) // bounded history depth
+}
+
+function inventoryFromRef(repo, ref, notesRel) {
+  const items = []
+  try {
+    const paths = git(repo, ['ls-tree', '-r', '-z', '--name-only', ref, '--', notesRel]).split('\0').filter(Boolean)
+    for (const p of paths) {
+      const rel = p.startsWith(`${notesRel}/`) ? p.slice(notesRel.length + 1) : p
+      const segs = rel.split('/')
+      if (segs.length !== 3) continue
+      const [lc, cls, file] = segs
+      if (!LIFECYCLES.includes(lc) || !CLASSES.includes(cls)) continue
+      if (!file.endsWith('.md') || file.endsWith('.zh.md')) continue
+      const m = file.match(NOTE_FILE)
+      if (!m) continue
+      items.push({ p: rel, d: m[1], l: lc, c: cls, t: null })
+    }
+    const titles = new Map()
+    for (const line of git(repo, ['grep', '-e', '^# ', ref, '--', notesRel]).split('\n')) {
+      const rest = line.slice(line.indexOf(':') + 1) // drop "<ref>:"
+      const ci = rest.indexOf(':')
+      if (ci < 0) continue
+      const path = rest.slice(0, ci)
+      if (!titles.has(path)) titles.set(path, rest.slice(ci + 1).replace(/^#\s+/, '').trim())
+    }
+    for (const item of items) {
+      item.t = titles.get(`${notesRel}/${item.p}`) ?? item.p.split('/').pop().replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.md$/, '').replace(/-/g, ' ')
+    }
+  } catch { /* treat ref as empty */ }
+  return items
+}
+
+function diffSnapshots(prev, cur) {
+  const prevByPath = new Map(prev.map(n => [n.p, n]))
+  const curByPath = new Map(cur.map(n => [n.p, n]))
+  const baseName = (n) => n.p.split('/').pop().replace(/\.md$/, '')
+  const prevBase = new Map(prev.map(n => [baseName(n), n]))
+  const curBase = new Map(cur.map(n => [baseName(n), n]))
+  const movedBases = new Set()
+  const archived = []
+  const moved = []
+  for (const [base, pn] of prevBase) {
+    const cn = curBase.get(base)
+    if (cn && cn.p !== pn.p) {
+      movedBases.add(base)
+      moved.push({ t: cn.t, from: pn.p, to: cn.p })
+      if (pn.l === 'implemented' && cn.l === 'archived') archived.push({ t: cn.t })
+    }
+  }
+  // Moved notes are reported once (moved/archived); exclude them from add/remove.
+  const added = cur.filter(n => !prevByPath.has(n.p) && !movedBases.has(baseName(n)))
+  const removed = prev.filter(n => !curByPath.has(n.p) && !movedBases.has(baseName(n)))
+  return { added, removed, archived, moved }
+}
+
+function buildHistory(repo, notesRel) {
+  const refs = discoverSnapshotRefs(repo, notesRel)
+  if (!refs.length) return []
+  const inventories = refs.map(r => ({ ref: r.name, date: refDate(r.name), notes: inventoryFromRef(repo, r.name, notesRel) }))
+  const history = []
+  let previous = null
+  for (const inv of inventories) {
+    const counts = { total: inv.notes.length }
+    for (const n of inv.notes) counts[n.l] = (counts[n.l] ?? 0) + 1
+    const diff = previous ? diffSnapshots(previous.notes, inv.notes) : null
+    history.push({
+      date: inv.date ?? inv.ref,
+      ref: inv.ref,
+      counts,
+      added: diff?.added ?? [],
+      removed: diff?.removed ?? [],
+      archived: diff?.archived ?? [],
+      moved: diff?.moved ?? [],
+    })
+    previous = inv
+  }
+  return history
+}
+
 function main() {
   const rootArg = argValue('--notes-root')
   const outArg = argValue('-o') ?? argValue('--output')
@@ -164,12 +292,18 @@ function main() {
   }
   const counts = { total: notes.length }
   for (const n of notes) counts[n.l] = (counts[n.l] ?? 0) + 1
+  // History from git snapshot refs of the notes' repository (empty when unavailable).
+  const repoRoot = resolve(root, '../..')
+  const hasGit = existsSync(join(repoRoot, '.git'))
+  const history = hasGit ? buildHistory(repoRoot, '.agents/notes') : []
+  if (history.length) console.log(`history: ${history.length} snapshots (${history[0].date} → ${history[history.length - 1].date})`)
   const payload = {
     generatedAt: new Date().toISOString(),
     source: sourceLabel,
     notesRoot: root,
     counts,
     notes,
+    history,
   }
   const out = resolve(outArg ?? join(process.cwd(), 'content/agent-notes.json'))
   writeFileSync(out, `${JSON.stringify(payload)}\n`)

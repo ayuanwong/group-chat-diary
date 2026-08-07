@@ -448,6 +448,7 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
 /* ── Agent Notes tab（组件与 dsh-archive-theme 一致，变量驱动随主题切换）── */
 .chip-group{display:flex;gap:6px;flex-wrap:wrap}
 .an-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 20px}
+.an-stats-card .an-tiles{margin:0}
 .an-tile{background:var(--panel);border:1px solid var(--dim);border-radius:12px;padding:14px 16px}
 .an-tile .num{font-size:30px;font-weight:700;line-height:1.1;color:var(--ink)}
 .an-tile .num.implemented{color:var(--gr)}
@@ -786,7 +787,6 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
     <div class="wrap">
       <div class="p-head"><div class="k">06 // AGENT NOTES</div><h2>Agent Notes 全量清单</h2>
       <p class="desc" id="anDesc">加载中…</p></div>
-      <div class="an-tiles" id="anTiles"></div>
       <div class="an-card">
         <h3>按日发布节奏</h3>
         <div id="anTimeline"></div>
@@ -820,6 +820,10 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
             <tbody id="anRows"></tbody>
           </table>
         </div>
+      </div>
+      <div class="an-card an-stats-card">
+        <h3>📊 统计</h3>
+        <div class="an-tiles" id="anTiles"></div>
       </div>
     </div>
   </section>
@@ -1465,7 +1469,8 @@ function initAgentNotes() {
     const todo = NOTES.filter(n => n.l === "proposed").sort((a, b) => a.d.localeCompare(b.d));
     $("anTodoCount").textContent = todo.length;
     todoList.innerHTML = todo.map((n, i) =>
-      `<li><span class="d">${n.d}</span><span class="ct ${n.c}">${CLS_LABEL[n.c]}</span><span class="t-zh">${i + 1}. ${escapeHtml(n.tz)}</span><span class="t-en">${escapeHtml(n.te)}</span></li>`).join("");
+      `<li class="an-clickable" title="点击查看摘要详情"><span class="d">${n.d}</span><span class="ct ${n.c}">${CLS_LABEL[n.c]}</span><span class="t-zh">${i + 1}. ${escapeHtml(n.tz)}<span class="an-more">详情 ›</span></span><span class="t-en">${escapeHtml(n.te)}</span></li>`).join("");
+    todoList.querySelectorAll("li").forEach((li, i) => li.addEventListener("click", () => openNote(todo[i])));
   };
   const render = () => {
     const visible = NOTES.map((n, i) => ({ n, i })).filter(({ n }) => {

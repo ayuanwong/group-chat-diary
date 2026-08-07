@@ -15,7 +15,7 @@ export interface AllowlistEnv {
 }
 
 export interface AllowlistPageState {
-  status: "ready" | "syncing" | "error";
+  status: "ready" | "syncing" | "stale" | "error";
 }
 
 interface AccessMetaRow {
@@ -193,6 +193,13 @@ export async function allowlistIsFresh(env: AllowlistEnv, nowMs = Date.now()): P
   return isFresh(await readMeta(env), nowMs);
 }
 
+export async function allowlistHasActiveMembers(env: AllowlistEnv): Promise<boolean> {
+  const row = await env.ACCESS_DB.prepare(`
+    SELECT COUNT(*) AS count FROM access_allowlist WHERE active = 1
+  `).first<{ count: number }>();
+  return Number(row?.count ?? 0) > 0;
+}
+
 export async function prepareAllowlistPage(
   env: AllowlistEnv,
   githubFetch: GitHubFetch,
@@ -203,8 +210,12 @@ export async function prepareAllowlistPage(
   const meta = await readMeta(env);
   if (isFresh(meta, nowMs)) return { status: "ready" };
   if (meta.lockUntil > Math.floor(nowMs / 1000)) return { status: "syncing" };
-  if (!forceRetry && hasRecentError(meta, nowMs)) return { status: "error" };
-  if (!env.GITHUB_ORG_READ_TOKEN) return { status: "error" };
+  if (!forceRetry && hasRecentError(meta, nowMs)) {
+    return { status: await allowlistHasActiveMembers(env) ? "stale" : "error" };
+  }
+  if (!env.GITHUB_ORG_READ_TOKEN) {
+    return { status: await allowlistHasActiveMembers(env) ? "stale" : "error" };
+  }
 
   const claimed = await claimRefresh(env, Math.floor(nowMs / 1000));
   if (!claimed) return { status: "syncing" };
@@ -213,5 +224,6 @@ export async function prepareAllowlistPage(
     context.waitUntil(refresh);
     return { status: "syncing" };
   }
-  return { status: await refresh ? "ready" : "error" };
+  if (await refresh) return { status: "ready" };
+  return { status: await allowlistHasActiveMembers(env) ? "stale" : "error" };
 }

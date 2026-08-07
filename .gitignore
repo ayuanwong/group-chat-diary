@@ -8,4 +8,5 @@ __pycache__/
 .qa.local.env
 worker-configuration.d.ts
 .work-env/
+.local/
 .DS_Store

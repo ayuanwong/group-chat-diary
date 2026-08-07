@@ -1,6 +1,6 @@
-# DSH 内测群每日档案
+# DSH 私有数据档案
 
-本仓库用于私有归档 DeepSeek Harness（DSH）内测期间的群聊信号、成员参与、产品纪事与 Issue 反馈。网站只有一个持续更新的页面外壳，每个日期对应一份 JSON 快照；README 提供项目说明、每日基本纪要和文件更新记录。
+本仓库承载受保护的 DeepSeek Harness（DSH）档案网站。页面代码与数据更新已经分离：群聊按北京时间自然日归档，GitHub Issue 与 Repo 使用独立的最新版本，组织成员名单只用于访问控制，实时 QA 从私有 D1 语料检索。
 
 > **仅限获得授权的内部成员查看。** 文件包含群成员昵称和精选发言，请勿转发到公开仓库、公开网盘或社交平台。不得开启无访问门禁的 GitHub Pages。
 
@@ -8,30 +8,31 @@
 
 ### 档案包含什么
 
-- **今日新增**：对比前一日归档，展示新增 Issue、对话主题和精选对话；
+- **今日最新**：按北京时间自然日展示群聊消息、主题、精选信号与当日创建的 Issue；
 - **信号与纪事**：从有效群消息中收录可行动的问题、建议、实测与明确完成态事件；
 - **成员星卡**：只依据群内已验证发言归纳参与情况，不推断真实身份；
-- **Issue 汇总**：同步私有仓库 [`dsh-external/issues`](https://github.com/dsh-external/issues) 的 Issue，并按既有规则归类。
+- **Issue / Repo Board**：同步私有仓库 [`dsh-external/issues`](https://github.com/dsh-external/issues) 的 Issue，以及 `dsh-external` 组织 Repo 列表、创建和推送情况。
 
 ### 数据来源与边界
 
 - 群聊只来自本机微信 4.x 数据库中的 `【官方】DSH内测群`；
 - Issue 只来自私有仓库 `dsh-external/issues`；
+- Repo 只来自本机已授权 `gh` 会话能够读取的 `dsh-external` 完整组织仓库列表；
 - 页面不包含完整聊天记录、微信数据库、解密密钥、GitHub 凭据、本机配置或本机绝对路径；
-- 私有仓库的 `corpus/` 保存按日期拆分的完整群聊消息行和 Issue 日快照，供内部检索与问答使用；它不会进入 Pages 构建产物；
+- 历史 `corpus/` 保留既有私有归档；新式运行把当天脱敏群聊写入忽略提交的 `.local/`，再原子同步到 `QA_DB`，不会进入 Pages 构建产物；
 - 完整语料保留每条消息及其时间、发送者、左右归属、类型和正文，仅移除隐藏 XML/媒体密钥、凭据与本机绝对路径；
 - 纪事只收录产品方完成态更新或来源明确的公告，成员疑问、转述与猜测不作为版本更新；
-- 所有统计均为截至该文件生成时的累计快照；“今日新增”才表示相较前一份归档的增量。
+- 群聊统计窗口固定为北京时间 `00:00:00 <= timestamp < 次日 00:00:00`，与任务实际运行或上传时间无关；GitHub Board 有独立同步时间。
 
 ### 如何查看
 
 - 外发网站：访问受保护的 [`dsh.hiwangjie.com`](https://dsh.hiwangjie.com) 后，使用 GitHub 登录；只有 `dsh-external` 组织的有效成员可以进入；
-- 网站默认展示最新快照，也可以从顶部日期选择器切换历史日期；切换日期仍使用同一个 HTML 页面；
+- 网站默认展示最新完整群聊日，也可以从顶部日期选择器切换历史自然日；Issue / Repo Board 不随该日期切换；
 - “新人导引”是独立内容入口，源文件为 `content/newcomer-guide.json`，当前为空，后续可直接从私有 GitHub 仓库更新。
 
 ## 受保护网站
 
-- 部署源是本私有仓库，但 Cloudflare Pages 只发布构建产生的 `dist/`：一份 `index.html`、日期清单和 JSON 数据，不会发布 README、构建脚本或仓库根目录；
+- 部署源是本私有仓库，但 Cloudflare Pages 只发布构建产生的 `dist/`。新数据从受保护 API 读取，完整私有语料不会进入 Pages；
 - Pages 的高级模式 Function 位于所有网页和静态资源之前；GitHub OAuth 只读取公开账号身份，不申请 `read:org` 或其他组织权限；
 - OAuth App 在 GitHub 中使用中性名称 `Member Portal`；成员首次授权后，它会出现在个人设置的 **Authorized OAuth Apps** 列表中，后续访问不需要重复同意同一组公开身份权限；
 - `dsh-external` 成员 ID 每日同步到 Cloudflare D1 私有白名单。登录和后续每次访问都按 GitHub ID 查询白名单，未通过认证时不会读取或返回档案资源；
@@ -48,7 +49,7 @@
 - 每天北京时间 05:00 仍会重新读取 `dsh-external` 的完整成员列表并同步到 D1，用于修复偶发漏投或重试失败的 webhook 事件。
 - 需要立即更新时，直接在 Codex 中说“同步 DSH 成员名单”即可；执行入口是 `npm run sync:members`，同步失败时不会用空名单覆盖现有白名单。
 - 网站不向终端用户提供手工同步按钮；全量刷新只由后台冷却与单飞锁触发，防止匿名流量反复消耗 GitHub API 配额或频繁写入 D1。
-- `latest.txt` 明确指定首页对应的当日快照，所有历史 JSON 都受同一权限门禁保护。
+- `latest.txt` 与历史静态 JSON 仅作为迁移期只读回退；生产首页优先读取 `CONTENT_DB` 的 active 日期与版本。
 
 ## 每日基本纪要
 
@@ -157,16 +158,16 @@
 
 ## 自动更新方式
 
-- 每天北京时间 05:00 从授权数据源生成当天 `snapshots/YYYY-MM-DD.json`，不再生成新的按日 HTML；
-- 每次发布前同步一次 `dsh-external` 成员 ID 白名单；同步失败或成员列表异常为空时停止发布，并保留上一版白名单；
-- 校验通过后，同步更新当天 JSON、`latest.txt` 与 README 的每日纪要、讨论重点和文件更新记录；
-- 构建阶段只生成一份 `dist/index.html`，并生成 `dist/data/manifest.json` 供页面默认选择最新日期、切换历史日期；
-- 只在专用仓库工作区干净且可快进同步时，直接提交并推送到 `main`；
-- 任一数据、结构、隐私或 Git 校验失败即停止，不强推、不覆盖仓库中的其他改动。
+- `npm run refresh:group-day` 默认采集并上传前一北京时间自然日；也可以在命令后传入 `YYYY-MM-DD` 做幂等修复；
+- `npm run sync:github-data` 使用本机已授权 `gh` 会话读取完整私有 Issue/Repo，并共同更新 `CONTENT_DB` 与 GitHub QA 索引；不依赖组织 Owner 或终端用户 OAuth；
+- `npm run backfill:content` 首次回填历史群聊自然日和当前 GitHub 数据；
+- 群聊和 GitHub 数据均先写新版本、校验数量及 JSON，再切换 active 指针；失败时旧版本继续可用；
+- 页面只有在代码变化时才构建和部署。日常数据更新不修改 `snapshots/`、`latest.txt`、README 或 `dist/`；
+- `ACCESS_DB`、`CONTENT_DB`、`QA_DB` 分别承载白名单、展示安全数据和完整私有问答语料，三者不得混用。
 
 ## 本地问答预览
 
-- 问答框位于“今日最新”顶部，先在私有 `corpus/` 中检索完整群聊和最新 Issue，再把本轮命中的少量片段交给 DeepSeek；
+- 问答框位于“今日最新”顶部，从私有完整群聊、Issue 与 Repo 索引中检索，再把本轮命中的少量片段交给 DeepSeek；
 - 复制 `.qa.local.env.example` 为不会被 Git 提交的 `.qa.local.env`，填写 `DEEPSEEK_API_KEY`；
 - 当前默认模型为 `deepseek-v4-flash`，可通过 `DEEPSEEK_MODEL` 覆盖；Key 只由绑定在 `127.0.0.1` 的本机服务读取，不会进入浏览器、构建产物或仓库；
 - 执行 `npm run dev:qa` 后访问终端显示的本地地址；该命令只启动本地预览，不会触发 Cloudflare 部署。
@@ -174,9 +175,9 @@
 ## 线上问答
 
 - 线上 `/api/qa/status` 与 `/api/ask` 复用 GitHub 身份和组织成员白名单门禁，匿名请求无法读取状态、语料或调用模型；
-- 完整群聊与 Issue 由 `npm run sync:qa-corpus` 原子同步到独立的私有 D1 `QA_DB`，不会进入 `dist`，也不会作为静态文件提供下载；
+- 完整群聊与 GitHub 数据使用两个独立 active 指针同步到私有 `QA_DB`。Issue API 完整快照采用分块版本存储，Repo 进入同一实时检索体系；
 - DeepSeek Key 只以 Cloudflare Pages 加密 Secret `DEEPSEEK_API_KEY` 保存。Worker 每轮只发送检索命中的少量片段，并按 GitHub 用户限制为每 10 分钟 20 次提问；
-- 首次部署先执行 `npm run migrate:qa` 与 `npm run sync:qa-corpus`，之后每日语料刷新完成后再次运行 `npm run sync:qa-corpus`。
+- 首次部署先执行 `npm run migrate:content`、`npm run migrate:qa` 和 `npm run backfill:content`；之后群聊与 GitHub 两类任务可独立运行。
 
 ## 文件命名与保留
 

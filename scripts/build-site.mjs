@@ -90,6 +90,10 @@ assertPublishable(guideText, "content/newcomer-guide.json");
 if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide"') || !siteHtml.includes("/data/manifest.json")) {
   throw new Error("站点外壳缺少日期切换或新人导引入口");
 }
+if (!siteHtml.includes('/api/content/manifest') || !siteHtml.includes('id="boardRepos"')
+  || !siteHtml.includes('id="repoList"') || !siteHtml.includes('Issue / Repo')) {
+  throw new Error("站点外壳缺少实时内容 API 或 Issue/Repo Board");
+}
 if (!siteHtml.includes('rel="icon"') || !siteHtml.includes('/favicon.png?v=20260806')) {
   throw new Error("站点外壳缺少指定 favicon");
 }
@@ -110,6 +114,9 @@ if (!siteHtml.includes('id="accountLogin"') || !siteHtml.includes('fetch("/api/m
 }
 if (!siteHtml.includes('id="qaConsole"') || !siteHtml.includes('id="qaForm"') || !siteHtml.includes('fetch("/api/ask"')) {
   throw new Error("今日最新顶部必须保留检索问答入口");
+}
+if (!siteHtml.includes('Repo 用 R') || !siteHtml.includes('repoCount')) {
+  throw new Error("实时问答必须显示并支持 Repo 私有语料");
 }
 if (!siteHtml.includes('[...(state.group?.chronicles ?? [])].sort((left, right) =>')) {
   throw new Error("纪事必须按时间倒序渲染");

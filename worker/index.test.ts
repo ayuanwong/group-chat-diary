@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createHandler, signSession, verifySession, type WorkerEnv } from "./index";
+import { defaultQaPlan } from "./qa";
 
 function makeAccessDb(
   allowedIds = [123],
@@ -26,6 +27,9 @@ function makeAccessDb(
         }
         if (sql.includes("COUNT(*) AS count") && sql.includes("access_allowlist_staging")) {
           return { count: staging.get(String(values[0]))?.size ?? 0 };
+        }
+        if (sql.includes("COUNT(*) AS count") && sql.includes("access_allowlist WHERE active = 1")) {
+          return { count: [...allowlist.values()].filter((row) => row.active === 1).length };
         }
         return null;
       }),
@@ -81,13 +85,16 @@ function makeAccessDb(
 
 function makeQaDb(requestCount = 1): D1Database {
   const meta = [
-    { key: "active_sync_id", value: "test-sync" },
-    { key: "message_count", value: "13078" },
-    { key: "issue_count", value: "357" },
-    { key: "group_date_count", value: "7" },
-    { key: "latest_group_date", value: "2026-08-06" },
-    { key: "latest_issue_date", value: "2026-08-06" },
-    { key: "synced_at", value: "2026-08-06T08:00:00.000Z" },
+    { key: "active_group_sync_id", value: "test-sync" },
+    { key: "active_github_sync_id", value: "test-sync" },
+    { key: "group_message_count", value: "13078" },
+    { key: "github_issue_count", value: "357" },
+    { key: "github_repo_count", value: "80" },
+    { key: "group_date_count_v2", value: "7" },
+    { key: "latest_group_date_v2", value: "2026-08-06" },
+    { key: "latest_issue_date_v2", value: "2026-08-06" },
+    { key: "group_synced_at", value: "2026-08-06T08:00:00.000Z" },
+    { key: "github_synced_at", value: "2026-08-06T08:05:00.000Z" },
   ];
   const group = {
     document_key: "test-sync:g:message-1",
@@ -123,6 +130,23 @@ function makeQaDb(requestCount = 1): D1Database {
     content: "#357 停止生成 引导消息 静默销毁",
     fts_rank: -0.5,
   };
+  const repo = {
+    document_key: "test-sync:r:80",
+    kind: "repo",
+    source_date: "2026-08-06",
+    position: 79,
+    occurred_at: "2026-08-06T07:00:00Z",
+    sender: null,
+    title: "dsh-external/example-repo",
+    url: "https://github.com/dsh-external/example-repo",
+    state: "active",
+    category: "TypeScript",
+    priority: 0,
+    is_changelog: 0,
+    excerpt: "一个用于验证 Repo 检索的仓库。",
+    content: "dsh-external/example-repo TypeScript 最近推送",
+    fts_rank: -0.25,
+  };
   const speakerRows = [
     { ...group, document_key: "test-sync:g:speaker-a-1", sender: "成员甲", content: "我做了完整复现，并整理了原因、方案和验证步骤。 ↳ 回复 被引用者：这不是成员甲的观点。", message_count: 120, substantive_count: 82, sample_rank: 1 },
     { ...group, document_key: "test-sync:g:speaker-a-2", sender: "成员甲", content: "这个交互可以换一种实现，减少一次不必要的等待。", message_count: 120, substantive_count: 82, sample_rank: 2 },
@@ -141,11 +165,72 @@ function makeQaDb(requestCount = 1): D1Database {
         all: vi.fn(async () => {
           if (sql.includes("qa_corpus_meta")) return { results: meta };
           if (sql.includes("PARTITION BY d.sender")) return { results: speakerRows };
-          if (sql.includes("qa_corpus_fts")) return { results: values[2] === "group" ? [group] : [issue] };
+          if (sql.includes("qa_group_fts")) return { results: [group] };
+          if (sql.includes("qa_github_fts")) return { results: values[2] === "repo" ? [repo] : [issue] };
           if (sql.includes("is_changelog = 1")) return { results: [group] };
           if (sql.includes("position BETWEEN")) {
             return { results: [{ occurred_at: group.occurred_at, sender: group.sender, content: group.content }] };
           }
+          return { results: [] };
+        }),
+      };
+      return statement;
+    }),
+  } as unknown as D1Database;
+}
+
+function makeContentDb(): D1Database {
+  const groupPayload = {
+    version: 2,
+    snapshotDate: "2026-08-06",
+    group: { version: 3, source: { group: "【官方】DSH内测群" }, stats: { accepted_messages: 3219 } },
+    comparison: { version: 2, status: "ready" },
+    generatedAt: "2026-08-07T00:00:00.000Z",
+  };
+  const issuePayload = { version: 2, issues: [{ n: 357 }], issue_groups: [] };
+  const repoPayload = { version: 1, repositories: [{ id: 80, name: "example-repo" }], stats: { total: 1 } };
+  return {
+    prepare: vi.fn((sql: string) => {
+      let values: unknown[] = [];
+      const statement = {
+        bind: vi.fn((...nextValues: unknown[]) => {
+          values = nextValues;
+          return statement;
+        }),
+        first: vi.fn(async () => {
+          if (sql.includes("content_active_group_days") && sql.includes("v.payload")) {
+            return { payload: JSON.stringify(groupPayload) };
+          }
+          if (sql.includes("content_active_sources")) {
+            const source = String(values[0]);
+            return {
+              source,
+              sync_id: "github-sync",
+              generated_at: "2026-08-07T00:05:00.000Z",
+              item_count: source === "issues" ? 1 : 1,
+              payload: sql.includes("v.payload")
+                ? JSON.stringify(source === "issues" ? issuePayload : repoPayload)
+                : undefined,
+              activated_at: "2026-08-07T00:06:00.000Z",
+            };
+          }
+          return null;
+        }),
+        all: vi.fn(async () => {
+          if (sql.includes("content_active_group_days")) {
+            return { results: [{
+              date: "2026-08-06",
+              ingest_id: "group-sync",
+              generated_at: "2026-08-07T00:00:00.000Z",
+              source_message_count: 3323,
+              accepted_message_count: 3219,
+              signal_count: 91,
+              participant_count: 104,
+              chronicle_count: 2,
+              activated_at: "2026-08-07T00:01:00.000Z",
+            }] };
+          }
+          if (sql.includes("content_source_chunks")) return { results: [] };
           return { results: [] };
         }),
       };
@@ -164,6 +249,7 @@ function makeEnv(
   return {
     ACCESS_DB: makeAccessDb(allowedIds, accessWrites, lastSyncAt),
     QA_DB: makeQaDb(requestCount),
+    CONTENT_DB: makeContentDb(),
     ASSETS: {
       fetch: vi.fn(async () => new Response(assetBody, { headers: { "Cache-Control": "public" } })),
     } as unknown as Fetcher,
@@ -259,6 +345,24 @@ describe("archive gate", () => {
     expect(modelFetch).not.toHaveBeenCalled();
   });
 
+  it("keeps the live content APIs behind the member gate", async () => {
+    const env = makeEnv();
+    const anonymous = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/repos`), env);
+    expect(anonymous.status).toBe(302);
+    expect(anonymous.headers.get("Location")).toBe(`${env.SITE_ORIGIN}/login`);
+
+    const token = await signSession(
+      { version: 2, githubId: 123, login: "member", exp: Math.floor(Date.now() / 1000) + 300 },
+      env.SESSION_SECRET,
+    );
+    const headers = { Cookie: `__Host-portal_session=${token}` };
+    const manifest = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/manifest`, { headers }), env);
+    expect(manifest.status).toBe(200);
+    await expect(manifest.json()).resolves.toMatchObject({ version: 2, latest: "2026-08-06", github: { repos: 1 } });
+    const repos = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/repos`, { headers }), env);
+    await expect(repos.json()).resolves.toMatchObject({ version: 1, stats: { total: 1 } });
+  });
+
   it("revokes an existing session when the member leaves the allowlist", async () => {
     const env = makeEnv("SECRET ARCHIVE", []);
     const token = await signSession(
@@ -286,7 +390,7 @@ describe("protected DeepSeek Q&A", () => {
     return new Request(`${env.SITE_ORIGIN}${pathname}`, { ...init, headers });
   }
 
-  it("reports only private group and Issue corpus readiness", async () => {
+  it("reports private group, Issue, and Repo corpus readiness", async () => {
     const env = makeEnv();
     const response = await createHandler()(await authenticatedRequest(env, "/api/qa/status"), env);
     expect(response.status).toBe(200);
@@ -294,10 +398,17 @@ describe("protected DeepSeek Q&A", () => {
     expect(body).toMatchObject({
       deepseekReady: true,
       model: "deepseek-v4-flash",
-      corpus: { messageCount: 13_078, issueCount: 357 },
+      corpus: { messageCount: 13_078, issueCount: 357, repoCount: 80 },
       localOnly: false,
     });
     expect(body).not.toHaveProperty("webReady");
+  });
+
+  it("routes repository questions to the private Repo index", () => {
+    expect(defaultQaPlan("组织目前有哪些 Repo，最近哪些仓库有更新？")).toMatchObject({
+      intent: "repository",
+      source: "repo",
+    });
   });
 
   it("streams a cited answer from DeepSeek without exposing the API key", async () => {
@@ -553,8 +664,8 @@ describe("GitHub OAuth", () => {
 
     const failedResponse = await createHandler(githubFetch)(new Request(`${env.SITE_ORIGIN}/login`), env);
     const failedBody = await failedResponse.text();
-    expect(failedBody).toContain("访问名单暂时未能更新");
-    expect(failedBody).not.toContain('href="/auth/login"');
+    expect(failedBody).toContain("最新名单暂时无法获取");
+    expect(failedBody).toContain('href="/auth/login?fallback=1"');
 
     const token = await signSession(
       { version: 2, githubId: 123, login: "member", exp: Math.floor(Date.now() / 1000) + 300 },
@@ -574,6 +685,14 @@ describe("GitHub OAuth", () => {
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe(`${env.SITE_ORIGIN}/login`);
     expect(githubFetch).not.toHaveBeenCalled();
+  });
+
+  it("allows an explicit fallback to the last non-empty verified allowlist", async () => {
+    const env = makeEnv("SECRET ARCHIVE", [123], 1, "2026-08-01T00:00:00.000Z");
+    const response = await createHandler()(new Request(`${env.SITE_ORIGIN}/auth/login?fallback=1`), env);
+    const location = new URL(response.headers.get("Location") ?? "");
+    expect(location.origin).toBe("https://github.com");
+    expect(location.searchParams.has("scope")).toBe(false);
   });
 
   it("requests only public GitHub identity and sets an HttpOnly state cookie", async () => {

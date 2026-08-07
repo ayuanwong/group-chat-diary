@@ -143,6 +143,21 @@ main{position:relative;z-index:2;min-height:80vh}
 .issue-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
 .issue-controls .filters{margin:0}
 .issue-controls .label{font-size:10px;color:var(--faint);letter-spacing:.14em}
+.board-tabs{display:flex;gap:6px;margin:-12px 0 22px;padding-bottom:12px;border-bottom:1px solid var(--dim)}
+.board-tabs button{font:inherit;font-size:12px;color:var(--mut);background:none;border:1px solid var(--dim);padding:6px 16px;cursor:pointer;letter-spacing:.08em}
+.board-tabs button:hover{color:var(--ink);border-color:var(--gr2)}
+.board-tabs button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
+.repo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.repo-card{display:flex;flex-direction:column;min-height:190px;border:1px solid var(--dim);background:var(--panel);padding:14px;text-decoration:none;transition:border-color .15s,background .15s}
+.repo-card:hover{border-color:var(--gr2);background:var(--panel2)}
+.repo-card .top{display:flex;gap:8px;align-items:flex-start}
+.repo-card .name{color:var(--ink);font-size:13px;font-weight:700;overflow-wrap:anywhere}
+.repo-card .badge{margin-left:auto;flex:none;border:1px solid var(--dim);color:var(--faint);font-size:8.5px;padding:1px 5px;letter-spacing:.08em}
+.repo-card .badge.new{color:var(--bg);background:var(--gr);border-color:var(--gr)}
+.repo-card .desc{color:var(--mut);font-size:11px;line-height:1.65;margin-top:9px}
+.repo-card .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.repo-card .tags span{font-size:9px;color:var(--faint);border:1px solid var(--dim);padding:1px 5px}
+.repo-card .meta{margin-top:auto;padding-top:12px;color:var(--faint);font-size:9.5px;line-height:1.6}
 .collbar{display:flex;align-items:center;gap:10px;margin-bottom:20px}
 .collbar .bar{flex:1;height:10px;border:1px solid var(--dim);padding:2px}
 .collbar .bar i{display:block;height:100%;width:0;background:var(--gr);transition:width 1s}
@@ -320,7 +335,7 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
   <div class="nav">
     <div class="logo">DSH <em>//</em> 档案馆</div>
     <div class="tabs" id="tabs"></div>
-    <label class="date-switch" for="datePicker"><span class="label">日期</span><select id="datePicker" aria-label="切换档案日期"></select></label>
+    <label class="date-switch" for="datePicker"><span class="label">群聊日期</span><select id="datePicker" aria-label="切换群聊自然日"></select></label>
     <div class="meta" id="snapshotMeta">读取快照…</div>
     <div class="account-menu" aria-label="当前登录账户">
       <span class="account-login" id="accountLogin">GitHub 账户</span>
@@ -351,7 +366,7 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
             <div>
               <div class="qa-kicker">ASK DSH // RETRIEVAL ONLINE</div>
               <h3 class="qa-title" id="qaTitle"><span class="orb" aria-hidden="true"></span>直接问档案</h3>
-              <p class="qa-subtitle">不用逐个翻 Tab。问题会先判别意图、执行多路检索与融合重排，再由 DeepSeek 组织带来源的回答。</p>
+              <p class="qa-subtitle">不用逐个翻 Tab。问题会在完整私有群聊、Issue 与 Repo 语料中执行多路检索，再由 DeepSeek 组织带来源的回答。</p>
             </div>
             <div class="qa-statuses" aria-live="polite">
               <span class="qa-status" id="qaCorpusStatus" data-state="waiting">语料连接中</span>
@@ -360,13 +375,14 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
           </div>
 
           <div class="qa-transcript" id="qaTranscript" aria-live="polite">
-            <div class="qa-empty" id="qaEmpty"><div class="core" aria-hidden="true">⌁</div><div><b>从一个具体问题开始</b>群聊用 G、Issue 用 I 标注，点引用即可回看命中来源。</div></div>
+            <div class="qa-empty" id="qaEmpty"><div class="core" aria-hidden="true">⌁</div><div><b>从一个具体问题开始</b>群聊用 G、Issue 用 I、Repo 用 R 标注，点引用即可回看命中来源。</div></div>
           </div>
           <div class="qa-notice" id="qaNotice" role="status"></div>
 
           <div class="qa-prompts" aria-label="推荐问题">
             <button type="button" class="qa-prompt" data-question="最近群里最关心的三个问题是什么？">最近大家关心什么？</button>
             <button type="button" class="qa-prompt" data-question="目前有哪些高优先级 Bug Issue 值得关注？">高优先级 Bug</button>
+            <button type="button" class="qa-prompt" data-question="组织目前有哪些 Repo，最近哪些仓库有更新？">Repo 动态</button>
             <button type="button" class="qa-prompt" data-question="内测版本最近有哪些明确完成的更新？">最近版本更新</button>
           </div>
 
@@ -468,14 +484,29 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 
   <section class="panel" id="panel-issues" hidden>
     <div class="wrap">
-      <div class="p-head"><div class="k">04 // ISSUES</div><h2>Issue 汇总</h2>
-      <p class="desc"><b id="issTotal">0</b> 条内测 Issue 按可复查规则归纳成 <b id="issCount">0</b> 组；标题与摘要均来自 GitHub 原始内容。<b>点击 #编号打开对应 Issue</b>。</p></div>
-      <div class="sig-bar"><b>&gt;</b> <b id="issOpen">0</b> 条开放中 · 每条 Issue 只进入一个分组 · 未使用模型猜测 · 数据整理于 <b id="issUpdated">--</b></div>
-      <div class="issue-controls">
-        <span class="label">排序</span><div id="issSortBtns" class="filters"></div>
-        <span class="label">分类</span><div class="filters" id="issCatFilters"></div>
+      <div class="p-head"><div class="k">04 // GITHUB BOARD</div><h2>Issue / Repo</h2>
+      <p class="desc">GitHub 数据独立更新，不跟随群聊日期。页面始终读取最近一次校验成功的版本。</p></div>
+      <div class="board-tabs" id="boardTabs" aria-label="Issue 与 Repo 切换">
+        <button type="button" class="on" data-board="issues">Issue</button>
+        <button type="button" data-board="repos">Repo</button>
       </div>
-      <div id="issList"></div>
+      <section id="boardIssues">
+        <div class="sig-bar"><b>&gt;</b> 共 <b id="issTotal">0</b> 条 · <b id="issOpen">0</b> 条开放中 · 归纳为 <b id="issCount">0</b> 组 · 同步于 <b id="issUpdated">--</b></div>
+        <div class="issue-controls">
+          <span class="label">排序</span><div id="issSortBtns" class="filters"></div>
+          <span class="label">分类</span><div class="filters" id="issCatFilters"></div>
+        </div>
+        <div id="issList"></div>
+      </section>
+      <section id="boardRepos" hidden>
+        <div class="sig-bar"><b>&gt;</b> 共 <b id="repoTotal">0</b> 个 Repo · 活跃 <b id="repoActive">0</b> · 归档 <b id="repoArchived">0</b> · 同步于 <b id="repoUpdated">--</b></div>
+        <div class="toolbar">
+          <div id="repoRangeBtns" class="filters" style="margin:0"></div>
+          <input type="search" id="repoSearch" placeholder="搜索 Repo…">
+          <span class="count" id="repoVisible"></span>
+        </div>
+        <div class="repo-grid" id="repoList"></div>
+      </section>
     </div>
   </section>
 
@@ -512,15 +543,20 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 
 <script type="module">"use strict";
 
-const manifestResponse = await fetch("/data/manifest.json", { cache: "no-store" });
-if (!manifestResponse.ok) throw new Error(`manifest.json: HTTP ${manifestResponse.status}`);
+let liveContent = false;
+let manifestResponse = await fetch("/api/content/manifest", { cache: "no-store" });
+if (!manifestResponse.ok) manifestResponse = await fetch("/data/manifest.json", { cache: "no-store" });
+else liveContent = true;
+if (!manifestResponse.ok) throw new Error(`内容日期清单：HTTP ${manifestResponse.status}`);
 const SITE_MANIFEST = await manifestResponse.json();
 if (!Array.isArray(SITE_MANIFEST.dates) || !SITE_MANIFEST.dates.length || !SITE_MANIFEST.latest) {
   throw new Error("站点日期清单无效");
 }
 const requestedDate = new URL(location.href).searchParams.get("date");
 const SELECTED_DATE = SITE_MANIFEST.dates.includes(requestedDate) ? requestedDate : SITE_MANIFEST.latest;
-const snapshotResponse = await fetch(`/data/${SELECTED_DATE}.json`, { cache: "no-store" });
+const snapshotResponse = await fetch(liveContent
+  ? `/api/content/group?date=${encodeURIComponent(SELECTED_DATE)}`
+  : `/data/${SELECTED_DATE}.json`, { cache: "no-store" });
 if (!snapshotResponse.ok) throw new Error(`${SELECTED_DATE}.json: HTTP ${snapshotResponse.status}`);
 const EMBEDDED_SNAPSHOT = await snapshotResponse.json();
 const guideResponse = await fetch("/data/newcomer-guide.json", { cache: "no-store" });
@@ -528,11 +564,12 @@ const NEWCOMER_GUIDE = guideResponse.ok ? await guideResponse.json() : { version
 document.title = `DSH 档案馆 · ${SELECTED_DATE}`;
 
 const DATA_URLS = {
-  group: "group-data.json",
-  issues: "issues.json",
+  group: `/api/content/group?date=${encodeURIComponent(SELECTED_DATE)}`,
+  issues: "/api/content/issues",
+  repos: "/api/content/repos",
 };
 
-const state = { group: null, issues: null, comparison: null, busy: false };
+const state = { group: null, issues: null, repos: null, comparison: null, busy: false };
 const $ = (id) => document.getElementById(id);
 const escapeHtml = (value) => String(value ?? "")
   .replaceAll("&", "&amp;")
@@ -568,19 +605,20 @@ async function refreshQaStatus() {
     const status = await response.json();
     const messages = Number(status.corpus?.messageCount || 0).toLocaleString("zh-CN");
     const issues = Number(status.corpus?.issueCount || 0).toLocaleString("zh-CN");
-    qaSetStatus("qaCorpusStatus", `群聊 ${messages} · Issue ${issues}`, Boolean(status.corpus?.messageCount && status.corpus?.issueCount));
+    const repos = Number(status.corpus?.repoCount || 0).toLocaleString("zh-CN");
+    qaSetStatus("qaCorpusStatus", `群聊 ${messages} · Issue ${issues} · Repo ${repos}`, Boolean(status.corpus?.messageCount && status.corpus?.issueCount));
     qaSetStatus("qaModelStatus", status.deepseekReady ? qaModelLabel(status.model, status.thinking) : "等待 DEEPSEEK KEY", Boolean(status.deepseekReady));
     qaState.ready = Boolean(status.deepseekReady);
     $("qaSend").disabled = !qaState.ready || qaState.busy;
     $("qaSend").textContent = qaState.busy ? "停止生成" : qaState.ready ? "发送问题 ↗" : "等待模型";
-    $("qaNotice").textContent = status.deepseekReady ? "" : "在本地 .qa.local.env 填入 DEEPSEEK_API_KEY 后，这里会自动变为可提问状态。";
+    $("qaNotice").textContent = status.deepseekReady ? "" : "问答模型或私有语料尚未就绪。";
   } catch {
     qaState.ready = false;
-    qaSetStatus("qaCorpusStatus", "本地问答服务未连接", false);
+    qaSetStatus("qaCorpusStatus", "问答语料暂时不可用", false);
     qaSetStatus("qaModelStatus", "DEEPSEEK OFFLINE", false);
     $("qaSend").disabled = true;
     $("qaSend").textContent = "等待服务";
-    $("qaNotice").textContent = "请使用本地问答预览服务打开此页面。";
+    $("qaNotice").textContent = "请稍后重新检测问答服务。";
   }
 }
 
@@ -618,9 +656,9 @@ function qaCitationButton(citation) {
 }
 
 function qaAppendInline(element, value) {
-  const parts = String(value || "").split(/(\[[GI]\d+\]|\*\*[^*\n]+\*\*|`[^`\n]+`)/gu);
+  const parts = String(value || "").split(/(\[[GIR]\d+\]|\*\*[^*\n]+\*\*|`[^`\n]+`)/gu);
   for (const part of parts) {
-    const citation = part.match(/^\[([GI]\d+)\]$/u)?.[1];
+    const citation = part.match(/^\[([GIR]\d+)\]$/u)?.[1];
     if (citation) {
       element.appendChild(qaCitationButton(citation));
     } else if (/^\*\*[^*\n]+\*\*$/u.test(part)) {
@@ -684,7 +722,7 @@ function qaRenderSources(bubble, sources) {
     card.id = `qaSource-${source.citation}`;
     const id = document.createElement("div");
     id.className = "id";
-    id.textContent = `${source.citation} // ${source.kind === "group" ? "群聊" : "ISSUE"}`;
+    id.textContent = `${source.citation} // ${source.kind === "group" ? "群聊" : source.kind === "repo" ? "REPO" : "ISSUE"}`;
     const label = document.createElement("div");
     label.className = "label";
     const safeUrl = typeof source.url === "string" && /^https:\/\//u.test(source.url) ? source.url : null;
@@ -772,7 +810,7 @@ async function qaAsk(question) {
     await qaReadEvents(response, (event, payload) => {
       if (event === "meta") {
         qaState.sources = Array.isArray(payload.sources) ? payload.sources : [];
-        const intentLabels = { lookup: "事实检索", issue: "Issue 检索", release: "版本核验", overview: "全局归纳", speaker: "成员比较" };
+        const intentLabels = { lookup: "事实检索", issue: "Issue 检索", repository: "Repo 检索", release: "版本核验", overview: "全局归纳", speaker: "成员比较" };
         const intent = intentLabels[payload.retrieval?.intent] || "融合检索";
         $("qaNotice").textContent = `${intent} · ${qaState.sources.length} 个来源 · ${qaModelLabel(payload.model, true, payload.reasoningEffort)} 正在生成…`;
       } else if (event === "token") {
@@ -817,7 +855,7 @@ function initQa() {
       return;
     }
     if (!qaState.ready) {
-      $("qaNotice").textContent = "请先在本地 .qa.local.env 填入 DEEPSEEK_API_KEY。";
+      $("qaNotice").textContent = "问答模型或私有语料尚未就绪。";
       return;
     }
     const question = input.value.trim();
@@ -840,14 +878,14 @@ function initQa() {
 }
 
 async function fetchJson(url) {
-  if (EMBEDDED_SNAPSHOT) {
-    if (url === DATA_URLS.group) return EMBEDDED_SNAPSHOT.group;
-    if (url === DATA_URLS.issues) return EMBEDDED_SNAPSHOT.issues;
-    throw new Error(`当前日期快照中没有 ${url}`);
-  }
+  if (url === DATA_URLS.group && EMBEDDED_SNAPSHOT?.group) return EMBEDDED_SNAPSHOT.group;
   const separator = url.includes("?") ? "&" : "?";
   const response = await fetch(`${url}${separator}t=${Date.now()}`, { cache: "no-store" });
-  if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+  if (!response.ok) {
+    if (url === DATA_URLS.issues && EMBEDDED_SNAPSHOT?.issues) return EMBEDDED_SNAPSHOT.issues;
+    if (url === DATA_URLS.repos) return { version: 1, updatedAt: null, stats: { total: 0, active: 0, archived: 0 }, repositories: [] };
+    throw new Error(`${url}: HTTP ${response.status}`);
+  }
   return response.json();
 }
 
@@ -859,6 +897,10 @@ function validGroup(data) {
 
 function validIssues(data) {
   return data && data.version === 2 && Array.isArray(data.issues) && Array.isArray(data.issue_groups);
+}
+
+function validRepos(data) {
+  return data && data.version === 1 && Array.isArray(data.repositories) && data.stats;
 }
 
 function emptyBlock(message) {
@@ -919,7 +961,7 @@ function renderGuide() {
 }
 
 function initTabs() {
-  const tabs = [["delta", "今日最新"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue"], ["data", "数据"]];
+  const tabs = [["delta", "今日最新"], ["guide", "新人导引"], ["cards", "星卡"], ["signals", "信号"], ["chronicle", "纪事"], ["issues", "Issue / Repo"], ["data", "数据"]];
   const nav = $("tabs");
   const requestedTab = new URL(location.href).searchParams.get("tab");
   let current = tabs.some(([key]) => key === requestedTab) ? requestedTab : "delta";
@@ -980,6 +1022,17 @@ function renderChronicle() {
 function compactTime(value) {
   const text = String(value || "");
   return text ? text.slice(5, 16).replace("T", " ") : "--";
+}
+
+function beijingDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.valueOf())) return String(value || "").slice(0, 10);
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
 }
 
 const TOPIC_DESCRIPTIONS = {
@@ -1074,7 +1127,7 @@ function renderDelta() {
     $("deltaIssueHighlights").innerHTML = '<span class="item">暂无代表内容。</span>';
     $("deltaIssueVisible").textContent = "";
     $("deltaChatRange").textContent = "";
-    $("deltaTopicLead").textContent = "需要保留连续两天的 HTML，才能计算新增内容。";
+    $("deltaTopicLead").textContent = "缺少前一自然日数据，当前日期仍可在其他 Tab 中独立查看。";
     $("deltaTopicOverview").textContent = "暂无可比较的大盘数据。";
     $("deltaTopicCategories").textContent = "暂无主题占比。";
     $("deltaTopicHighlights").innerHTML = '<span class="item">暂无代表内容。</span>';
@@ -1086,20 +1139,19 @@ function renderDelta() {
     return;
   }
 
-  const issuesByNumber = Object.fromEntries((state.issues?.issues ?? []).map((issue) => [issue.n, issue]));
-  const newIssues = (comparison.newIssueNumbers ?? []).map((number) => issuesByNumber[number]).filter(Boolean);
+  const newIssues = (state.issues?.issues ?? []).filter((issue) => beijingDate(issue.created) === SELECTED_DATE);
   const signalIds = new Set(comparison.newSignalMessageIds ?? []);
   const newSignals = (state.group?.signals ?? [])
     .filter((signal) => signalIds.has(signal.message_id))
     .sort((a, b) => String(b.timestamp).localeCompare(String(a.timestamp)));
   const topics = (comparison.topicDeltas ?? []).filter((item) => item.delta > 0);
 
-  $("deltaDesc").innerHTML = `比较 <b>${escapeHtml(comparison.previousLabel)}</b> 与 <b>${escapeHtml(comparison.currentLabel)}</b> 两份归档；` +
-    `统计窗口为 ${escapeHtml(compactTime(comparison.previousCutoff))} → ${escapeHtml(compactTime(comparison.currentCutoff))}。`;
+  $("deltaDesc").innerHTML = `群聊按北京时间自然日统计：<b>${escapeHtml(SELECTED_DATE)} 00:00 → 次日 00:00</b>；` +
+    `Issue 来自当前 GitHub 数据，并按创建时间归入所选日期。`;
   $("deltaMessageNum").textContent = Number(comparison.newMessageCount || 0).toLocaleString("zh-CN");
   $("deltaIssueNum").textContent = newIssues.length.toLocaleString("zh-CN");
   $("deltaSignalNum").textContent = newSignals.length.toLocaleString("zh-CN");
-  $("deltaChatRange").textContent = `${compactTime(comparison.previousCutoff)} → ${compactTime(comparison.currentCutoff)}`;
+  $("deltaChatRange").textContent = `${SELECTED_DATE} 00:00 → 次日 00:00`;
 
   const issueCategories = ["全部", ...new Set(newIssues.map((issue) => issue.cat || "其他"))];
   const categoryCounts = Array.from(new Set(newIssues.map((issue) => issue.cat || "其他")))
@@ -1109,11 +1161,9 @@ function renderDelta() {
     ? `${newIssues.length} 条；${categoryCounts.slice(0, 3).map((item) => `${item.category} ${item.count}`).join(" · ")}`
     : "没有新增 Issue";
   const currentIssueTotal = state.issues?.issues?.length ?? 0;
-  const previousIssueTotal = Math.max(0, currentIssueTotal - newIssues.length);
   const highPriorityIssues = newIssues.filter((issue) => Number(issue.priority || 0) >= 4);
-  $("deltaIssueOverview").innerHTML = `Issue 总量从 <b>${previousIssueTotal}</b> 增至 <b>${currentIssueTotal}</b>，` +
-    `本轮新增 <b>${newIssues.length}</b> 条，较前一快照增长 <b>${percent(newIssues.length, previousIssueTotal)}</b>；` +
-    `新增内容占当前总量 <b>${percent(newIssues.length, currentIssueTotal)}</b>。`;
+  $("deltaIssueOverview").innerHTML = `当前共有 <b>${currentIssueTotal}</b> 条 Issue；` +
+    `其中 <b>${newIssues.length}</b> 条创建于所选自然日，占当前总量 <b>${percent(newIssues.length, currentIssueTotal)}</b>。`;
   $("deltaIssueCategories").innerHTML = categoryCounts.length
     ? `主要是 ${categoryCounts.slice(0, 3).map((item) => `<b>${escapeHtml(item.category)} ${item.count} 条（${percent(item.count, newIssues.length)}）</b>`).join("、")}。` +
       `优先级 4–5 共 <b>${highPriorityIssues.length} 条（${percent(highPriorityIssues.length, newIssues.length)}）</b>。`
@@ -1165,9 +1215,10 @@ function renderDelta() {
   const currentMessageCount = Number(comparison.currentMessageCount || 0);
   const previousMessageCount = Number(comparison.previousMessageCount || 0);
   const newMessageCount = Number(comparison.newMessageCount || 0);
-  $("deltaTopicOverview").innerHTML = `有效群消息从 <b>${previousMessageCount.toLocaleString("zh-CN")}</b> 增至 ` +
-    `<b>${currentMessageCount.toLocaleString("zh-CN")}</b>，新增 <b>${newMessageCount.toLocaleString("zh-CN")}</b> 条；` +
-    `较前一快照增长 <b>${percent(newMessageCount, previousMessageCount)}</b>，新增部分占当前总量 <b>${percent(newMessageCount, currentMessageCount)}</b>。`;
+  const messageChange = currentMessageCount - previousMessageCount;
+  $("deltaTopicOverview").innerHTML = `所选日共有 <b>${currentMessageCount.toLocaleString("zh-CN")}</b> 条有效群消息；` +
+    `前一自然日为 <b>${previousMessageCount.toLocaleString("zh-CN")}</b> 条，日环比 ` +
+    `<b>${messageChange >= 0 ? "+" : ""}${messageChange.toLocaleString("zh-CN")}</b>。`;
   const topicHitTotal = topics.reduce((sum, item) => sum + item.delta, 0);
   $("deltaTopicCategories").innerHTML = headlineTopics.length
     ? `新增消息产生 <b>${topicHitTotal}</b> 次主题命中；最高的是 ` +
@@ -1431,6 +1482,76 @@ function renderIssues() {
   render();
 }
 
+function initBoardTabs() {
+  const tabs = $("boardTabs");
+  const sections = { issues: $("boardIssues"), repos: $("boardRepos") };
+  tabs.querySelectorAll("button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const target = button.dataset.board;
+      tabs.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      Object.entries(sections).forEach(([key, section]) => { section.hidden = key !== target; });
+    });
+  });
+}
+
+function renderRepos() {
+  const repositories = state.repos?.repositories ?? [];
+  const stats = state.repos?.stats ?? {};
+  $("repoTotal").textContent = Number(stats.total ?? repositories.length).toLocaleString("zh-CN");
+  $("repoActive").textContent = Number(stats.active ?? repositories.filter((repo) => !repo.archived).length).toLocaleString("zh-CN");
+  $("repoArchived").textContent = Number(stats.archived ?? repositories.filter((repo) => repo.archived).length).toLocaleString("zh-CN");
+  $("repoUpdated").textContent = compactTime(state.repos?.updatedAt) || "--";
+  const list = $("repoList");
+  const ranges = $("repoRangeBtns");
+  const search = $("repoSearch");
+  list.innerHTML = "";
+  ranges.innerHTML = "";
+  search.value = "";
+  if (!repositories.length) {
+    $("repoVisible").textContent = "显示 0 / 0";
+    list.innerHTML = emptyBlock("Repo 数据尚未生成。");
+    return;
+  }
+  let range = "all";
+  let query = "";
+  const referenceTime = new Date(state.repos?.updatedAt || Date.now()).valueOf();
+  const daysSince = (value) => Math.max(0, (referenceTime - new Date(value).valueOf()) / 86_400_000);
+  const draw = () => {
+    const visible = repositories.filter((repo) => {
+      if (range !== "all" && daysSince(repo.createdAt) > Number(range)) return false;
+      if (!query) return true;
+      return `${repo.name} ${repo.fullName} ${repo.description} ${repo.language} ${(repo.topics || []).join(" ")}`.toLowerCase().includes(query);
+    }).slice().sort((left, right) => String(right.createdAt).localeCompare(String(left.createdAt))
+      || String(right.pushedAt).localeCompare(String(left.pushedAt)) || left.name.localeCompare(right.name, "en"));
+    $("repoVisible").textContent = `显示 ${visible.length} / ${repositories.length}`;
+    list.innerHTML = visible.length ? visible.map((repo) => {
+      const newlyCreated = daysSince(repo.createdAt) <= 7;
+      const stateLabel = repo.archived ? "已归档" : repo.disabled ? "已停用" : newlyCreated ? "7 日内新建" : "活跃";
+      const tags = [repo.language, repo.visibility, ...(repo.topics || []).slice(0, 3)].filter(Boolean);
+      return `<a class="repo-card" href="${escapeHtml(repo.url)}" target="_blank" rel="noopener noreferrer">` +
+        `<div class="top"><span class="name">${escapeHtml(repo.fullName || repo.name)}</span>` +
+        `<span class="badge${newlyCreated ? " new" : ""}">${escapeHtml(stateLabel)}</span></div>` +
+        `<div class="desc">${escapeHtml(repo.description || "暂无仓库说明。")}</div>` +
+        `<div class="tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>` +
+        `<div class="meta">创建 ${escapeHtml(compactTime(repo.createdAt))} · 最近推送 ${escapeHtml(compactTime(repo.pushedAt))}` +
+        `${repo.firstSeenAt ? ` · 首次观察 ${escapeHtml(compactTime(repo.firstSeenAt))}` : ""}<br>打开 Repo ↗</div></a>`;
+    }).join("") : emptyBlock("当前筛选下没有 Repo。");
+  };
+  for (const [value, label] of [["all", "全部"], ["7", "近 7 天新建"], ["30", "近 30 天新建"]]) {
+    const button = document.createElement("button");
+    button.textContent = label;
+    button.classList.toggle("on", value === range);
+    button.addEventListener("click", () => {
+      range = value;
+      ranges.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      draw();
+    });
+    ranges.appendChild(button);
+  }
+  search.oninput = () => { query = search.value.trim().toLowerCase(); draw(); };
+  draw();
+}
+
 function renderData() {
   const hours = state.group?.hourly ?? Array(24).fill(0);
   const box = $("hours");
@@ -1458,7 +1579,7 @@ function renderData() {
   if ($("dataNote")) {
     const stats = state.group?.stats;
     $("dataNote").textContent = state.group?.status === "ready"
-      ? `本地源记录 ${stats.source_messages} 条；确认发言 ${stats.accepted_messages} 条；排除系统通知或无效记录 ${stats.excluded_messages} 条。Issue 与群聊快照由后台任务采集并发布，网站直接展示已发布的最新版本。`
+      ? `所选自然日本地源记录 ${stats.source_messages} 条；确认发言 ${stats.accepted_messages} 条；排除系统通知或无效记录 ${stats.excluded_messages} 条。GitHub Issue/Repo 使用独立实时版本，不跟随群聊日期。`
       : "旧群聊数据已撤下；没有本机证据时页面保持空白。";
   }
 }
@@ -1466,10 +1587,11 @@ function renderData() {
 function renderFooter() {
   const messageCount = state.group?.stats?.accepted_messages ?? 0;
   const issueCount = state.issues?.issues?.length ?? 0;
+  const repoCount = state.repos?.repositories?.length ?? 0;
   if ($("footerClosing")) $("footerClosing").innerHTML = messageCount
     ? `本页只展示来自 <b>【官方】DSH内测群</b>、且发言归属可由本机微信数据库验证的聚合与精选记录。有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>。`
     : `旧群聊档案已撤下；等待 <b>【官方】DSH内测群</b> 的新证据数据。有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>。`;
-  if ($("footerMeta")) $("footerMeta").textContent = `> 群消息 ${messageCount} 条 · Issue ${issueCount} 条 · EOF`;
+  if ($("footerMeta")) $("footerMeta").textContent = `> 群消息 ${messageCount} 条 · Issue ${issueCount} 条 · Repo ${repoCount} 个 · EOF`;
 }
 
 function renderAll() {
@@ -1478,6 +1600,7 @@ function renderAll() {
   renderSignals();
   renderCards();
   renderIssues();
+  renderRepos();
   renderData();
   renderFooter();
 }
@@ -1491,22 +1614,25 @@ async function refreshAll({ initial = false } = {}) {
   state.busy = true;
   $("refreshBar").classList.add("on");
   $("refreshFill").style.width = "20%";
-  refreshStatus(EMBEDDED_SNAPSHOT
-    ? "正在载入当前日期的群聊与 Issue 快照…"
-    : "正在重新拉取已发布的群聊快照与 GitHub Issue 快照…");
+  refreshStatus("正在载入群聊自然日与最新 GitHub Issue/Repo 数据…");
   try {
-    const [group, issues] = await Promise.all([fetchJson(DATA_URLS.group), fetchJson(DATA_URLS.issues)]);
+    const [group, issues, repos] = await Promise.all([
+      fetchJson(DATA_URLS.group),
+      fetchJson(DATA_URLS.issues),
+      fetchJson(DATA_URLS.repos),
+    ]);
     if (!validGroup(group)) throw new Error("group-data.json 格式或群名不匹配");
     if (!validIssues(issues)) throw new Error("issues.json 格式不匹配");
+    if (!validRepos(repos)) throw new Error("repos.json 格式不匹配");
     state.group = group;
     state.issues = issues;
+    state.repos = repos;
     state.comparison = EMBEDDED_SNAPSHOT?.comparison ?? null;
     renderAll();
     $("refreshFill").style.width = "100%";
     const groupCount = group.stats.accepted_messages;
-    refreshStatus(EMBEDDED_SNAPSHOT
-      ? `已载入站点快照：群消息 ${groupCount} 条 / Issue ${issues.issues.length} 条。快照生成于 ${EMBEDDED_SNAPSHOT.generatedAt || "--"}。`
-      : `已载入：群消息 ${groupCount} 条 / Issue ${issues.issues.length} 条。页面已原地更新；浏览器不会直接读取本机微信。`);
+    refreshStatus(`已载入：群消息 ${groupCount} 条 / Issue ${issues.issues.length} 条 / Repo ${repos.repositories.length} 个。` +
+      `群聊生成于 ${EMBEDDED_SNAPSHOT.generatedAt || "--"}；GitHub 同步于 ${repos.updatedAt || issues.updated_at || "--"}。`);
   } catch (error) {
     $("refreshFill").style.width = "100%";
     refreshStatus(`更新失败：${String(error.message || error).slice(0, 100)}`);
@@ -1524,6 +1650,7 @@ initQa();
 initDatePicker();
 renderGuide();
 initTabs();
+initBoardTabs();
 initWarp();
 refreshAll({ initial: true });
 </script>

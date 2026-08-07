@@ -14,6 +14,26 @@
     "GITHUB_ORG": "dsh-external",
     "SITE_ORIGIN": "https://square-shadow-f6fa.lesliewong0923.workers.dev"
   },
+  "d1_databases": [
+    {
+      "binding": "ACCESS_DB",
+      "database_name": "dsh-group-chat-diary-access",
+      "database_id": "75dffda0-f09b-4d07-9ef8-23629dcdab52",
+      "migrations_dir": "migrations"
+    },
+    {
+      "binding": "QA_DB",
+      "database_name": "dsh-group-chat-diary-qa",
+      "database_id": "25369f50-77a3-42ea-b6f4-32cb3d2a5f5c",
+      "migrations_dir": "qa-migrations"
+    },
+    {
+      "binding": "CONTENT_DB",
+      "database_name": "dsh-group-chat-diary-content",
+      "database_id": "ed96c333-ff96-45a7-91e9-bb5ddcbc5e7b",
+      "migrations_dir": "content-migrations"
+    }
+  ],
   "secrets": {
     "required": ["GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET", "GITHUB_ORG_READ_TOKEN", "SESSION_SECRET"]
   },

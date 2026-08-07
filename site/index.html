@@ -376,6 +376,58 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 @media(max-width:760px){.qa-top{display:block}.qa-statuses{justify-content:flex-start;max-width:none;margin-top:12px}.qa-source-list{grid-template-columns:1fr}}
 @media(max-width:560px){.qa-inner{padding:16px 13px 13px}.qa-form{grid-template-columns:1fr}.qa-send{min-height:42px}.qa-controls{justify-content:flex-start}.qa-empty{justify-content:flex-start}.qa-prompt{flex:1 1 46%;text-align:left}}
 </style>
+<style id="loserfoxTheme">
+/* ── LoserFox 主题（参考 agent-notes 全量清单设计）────────────────
+   默认保留终端绿主题；html[data-theme="loserfox"] 时切换为明/暗
+   自适应现代主题（跟随系统 prefers-color-scheme），设计 token 与
+   .agents/skills/dsh-archive-theme/theme.mjs 一致（series-1 蓝为主色）。 */
+.theme-toggle{font:inherit;font-size:12px;color:var(--mut);background:none;border:1px solid var(--dim);border-radius:8px;padding:5px 10px;cursor:pointer;letter-spacing:.05em;white-space:nowrap}
+.theme-toggle:hover{color:var(--ink);border-color:var(--gr2)}
+html[data-theme="loserfox"]{
+  color-scheme:light dark;
+  --bg:#f9f9f7; --panel:rgba(11,11,11,.04); --panel2:rgba(11,11,11,.07);
+  --gr:#2a78d6; --gr2:#1f5fb0; --dim:#e1e0d9; --ink:#0b0b0b; --mut:#52514e; --faint:#898781;
+  --amber:#eda100;
+  --mono:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  html[data-theme="loserfox"]{
+    --bg:#0d0d0d; --panel:rgba(255,255,255,.05); --panel2:rgba(255,255,255,.08);
+    --gr:#3987e5; --gr2:#4a93ea; --dim:#2c2c2a; --ink:#ffffff; --mut:#c3c2b7; --faint:#898781;
+    --amber:#c98500;
+  }
+}
+html[data-theme="loserfox"] body::before,
+html[data-theme="loserfox"] body::after{display:none}
+html[data-theme="loserfox"] body{background:var(--bg);color:var(--ink)}
+html[data-theme="loserfox"] .flicker{animation:none}
+html[data-theme="loserfox"] header{background:var(--bg)}
+html[data-theme="loserfox"] #warp .warp-txt{text-shadow:none}
+html[data-theme="loserfox"] .nav .tabs button.on,
+html[data-theme="loserfox"] .filters button.on{color:#fff;background:var(--gr);border-color:var(--gr)}
+html[data-theme="loserfox"] .iss .mi:hover{background:var(--panel)}
+html[data-theme="loserfox"] .repo-item{border-color:var(--dim);background:var(--panel)}
+html[data-theme="loserfox"] .repo-item:hover{border-color:var(--gr2);background:var(--panel2)}
+html[data-theme="loserfox"] .repo-item .line b,
+html[data-theme="loserfox"] .qa-kicker{color:var(--gr)}
+html[data-theme="loserfox"] .pcard .ava{background:var(--panel)}
+html[data-theme="loserfox"] .pcard .ava .ch,
+html[data-theme="loserfox"] .cloud .wd:hover{text-shadow:none}
+html[data-theme="loserfox"] .guide-hero{border-color:rgba(237,161,0,.35);background:linear-gradient(120deg,rgba(237,161,0,.07),transparent)}
+html[data-theme="loserfox"] .guide-code{border-color:var(--dim);background:#f2f2ee;color:var(--ink)}
+html[data-theme="loserfox"] .guide-callout{background:var(--panel)}
+html[data-theme="loserfox"] .guide-table th{background:var(--panel)}
+html[data-theme="loserfox"] .qa-console{border-color:var(--dim);background:var(--panel);box-shadow:none}
+html[data-theme="loserfox"] .qa-console::before,
+html[data-theme="loserfox"] .qa-console::after{display:none}
+html[data-theme="loserfox"] .qa-top{border-bottom-color:var(--dim)}
+html[data-theme="loserfox"] .qa-title .orb{box-shadow:none}
+html[data-theme="loserfox"] .qa-status[data-state="ready"]{border-color:var(--dim)}
+html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:none}
+@media (prefers-color-scheme: dark){
+  html[data-theme="loserfox"] .guide-code{background:#141414;color:var(--ink)}
+}
+</style>
 </head>
 <body class="flicker">
 <div id="warp"><canvas id="warpCv"></canvas><div class="warp-txt">HYPERSPACE // WARP</div><div class="warp-skip" id="warpSkip">点击跳过 ▸</div></div>
@@ -384,6 +436,7 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
     <div class="logo">DSH <em>//</em> 档案馆</div>
     <div class="tabs" id="tabs"></div>
     <label class="date-switch" for="datePicker"><span class="label">群聊日期</span><select id="datePicker" aria-label="切换群聊自然日"></select></label>
+    <button type="button" id="themeBtn" class="theme-toggle" title="切换主题（终端绿 / LoserFox）" aria-label="切换主题">🌓 主题</button>
     <div class="meta" id="snapshotMeta">读取快照…</div>
     <div class="account-menu" aria-label="当前登录账户">
       <span class="account-login" id="accountLogin">GitHub 账户</span>
@@ -1854,6 +1907,24 @@ initTabs();
 initBoardTabs();
 initWarp();
 refreshAll({ initial: true });
+</script>
+<script>
+// ── LoserFox 主题切换（localStorage 持久化）──
+(() => {
+  const KEY = "dsh-site-theme";
+  const root = document.documentElement;
+  const btn = document.getElementById("themeBtn");
+  const apply = (value) => {
+    if (value === "loserfox") root.setAttribute("data-theme", "loserfox");
+    else root.removeAttribute("data-theme");
+  };
+  apply(localStorage.getItem(KEY));
+  if (btn) btn.addEventListener("click", () => {
+    const next = root.hasAttribute("data-theme") ? "" : "loserfox";
+    if (next) localStorage.setItem(KEY, next); else localStorage.removeItem(KEY);
+    apply(next);
+  });
+})();
 </script>
 </body>
 </html>

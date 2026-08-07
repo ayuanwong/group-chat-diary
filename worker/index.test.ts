@@ -197,7 +197,7 @@ function makeContentDb(): D1Database {
       signals: [{ message_id: "signal-2", sender: "成员甲", timestamp: "2026-08-06T12:00:00+08:00", text: "第二条信号" }],
       chronicles: [
         {
-          message_id: "event-2", sender: "Baymax", timestamp: "2026-08-06T13:00:00+08:00",
+          message_id: "event-2", sender: "崔小天", timestamp: "2026-08-06T13:00:00+08:00",
           title: "内测版本更新", quote: "Changelog 2026-08-06", detail: "DeepSeek Harness 新版本已发布。",
         },
         {

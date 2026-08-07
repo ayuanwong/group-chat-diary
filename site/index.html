@@ -150,23 +150,6 @@ main{position:relative;z-index:2;min-height:80vh}
 .board-tabs button{font:inherit;font-size:12px;color:var(--mut);background:none;border:1px solid var(--dim);padding:6px 16px;cursor:pointer;letter-spacing:.08em}
 .board-tabs button:hover{color:var(--ink);border-color:var(--gr2)}
 .board-tabs button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
-.repo-brief{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:16px;border:1px solid rgba(91,238,255,.24);background:linear-gradient(120deg,rgba(91,238,255,.065),rgba(51,255,102,.025));padding:15px 16px;margin-bottom:12px}
-.repo-brief h3{color:#bffaff;font-size:13px;letter-spacing:.08em}
-.repo-brief p{color:var(--mut);font-size:11px;line-height:1.7;margin-top:5px}
-.repo-brief .source{align-self:center;color:var(--faint);font-size:9.5px;line-height:1.65;border-left:1px solid var(--dim);padding-left:14px}
-.repo-brief .source b{display:block;color:var(--gr);font-size:9px;letter-spacing:.14em;margin-bottom:3px}
-.repo-focus-title{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:18px 0 9px}
-.repo-focus-title h3{color:var(--ink);font-size:13px;letter-spacing:.06em}
-.repo-focus-title span{color:var(--faint);font-size:9.5px}
-.repo-focus{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:20px}
-.repo-focus-card{display:block;border:1px solid var(--dim);border-left:2px solid var(--gr);background:var(--panel);padding:11px 12px;text-decoration:none;min-width:0;transition:border-color .15s,background .15s}
-.repo-focus-card:hover{border-color:var(--gr);background:var(--panel2)}
-.repo-focus-card .top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.repo-focus-card .rank{color:var(--amber);font-size:9px;letter-spacing:.1em}
-.repo-focus-card .cat{color:#5beeff;font-size:9px;border:1px solid rgba(91,238,255,.22);padding:0 5px}
-.repo-focus-card .name{color:var(--ink);font-size:12px;font-weight:700;overflow-wrap:anywhere}
-.repo-focus-card .summary{color:var(--mut);font-size:10.5px;line-height:1.6;margin-top:6px}
-.repo-focus-card .activity{color:var(--gr);font-size:10px;line-height:1.55;margin-top:5px}
 .repo-groups{display:grid;gap:9px}
 .repo-group{border:1px solid var(--dim);background:var(--panel)}
 .repo-group:hover{border-color:var(--gr2)}
@@ -176,7 +159,6 @@ main{position:relative;z-index:2;min-height:80vh}
 .repo-group .group-title b{color:var(--ink);font-size:13px}
 .repo-group .group-title span{color:var(--gr);font-size:9px;border:1px solid var(--gr2);padding:0 5px}
 .repo-group .group-summary{color:var(--mut);font-size:10.5px;line-height:1.6;margin-top:4px}
-.repo-group .group-lead{color:var(--faint);font-size:9.5px;line-height:1.55;margin-top:5px}
 .repo-group .toggle{align-self:center;color:var(--gr);font-size:10px;white-space:nowrap}
 .repo-group .repo-drop{display:none;border-top:1px dashed var(--dim);padding:8px}
 .repo-group.open .repo-drop{display:grid;gap:7px}
@@ -193,7 +175,7 @@ main{position:relative;z-index:2;min-height:80vh}
 .repo-item .line b{display:inline-block;min-width:62px;color:#5beeff;font-size:9.5px;letter-spacing:.04em}
 .repo-item .line.activity{color:var(--gr)}
 .repo-item .line.why{color:var(--ink)}
-@media(max-width:760px){.repo-brief{grid-template-columns:1fr}.repo-brief .source{border-left:0;border-top:1px solid var(--dim);padding:10px 0 0}.repo-focus{grid-template-columns:1fr}.repo-item{grid-template-columns:1fr}.repo-group .group-head{grid-template-columns:1fr}.repo-group .toggle{justify-self:start}}
+@media(max-width:760px){.repo-item{grid-template-columns:1fr}.repo-group .group-head{grid-template-columns:1fr}.repo-group .toggle{justify-self:start}}
 .collbar{display:flex;align-items:center;gap:10px;margin-bottom:20px}
 .collbar .bar{flex:1;height:10px;border:1px solid var(--dim);padding:2px}
 .collbar .bar i{display:block;height:100%;width:0;background:var(--gr);transition:width 1s}
@@ -567,12 +549,6 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
       </section>
       <section id="boardRepos" hidden>
         <div class="sig-bar"><b>&gt;</b> 共 <b id="repoTotal">0</b> 个 Repo · 活跃 <b id="repoActive">0</b> · 归档 <b id="repoArchived">0</b> · 同步于 <b id="repoUpdated">--</b></div>
-        <div class="repo-brief">
-          <div><h3>这不是另一份仓库清单</h3><p id="repoNarrative">这里会先解释仓库解决什么问题、最近发生了什么，再给出为什么值得关注的阅读建议。</p></div>
-          <div class="source"><b>解读依据</b>用途来自 GitHub 仓库说明；动态来自默认分支最新提交；关注建议来自类别、创建时间与活跃度。</div>
-        </div>
-        <div class="repo-focus-title"><h3>当前先看</h3><span>按近期变化与项目新鲜度排序</span></div>
-        <div class="repo-focus" id="repoHighlights"></div>
         <div class="issue-controls">
           <span class="label">排序</span><div id="repoSortBtns" class="filters"></div>
           <span class="label">方向</span><div id="repoCatFilters" class="filters"></div>
@@ -1669,19 +1645,16 @@ function renderRepos() {
   $("repoArchived").textContent = Number(stats.archived ?? repositories.filter((repo) => repo.archived).length).toLocaleString("zh-CN");
   $("repoUpdated").textContent = compactTime(state.repos?.updatedAt) || "--";
   const list = $("repoList");
-  const highlights = $("repoHighlights");
   const filters = $("repoCatFilters");
   const sorts = $("repoSortBtns");
   const search = $("repoSearch");
   list.innerHTML = "";
-  highlights.innerHTML = "";
   filters.innerHTML = "";
   sorts.innerHTML = "";
   search.value = "";
   if (!repositories.length) {
     $("repoVisible").textContent = "显示 0 / 0";
     list.innerHTML = emptyBlock("Repo 数据尚未生成。");
-    highlights.innerHTML = emptyBlock("还没有可解读的 Repo 动态。");
     return;
   }
   const byId = new Map(repositories.map((repo) => [String(repo.id), repo]));
@@ -1694,10 +1667,6 @@ function renderRepos() {
     count: repositories.length,
     repositories: repositories.map((repo) => repo.id),
   }];
-  const quality = state.repos?.quality ?? {};
-  const priorityCount = repositories.filter((repo) => repo.attention?.label === "优先看").length;
-  $("repoNarrative").textContent = `已把 ${repositories.length} 个仓库归为 ${groups.length} 个方向，并标出 ${priorityCount} 个优先阅读项。` +
-    (Number.isInteger(quality.latestCommits) ? ` ${quality.latestCommits} 个仓库已核对默认分支最新提交。` : "");
   const referenceTime = new Date(state.repos?.updatedAt || Date.now()).valueOf();
   const daysSince = (value) => {
     const timestamp = new Date(value).valueOf();
@@ -1710,13 +1679,6 @@ function renderRepos() {
     || Number(right.attention?.score ?? 0) - Number(left.attention?.score ?? 0) || left.name.localeCompare(right.name, "en");
   const createdSort = (left, right) => String(right.createdAt).localeCompare(String(left.createdAt))
     || String(recentAt(right)).localeCompare(String(recentAt(left))) || left.name.localeCompare(right.name, "en");
-  const highlightIds = Array.isArray(state.repos?.highlights) ? state.repos.highlights.map(String) : [];
-  const focusRepos = [...highlightIds.map((id) => byId.get(id)).filter(Boolean), ...repositories.slice().sort(attentionSort)]
-    .filter((repo, index, all) => all.findIndex((item) => item.id === repo.id) === index).slice(0, 6);
-  highlights.innerHTML = focusRepos.map((repo, index) => `<a class="repo-focus-card" href="${escapeHtml(repo.url)}" target="_blank" rel="noopener noreferrer">` +
-    `<div class="top"><span class="rank">0${index + 1}</span><span class="cat">${escapeHtml(repo.categoryName)}</span>` +
-    `<span class="name">${escapeHtml(repo.name)}</span></div>` +
-    `<div class="summary">${escapeHtml(repo.summary)}</div><div class="activity">${escapeHtml(repo.activity)}</div></a>`).join("");
   let current = "all";
   let sortMode = "attention";
   let query = "";
@@ -1735,7 +1697,6 @@ function renderRepos() {
     }).filter(Boolean).sort((left, right) => comparator(left.members[0], right.members[0]) || left.group.name.localeCompare(right.group.name, "zh"));
     $("repoVisible").textContent = `显示 ${visibleCount} / ${repositories.length} · ${visibleGroups.length} 个方向`;
     list.innerHTML = visibleGroups.length ? visibleGroups.map(({ group, members }, groupIndex) => {
-      const lead = members[0];
       const cards = members.map((repo) => {
         const newlyCreated = daysSince(repo.createdAt) <= 7;
         const stateLabel = repo.archived ? "已归档" : repo.disabled ? "已停用" : newlyCreated ? "7 日内新建" : "活跃";
@@ -1751,8 +1712,7 @@ function renderRepos() {
       const open = Boolean(query) || current !== "all" || groupIndex === 0;
       return `<section class="repo-group${open ? " open" : ""}"><button type="button" class="group-head" aria-expanded="${open}">` +
         `<div><div class="group-title"><b>${escapeHtml(group.name)}</b><span>${members.length} 个 Repo</span></div>` +
-        `<div class="group-summary">${escapeHtml(group.summary || group.why || "")}</div>` +
-        `<div class="group-lead">当前先看：${escapeHtml(lead.name)} · ${escapeHtml(lead.activity)}</div></div>` +
+        `<div class="group-summary">${escapeHtml(group.summary || group.why || "")}</div></div>` +
         `<span class="toggle">${open ? "▴ 收起" : `▾ 展开 ${members.length} 个`}</span></button><div class="repo-drop">${cards}</div></section>`;
     }).join("") : emptyBlock("当前筛选下没有 Repo。");
     list.querySelectorAll(".repo-group .group-head").forEach((button) => button.addEventListener("click", () => {

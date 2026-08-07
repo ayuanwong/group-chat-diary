@@ -32,7 +32,7 @@ interface GroupPayloadRow {
 
 type JsonRecord = Record<string, unknown>;
 
-const OFFICIAL_PRODUCT_SENDERS = new Set(["Baymax"]);
+const OFFICIAL_PRODUCT_SENDERS = new Set(["Baymax", "崔小天"]);
 const OFFICIAL_DSH_SUBJECT = /deepseek\s+harness|dsh(?:2026|-external)|snapshot-\d{8}|changelog\s+\d{4}-\d{2}-\d{2}|内测版代码|github\s+repo.{0,40}(?:新版本|推送)|issues\s+repo/iu;
 
 function parsePayload(value: string | undefined): unknown | null {
@@ -56,6 +56,12 @@ function nonnegativeInteger(value: unknown, label: string): number {
 
 function itemIdentity(item: JsonRecord, date: string, index: number): string {
   return String(item.message_id || item.source_ref || `${date}:${item.timestamp || item.time || ""}:${item.sender || ""}:${index}`);
+}
+
+function chronicleIdentity(item: JsonRecord, date: string, index: number): string {
+  const evidence = [item.title, item.quote, item.detail].map((part) => String(part ?? "")).join("\n");
+  const releaseDate = evidence.match(/changelog\s+(\d{4}-\d{2}-\d{2})/iu)?.[1];
+  return releaseDate ? `changelog:${releaseDate}` : itemIdentity(item, date, index);
 }
 
 function newestFirst(left: JsonRecord, right: JsonRecord): number {
@@ -231,7 +237,8 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
     });
     dayChronicles.forEach((value, index) => {
       const item = record(value);
-      if (item) chronicles.set(itemIdentity(item, row.date, index), item);
+      const key = item ? chronicleIdentity(item, row.date, index) : "";
+      if (item && !chronicles.has(key)) chronicles.set(key, item);
     });
     dayMembers.forEach((value) => {
       const member = record(value);

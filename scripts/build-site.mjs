@@ -124,9 +124,12 @@ if (!siteHtml.includes('/api/content/manifest') || !siteHtml.includes('/api/cont
   || !siteHtml.includes('id="repoList"') || !siteHtml.includes('Issue / Repo')) {
   throw new Error("站点外壳缺少实时内容 API 或 Issue/Repo Board");
 }
-if (!siteHtml.includes('id="repoNarrative"') || !siteHtml.includes('id="repoHighlights"')
-  || !siteHtml.includes("它是什么") || !siteHtml.includes("最近发生") || !siteHtml.includes("为什么看")) {
-  throw new Error("Repo Board 必须提供用途、动态、价值解释与优先阅读区");
+if (!siteHtml.includes("它是什么") || !siteHtml.includes("最近发生") || !siteHtml.includes("为什么看")) {
+  throw new Error("Repo Board 必须逐仓库提供用途、动态与价值解释");
+}
+if (siteHtml.includes("这不是另一份仓库清单") || siteHtml.includes("当前先看")
+  || siteHtml.includes('id="repoNarrative"') || siteHtml.includes('id="repoHighlights"')) {
+  throw new Error("Repo Board 不得显示内部设计说明或含义不清的优先阅读区");
 }
 if (!siteHtml.includes('rel="icon"') || !siteHtml.includes('/favicon.png?v=20260807')) {
   throw new Error("站点外壳缺少指定 favicon");

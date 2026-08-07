@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "n
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { tokenize } from "../qa/retrieval.mjs";
-import { officialChronicles } from "./lib/chronicle-policy.mjs";
+import { mergeOfficialChronicles, withoutRepeatedChronicles } from "./lib/chronicle-policy.mjs";
 import {
   assertPrivateContent,
   d1Target,
@@ -90,7 +90,7 @@ function buildDigest(date, rows) {
     if (digest?.version !== 3 || digest?.source?.group !== GROUP || digest?.stats?.source_messages !== rows.length) {
       throw new Error(`${date} 群聊摘要与完整语料计数不一致。`);
     }
-    digest.chronicles = officialChronicles(digest.chronicles);
+    digest.chronicles = mergeOfficialChronicles(digest.chronicles, rows);
     digest.source = {
       group: GROUP,
       identity_rules: digest.source.identity_rules,
@@ -344,6 +344,7 @@ for (const date of targetDates) {
     priorDigest = digestCache.get(priorDate) ?? buildDigest(priorDate, prior.rows);
     digestCache.set(priorDate, priorDigest);
   }
+  digest.chronicles = withoutRepeatedChronicles(digest.chronicles, priorDigest?.chronicles);
   results.push(stageGroupDay(date, rows, text, digest, priorDigest));
 }
 const qa = syncQaGroup(files);

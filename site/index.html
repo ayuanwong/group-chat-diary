@@ -34,7 +34,7 @@ header.sidebar{position:fixed;inset:0 auto 0 0;width:220px;z-index:10;display:fl
 .side-collapse:hover{color:var(--ink);border-color:var(--gr2)}
 .side-expand{position:fixed;top:10px;left:10px;z-index:9;display:none;font:inherit;font-size:13px;line-height:1;color:var(--mut);background:var(--bg);border:1px solid var(--dim);border-radius:7px;width:30px;height:30px;cursor:pointer}
 .side-expand:hover{color:var(--ink);border-color:var(--gr2)}
-header.sidebar.collapsed{transform:translateX(-100%)}
+body[data-sidebar="collapsed"] header.sidebar{transform:translateX(-100%)}
 body[data-sidebar="collapsed"] main,
 body[data-sidebar="collapsed"] footer{margin-left:0}
 body[data-sidebar="collapsed"] .side-expand{display:block}
@@ -47,7 +47,7 @@ body[data-sidebar="collapsed"] .side-expand{display:block}
 main{position:relative;z-index:2;min-height:80vh;margin-left:220px}
 @media(max-width:900px){
   header.sidebar{position:static;width:auto;border-right:none;border-bottom:1px solid var(--dim);padding:10px 12px;gap:8px}
-  header.sidebar.collapsed{transform:none}
+  body[data-sidebar="collapsed"] header.sidebar{transform:none}
   .side-collapse,.side-expand{display:none!important}
   .side-tabs{flex-direction:row;overflow-x:auto;scrollbar-width:none}
   .side-tabs::-webkit-scrollbar{display:none}

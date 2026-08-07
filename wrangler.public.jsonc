@@ -15,7 +15,7 @@
     "SITE_ORIGIN": "https://square-shadow-f6fa.lesliewong0923.workers.dev"
   },
   "secrets": {
-    "required": ["GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET", "SESSION_SECRET"]
+    "required": ["GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET", "GITHUB_ORG_READ_TOKEN", "SESSION_SECRET"]
   },
   "observability": {
     "enabled": true

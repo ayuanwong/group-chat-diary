@@ -1,17 +1,81 @@
 import { describe, expect, it, vi } from "vitest";
 import { createHandler, signSession, verifySession, type WorkerEnv } from "./index";
 
-function makeAccessDb(allowedIds = [123], writes: unknown[][] = []): D1Database {
+function makeAccessDb(
+  allowedIds = [123],
+  writes: unknown[][] = [],
+  lastSyncAt: string | null = new Date().toISOString(),
+): D1Database {
+  const allowlist = new Map(allowedIds.map((id) => [id, { login: `member-${id}`, active: 1 }]));
+  const meta = new Map<string, string>();
+  if (lastSyncAt) meta.set("last_sync_at", lastSyncAt);
+  meta.set("member_count", String(allowedIds.length));
+  meta.set("allowlist_refresh_lock_until", "0");
+  const staging = new Map<string, Map<number, string>>();
+
+  function prepare(sql: string) {
+    let values: unknown[] = [];
+    const statement = {
+      bind: vi.fn((...nextValues: unknown[]) => {
+        values = nextValues;
+        return statement;
+      }),
+      first: vi.fn(async () => {
+        if (sql.includes("SELECT 1 AS allowed")) {
+          return allowlist.get(Number(values[0]))?.active === 1 ? { allowed: 1 } : null;
+        }
+        if (sql.includes("COUNT(*) AS count") && sql.includes("access_allowlist_staging")) {
+          return { count: staging.get(String(values[0]))?.size ?? 0 };
+        }
+        return null;
+      }),
+      all: vi.fn(async () => {
+        if (sql.includes("FROM access_sync_meta")) {
+          return { results: [...meta.entries()].map(([key, value]) => ({ key, value })) };
+        }
+        return { results: [] };
+      }),
+      run: vi.fn(async () => {
+        writes.push([sql, ...values]);
+        let changes = 1;
+        if (sql.includes("allowlist_refresh_lock_until") && sql.includes("WHERE CAST")) {
+          const current = Number(meta.get("allowlist_refresh_lock_until") ?? 0);
+          const now = Number(values[1]);
+          if (current <= now) meta.set("allowlist_refresh_lock_until", String(values[0]));
+          else changes = 0;
+        } else if (sql.includes("INSERT INTO access_allowlist_staging")) {
+          const syncId = String(values[0]);
+          const rows = staging.get(syncId) ?? new Map<number, string>();
+          rows.set(Number(values[1]), String(values[2]));
+          staging.set(syncId, rows);
+        } else if (sql.includes("DELETE FROM access_allowlist_staging")) {
+          staging.delete(String(values[0]));
+        } else if (sql.includes("UPDATE access_allowlist SET active = 0")) {
+          for (const row of allowlist.values()) row.active = 0;
+        } else if (sql.includes("SELECT github_id, login, 1") && sql.includes("access_allowlist_staging")) {
+          for (const [githubId, login] of staging.get(String(values[0])) ?? []) {
+            allowlist.set(githubId, { login, active: 1 });
+          }
+        } else if (sql.includes("INSERT INTO access_allowlist (github_id, login, active")) {
+          allowlist.set(Number(values[0]), { login: String(values[1]), active: Number(values[2]) });
+        } else if (sql.includes("DELETE FROM access_sync_meta") && sql.includes("allowlist_refresh_error_at")) {
+          meta.delete("allowlist_refresh_error_at");
+        } else if (sql.includes("INSERT INTO access_sync_meta")) {
+          const key = ["last_sync_at", "member_count", "allowlist_refresh_error_at", "allowlist_refresh_lock_until"]
+            .find((candidate) => sql.includes(`'${candidate}'`));
+          if (key) meta.set(key, key === "allowlist_refresh_lock_until" && values.length === 0 ? "0" : String(values[0]));
+        }
+        return { success: true, meta: { changes } };
+      }),
+    };
+    return statement;
+  }
+
   return {
-    prepare: vi.fn((sql: string) => ({
-      bind: vi.fn((...values: unknown[]) => ({
-        run: vi.fn(async () => {
-          writes.push([sql, ...values]);
-          return { success: true };
-        }),
-        first: vi.fn(async () => allowedIds.includes(Number(values[0])) ? { allowed: 1 } : null),
-      })),
-    })),
+    prepare: vi.fn(prepare),
+    batch: vi.fn(async (statements: Array<ReturnType<typeof prepare>>) => Promise.all(
+      statements.map((statement) => statement.run()),
+    )),
   } as unknown as D1Database;
 }
 
@@ -90,9 +154,15 @@ function makeQaDb(requestCount = 1): D1Database {
   } as unknown as D1Database;
 }
 
-function makeEnv(assetBody = "SECRET ARCHIVE", allowedIds = [123], requestCount = 1): WorkerEnv {
+function makeEnv(
+  assetBody = "SECRET ARCHIVE",
+  allowedIds = [123],
+  requestCount = 1,
+  lastSyncAt: string | null = new Date().toISOString(),
+  accessWrites: unknown[][] = [],
+): WorkerEnv {
   return {
-    ACCESS_DB: makeAccessDb(allowedIds),
+    ACCESS_DB: makeAccessDb(allowedIds, accessWrites, lastSyncAt),
     QA_DB: makeQaDb(requestCount),
     ASSETS: {
       fetch: vi.fn(async () => new Response(assetBody, { headers: { "Cache-Control": "public" } })),
@@ -101,6 +171,7 @@ function makeEnv(assetBody = "SECRET ARCHIVE", allowedIds = [123], requestCount 
     DEEPSEEK_MODEL: "deepseek-v4-flash",
     GITHUB_CLIENT_ID: "test-client-id",
     GITHUB_CLIENT_SECRET: "test-client-secret",
+    GITHUB_ORG_READ_TOKEN: "test-org-read-token",
     GITHUB_WEBHOOK_SECRET: "test-webhook-secret",
     GITHUB_ORG: "dsh-external",
     SESSION_SECRET: "a-test-session-secret-that-is-long-enough",
@@ -415,7 +486,94 @@ describe("GitHub OAuth", () => {
     const response = await createHandler()(new Request(`${env.SITE_ORIGIN}/login`), env);
     const body = await response.text();
     expect(body).toContain("成员入口");
+    expect(body).toContain('href="/auth/login"');
     expect(body).not.toMatch(/DSH|DeepSeek|内测群|dsh-external/i);
+  });
+
+  it("refreshes a stale complete allowlist before enabling GitHub login", async () => {
+    const writes: unknown[][] = [];
+    const env = makeEnv("SECRET ARCHIVE", [123], 1, "2026-08-01T00:00:00.000Z", writes);
+    const githubFetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      expect(String(input)).toContain("/orgs/dsh-external/members");
+      expect(new Headers(init?.headers).get("Authorization")).toBe("Bearer test-org-read-token");
+      return Response.json([{ id: 456, login: "new-member" }]);
+    });
+    let refreshTask: Promise<unknown> | undefined;
+    const context = {
+      waitUntil: vi.fn((task: Promise<unknown>) => {
+        refreshTask = task;
+      }),
+    } as unknown as ExecutionContext;
+
+    const syncingResponse = await createHandler(githubFetch)(
+      new Request(`${env.SITE_ORIGIN}/login`),
+      env,
+      context,
+    );
+    const syncingBody = await syncingResponse.text();
+    expect(syncingBody).toContain("正在同步访问名单");
+    expect(syncingBody).toContain('http-equiv="refresh"');
+    expect(syncingBody).not.toContain('href="/auth/login"');
+    expect(context.waitUntil).toHaveBeenCalledOnce();
+
+    await refreshTask;
+    const readyResponse = await createHandler(githubFetch)(new Request(`${env.SITE_ORIGIN}/login`), env);
+    await expect(readyResponse.text()).resolves.toContain('href="/auth/login"');
+    expect(githubFetch).toHaveBeenCalledOnce();
+    expect(JSON.stringify(writes)).not.toContain(env.GITHUB_ORG_READ_TOKEN);
+
+    const token = await signSession(
+      { version: 2, githubId: 456, login: "new-member", exp: Math.floor(Date.now() / 1000) + 300 },
+      env.SESSION_SECRET,
+    );
+    const memberResponse = await createHandler()(
+      new Request(`${env.SITE_ORIGIN}/`, { headers: { Cookie: `__Host-portal_session=${token}` } }),
+      env,
+    );
+    expect(memberResponse.status).toBe(200);
+  });
+
+  it("keeps the previous allowlist active when a refresh fails", async () => {
+    const env = makeEnv("SECRET ARCHIVE", [123], 1, "2026-08-01T00:00:00.000Z");
+    const githubFetch = vi.fn(async () => new Response("Unavailable", { status: 503 }));
+    let refreshTask: Promise<unknown> | undefined;
+    const context = {
+      waitUntil: vi.fn((task: Promise<unknown>) => {
+        refreshTask = task;
+      }),
+    } as unknown as ExecutionContext;
+
+    const syncingResponse = await createHandler(githubFetch)(
+      new Request(`${env.SITE_ORIGIN}/login`),
+      env,
+      context,
+    );
+    expect(syncingResponse.status).toBe(200);
+    await refreshTask;
+
+    const failedResponse = await createHandler(githubFetch)(new Request(`${env.SITE_ORIGIN}/login`), env);
+    const failedBody = await failedResponse.text();
+    expect(failedBody).toContain("访问名单暂时未能更新");
+    expect(failedBody).not.toContain('href="/auth/login"');
+
+    const token = await signSession(
+      { version: 2, githubId: 123, login: "member", exp: Math.floor(Date.now() / 1000) + 300 },
+      env.SESSION_SECRET,
+    );
+    const existingMember = await createHandler()(
+      new Request(`${env.SITE_ORIGIN}/`, { headers: { Cookie: `__Host-portal_session=${token}` } }),
+      env,
+    );
+    expect(existingMember.status).toBe(200);
+  });
+
+  it("does not start OAuth while the allowlist is stale", async () => {
+    const env = makeEnv("SECRET ARCHIVE", [123], 1, "2026-08-01T00:00:00.000Z");
+    const githubFetch = vi.fn();
+    const response = await createHandler(githubFetch)(new Request(`${env.SITE_ORIGIN}/auth/login`), env);
+    expect(response.status).toBe(302);
+    expect(response.headers.get("Location")).toBe(`${env.SITE_ORIGIN}/login`);
+    expect(githubFetch).not.toHaveBeenCalled();
   });
 
   it("requests only public GitHub identity and sets an HttpOnly state cookie", async () => {

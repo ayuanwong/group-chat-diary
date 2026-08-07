@@ -1,12 +1,16 @@
 import { handleQaAsk, qaStatus, type ModelFetch } from "./qa";
+import {
+  allowlistIsFresh,
+  prepareAllowlistPage,
+  type AllowlistPageState,
+  type GitHubFetch,
+} from "./allowlist";
 
 const SESSION_COOKIE = "__Host-portal_session";
 const STATE_COOKIE = "__Host-portal_oauth_state";
 const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
 const STATE_TTL_SECONDS = 10 * 60;
 const GITHUB_API_VERSION = "2026-03-10";
-
-type GitHubFetch = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
 export interface WorkerEnv extends Env {
   ASSETS: Fetcher;
@@ -15,6 +19,7 @@ export interface WorkerEnv extends Env {
   DEEPSEEK_MODEL?: string;
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
+  GITHUB_ORG_READ_TOKEN: string;
   GITHUB_WEBHOOK_SECRET: string;
   GITHUB_ORG: string;
   SESSION_SECRET: string;
@@ -195,8 +200,19 @@ function redirect(location: string, status = 302, cookies: string[] = []): Respo
   return new Response(null, { status, headers });
 }
 
-function loginPage(error?: string, cookies: string[] = []): Response {
+function loginPage(
+  error?: string,
+  cookies: string[] = [],
+  allowlist: AllowlistPageState = { status: "ready" },
+): Response {
   const errorBlock = error ? `<p class="error">${escapeHtml(error)}</p>` : "";
+  const syncing = allowlist.status === "syncing";
+  const refresh = syncing ? '<meta http-equiv="refresh" content="1;url=/login">' : "";
+  const action = allowlist.status === "ready"
+    ? '<a class="primary" href="/auth/login">使用 GitHub 登录</a>'
+    : allowlist.status === "syncing"
+      ? '<div class="sync" role="status" aria-live="polite"><span class="pulse" aria-hidden="true"></span><strong>正在同步访问名单</strong><span>通常需要 2–5 秒，同步完成后会自动进入可登录状态。</span></div>'
+      : '<div class="sync error" role="alert"><strong>访问名单暂时未能更新</strong><span>旧名单仍保持可用，但为避免新成员被误拒，请稍后重新同步。</span></div><a class="secondary" href="/login?retry=1">重新同步</a>';
   const headers = new Headers();
   for (const value of cookies) headers.append("Set-Cookie", value);
   return htmlResponse(`<!doctype html>
@@ -205,12 +221,13 @@ function loginPage(error?: string, cookies: string[] = []): Response {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow,noarchive">
+  ${refresh}
   <title>成员入口</title>
   <style>
-    :root{color-scheme:dark}*{box-sizing:border-box}body{min-height:100vh;margin:0;display:grid;place-items:center;padding:24px;background:#030703;color:#d6ffe0;font:15px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}.card{width:min(100%,520px);padding:32px;border:1px solid #225c2f;border-radius:18px;background:#071008;box-shadow:0 24px 80px #0008}h1{margin:0 0 12px;font-size:22px;color:#56ff7b}p{margin:10px 0;color:#a8caae}.error{padding:10px 12px;border:1px solid #8a442f;border-radius:8px;color:#ffd2c3;background:#2a110b}a{display:inline-block;margin-top:14px;padding:11px 18px;border-radius:9px;background:#2ee65a;color:#001806;text-decoration:none;font-weight:700}small{display:block;margin-top:20px;color:#6f8e76}
+    :root{color-scheme:dark}*{box-sizing:border-box}body{min-height:100vh;margin:0;display:grid;place-items:center;padding:24px;background:#030703;color:#d6ffe0;font:15px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}.card{width:min(100%,520px);padding:32px;border:1px solid #225c2f;border-radius:18px;background:#071008;box-shadow:0 24px 80px #0008}h1{margin:0 0 12px;font-size:22px;color:#56ff7b}p{margin:10px 0;color:#a8caae}.error{padding:10px 12px;border:1px solid #8a442f;border-radius:8px;color:#ffd2c3;background:#2a110b}a{display:inline-block;margin-top:14px;padding:11px 18px;border-radius:9px;text-decoration:none;font-weight:700}.primary{background:#2ee65a;color:#001806}.secondary{border:1px solid #397846;color:#b8e8c2}.sync{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;margin-top:18px;padding:13px 14px;border:1px solid #356841;border-radius:10px;background:#0a190d;color:#b8e8c2}.sync span:last-child{grid-column:2;color:#7fa88a;font-size:12px}.sync.error{border-color:#8a442f;background:#2a110b;color:#ffd2c3}.pulse{width:9px;height:9px;border-radius:50%;background:#56ff7b;box-shadow:0 0 0 0 #56ff7b88;animation:pulse 1.2s infinite}@keyframes pulse{70%{box-shadow:0 0 0 8px #56ff7b00}100%{box-shadow:0 0 0 0 #56ff7b00}}small{display:block;margin-top:20px;color:#6f8e76}
   </style>
 </head>
-<body><main class="card"><h1>成员入口</h1><p>此页面仅向获准的 GitHub 账户开放。</p>${errorBlock}<a href="/auth/login">使用 GitHub 登录</a><small>首次登录只读取公开 GitHub 身份；授权完成后会保持登录，本站不会保存 GitHub 访问令牌。</small></main></body>
+<body><main class="card"><h1>成员入口</h1><p>此页面仅向获准的 GitHub 账户开放。</p>${errorBlock}${action}<small>登录前会先同步最新访问名单。首次登录只读取公开 GitHub 身份；本站不会保存 GitHub 访问令牌。</small></main></body>
 </html>`, 200, headers);
 }
 
@@ -381,8 +398,8 @@ async function handleOAuthCallback(request: Request, env: WorkerEnv, githubFetch
 export function createHandler(
   githubFetch: GitHubFetch = fetch,
   modelFetch: ModelFetch = fetch,
-): (request: Request, env: WorkerEnv) => Promise<Response> {
-  return async (request: Request, env: WorkerEnv): Promise<Response> => {
+): (request: Request, env: WorkerEnv, context?: ExecutionContext) => Promise<Response> {
+  return async (request: Request, env: WorkerEnv, context?: ExecutionContext): Promise<Response> => {
     const url = new URL(request.url);
     const origin = siteOrigin(env);
     if (!origin) return htmlResponse("<h1>网站配置错误</h1><p>请联系管理员。</p>", 500);
@@ -394,10 +411,31 @@ export function createHandler(
     }
     if (url.pathname === "/favicon.ico") return new Response(null, { status: 204, headers: securityHeaders() });
     if (url.pathname === "/internal/github-membership") return handleOrganizationWebhook(request, env);
-    if (url.pathname === "/login") return loginPage();
+    if (url.pathname === "/login") {
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+      }
+      let allowlist: AllowlistPageState;
+      try {
+        allowlist = await prepareAllowlistPage(
+          env,
+          githubFetch,
+          context,
+          url.searchParams.get("retry") === "1",
+        );
+      } catch {
+        allowlist = { status: "error" };
+      }
+      return loginPage(undefined, [], allowlist);
+    }
 
     if (url.pathname === "/auth/login") {
       if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+      try {
+        if (!await allowlistIsFresh(env)) return redirect(`${origin}/login`);
+      } catch {
+        return loginPage("访问名单核验暂时失败，请重新同步。", [], { status: "error" });
+      }
       const state = randomToken();
       const authorize = new URL("https://github.com/login/oauth/authorize");
       authorize.searchParams.set("client_id", env.GITHUB_CLIENT_ID);
@@ -459,7 +497,7 @@ export function createHandler(
 const handler = createHandler();
 
 export default {
-  fetch(request, env) {
-    return handler(request, env);
+  fetch(request, env, context) {
+    return handler(request, env, context);
   },
 } satisfies ExportedHandler<WorkerEnv>;

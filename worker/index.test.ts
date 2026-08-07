@@ -195,7 +195,16 @@ function makeContentDb(): D1Database {
         type_breakdown: { 文本: 4 },
       },
       signals: [{ message_id: "signal-2", sender: "成员甲", timestamp: "2026-08-06T12:00:00+08:00", text: "第二条信号" }],
-      chronicles: [{ message_id: "event-2", sender: "Baymax", timestamp: "2026-08-06T13:00:00+08:00", title: "第二个事件" }],
+      chronicles: [
+        {
+          message_id: "event-2", sender: "Baymax", timestamp: "2026-08-06T13:00:00+08:00",
+          title: "内测版本更新", quote: "Changelog 2026-08-06", detail: "DeepSeek Harness 新版本已发布。",
+        },
+        {
+          message_id: "personal-project", sender: "少女阿原", timestamp: "2026-08-06T15:04:50+08:00",
+          title: "内测版本更新", quote: "我做了一个群聊和 Issue 数据网站。", detail: "这是成员项目，不是 DSH 官方更新。",
+        },
+      ],
       members: [{
         name: "成员甲", count: 3, signals: 1, role: "协作推动者", traits: ["Issue 与协作"], self: false,
         representative: { headline: "第二天表现", time: "2026-08-06 12:00" },
@@ -219,7 +228,10 @@ function makeContentDb(): D1Database {
         type_breakdown: { 文本: 2, 图片: 1 },
       },
       signals: [{ message_id: "signal-1", sender: "成员乙", timestamp: "2026-08-05T11:00:00+08:00", text: "第一条信号" }],
-      chronicles: [{ message_id: "event-1", sender: "Baymax", timestamp: "2026-08-05T09:00:00+08:00", title: "第一个事件" }],
+      chronicles: [{
+        message_id: "event-1", sender: "Baymax", timestamp: "2026-08-05T09:00:00+08:00",
+        title: "内测版本更新", quote: "GitHub repo 已推送新版本。", detail: "snapshot-20260805T090000Z-test",
+      }],
       members: [
         { name: "成员甲", count: 2, signals: 0, role: "讨论参与者", traits: ["插件与生态"], self: false, representative: null },
         { name: "成员乙", count: 1, signals: 1, role: "实测贡献者", traits: ["性能稳定性"], self: false,
@@ -435,6 +447,10 @@ describe("archive gate", () => {
         { name: "成员甲", count: 5, signals: 1, activeDays: 2 },
         { name: "成员乙", count: 1, signals: 1, activeDays: 1 },
       ],
+    });
+    const day = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/group?date=2026-08-06`, { headers }), env);
+    await expect(day.json()).resolves.toMatchObject({
+      group: { chronicles: [{ message_id: "event-2" }] },
     });
   });
 

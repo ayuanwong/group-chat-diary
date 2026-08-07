@@ -32,6 +32,9 @@ interface GroupPayloadRow {
 
 type JsonRecord = Record<string, unknown>;
 
+const OFFICIAL_PRODUCT_SENDERS = new Set(["Baymax"]);
+const OFFICIAL_DSH_SUBJECT = /deepseek\s+harness|dsh(?:2026|-external)|snapshot-\d{8}|changelog\s+\d{4}-\d{2}-\d{2}|内测版代码|github\s+repo.{0,40}(?:新版本|推送)|issues\s+repo/iu;
+
 function parsePayload(value: string | undefined): unknown | null {
   if (!value) return null;
   try {
@@ -59,6 +62,19 @@ function newestFirst(left: JsonRecord, right: JsonRecord): number {
   return String(right.timestamp || right.time || "").localeCompare(String(left.timestamp || left.time || ""));
 }
 
+export function isOfficialChronicle(value: unknown): value is JsonRecord {
+  const item = record(value);
+  if (!item || !OFFICIAL_PRODUCT_SENDERS.has(String(item.sender ?? "").trim())) return false;
+  const evidence = [item.title, item.quote, item.detail]
+    .map((part) => String(part ?? ""))
+    .join("\n");
+  return OFFICIAL_DSH_SUBJECT.test(evidence);
+}
+
+function officialChronicles(value: unknown): JsonRecord[] {
+  return Array.isArray(value) ? value.filter(isOfficialChronicle) : [];
+}
+
 function sanitizedGroupSnapshot(value: unknown): unknown | null {
   const snapshot = record(value);
   const group = record(snapshot?.group);
@@ -68,6 +84,7 @@ function sanitizedGroupSnapshot(value: unknown): unknown | null {
     ...snapshot,
     group: {
       ...group,
+      chronicles: officialChronicles(group.chronicles),
       source: {
         group: source.group,
         identity_rules: source.identity_rules,
@@ -188,12 +205,13 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
     const source = record(group?.source);
     const stats = record(group?.stats);
     const daySignals = Array.isArray(group?.signals) ? group.signals : null;
-    const dayChronicles = Array.isArray(group?.chronicles) ? group.chronicles : null;
+    const rawDayChronicles = Array.isArray(group?.chronicles) ? group.chronicles : null;
     const dayMembers = Array.isArray(group?.members) ? group.members : null;
     if (group?.version !== 3 || source?.group !== "【官方】DSH内测群" || !stats
-      || !daySignals || !dayChronicles || !dayMembers) {
+      || !daySignals || !rawDayChronicles || !dayMembers) {
       throw new Error(`${row.date} 群聊展示数据不完整。`);
     }
+    const dayChronicles = officialChronicles(rawDayChronicles);
     sourceMessages += nonnegativeInteger(stats.source_messages, `${row.date} source_messages`);
     acceptedMessages += nonnegativeInteger(stats.accepted_messages, `${row.date} accepted_messages`);
     excludedMessages += nonnegativeInteger(stats.excluded_messages, `${row.date} excluded_messages`);

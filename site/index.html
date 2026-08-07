@@ -26,7 +26,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:91;bac
 #warp canvas{position:absolute;inset:0}
 #warp .warp-txt{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);font-size:12px;letter-spacing:.4em;color:var(--gr);text-shadow:0 0 12px rgba(51,255,102,.7);white-space:nowrap}
 #warp .warp-skip{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);font-size:10px;color:var(--faint);letter-spacing:.2em;cursor:pointer}
-header{position:sticky;top:0;z-index:50;background:rgba(2,6,3,.92);border-bottom:1px solid var(--dim)}
+header{position:relative;z-index:1;background:rgba(2,6,3,.92);border-bottom:1px solid var(--dim)}
 .nav{display:flex;align-items:center;gap:4px;max-width:1060px;margin:0 auto;padding:0 20px;height:50px}
 .nav .logo{font-size:14px;font-weight:700;letter-spacing:.06em;margin-right:18px;color:var(--ink);white-space:nowrap}
 .nav .logo em{font-style:normal;color:var(--gr)}
@@ -92,11 +92,11 @@ main{position:relative;z-index:2;min-height:80vh}
 .delta-stat .n{font-size:26px;line-height:1.1;color:var(--ink);font-weight:700}
 .delta-stat .l{font-size:10px;color:var(--faint);letter-spacing:.12em;margin-top:7px}
 .delta-stat .go{float:right;color:var(--gr);font-size:10px}
-.delta-subtabs{position:sticky;top:50px;z-index:12;display:flex;gap:5px;padding:10px 0;background:rgba(3,7,3,.96);border-top:1px solid var(--dim);border-bottom:1px solid var(--dim)}
+.delta-subtabs{position:static;display:flex;gap:5px;padding:10px 0;background:rgba(3,7,3,.96);border-top:1px solid var(--dim);border-bottom:1px solid var(--dim)}
 .delta-subtabs button{font:inherit;font-size:12px;color:var(--mut);background:none;border:1px solid var(--dim);padding:5px 12px;cursor:pointer;letter-spacing:.05em}
 .delta-subtabs button:hover{color:var(--ink);border-color:var(--gr2)}
 .delta-subtabs button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
-.delta-view{scroll-margin-top:110px}
+.delta-view{scroll-margin-top:20px}
 .delta-block{border-top:1px solid var(--dim);padding-top:25px;margin-top:28px}
 .delta-title{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:13px}
 .delta-title h3{font-size:17px;color:var(--ink);letter-spacing:.05em}

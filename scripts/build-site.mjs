@@ -2,6 +2,7 @@ import { access, copyFile, mkdir, readFile, readdir, rm, writeFile } from "node:
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { officialChronicles } from "./lib/chronicle-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const output = path.join(root, "dist");
@@ -38,6 +39,7 @@ function publishableSnapshot(snapshot) {
     ...snapshot,
     group: {
       ...snapshot.group,
+      chronicles: officialChronicles(snapshot?.group?.chronicles),
       source: {
         group: source.group,
         identity_rules: source.identity_rules,
@@ -53,6 +55,10 @@ function validateSnapshot(snapshot, name, expectedDate) {
   }
   if (!Number.isInteger(snapshot.group?.stats?.accepted_messages) || !Array.isArray(snapshot.group?.signals)) {
     throw new Error(`${name} 的群聊统计或信号数据不完整`);
+  }
+  if (!Array.isArray(snapshot.group?.chronicles)
+    || officialChronicles(snapshot.group.chronicles).length !== snapshot.group.chronicles.length) {
+    throw new Error(`${name} 的纪事包含非 DSH 官方项目更新`);
   }
   if (snapshot.issues?.version !== 2 || !Array.isArray(snapshot.issues?.issues) || !Array.isArray(snapshot.issues?.issue_groups)) {
     throw new Error(`${name} 的 Issue 数据不完整`);
@@ -128,6 +134,9 @@ if (!siteHtml.includes('rel="icon"') || !siteHtml.includes('/favicon.png?v=20260
 if (!siteHtml.includes('fetch("/data/newcomer-guide.json"') || !siteHtml.includes("固定内容 · 不随日期切换")
   || !siteHtml.includes("NEWCOMER_GUIDE.author") || !siteHtml.includes("renderBlock")) {
   throw new Error("新人导引必须使用独立的全局内容源，并明确不随日期切换");
+}
+if (siteHtml.includes("header{position:sticky") || siteHtml.includes(".delta-subtabs{position:sticky")) {
+  throw new Error("页面头部和二级导航不得吸顶，避免新人指引与内容重叠");
 }
 if (siteHtml.includes('date === SITE_MANIFEST.latest ? " · 最新"')) {
   throw new Error("日期选择器不得把“最新”拼进日期文本，避免窄屏截断");

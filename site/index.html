@@ -602,6 +602,12 @@ html[data-theme="loserfox"] .qa-status[data-state="ready"]::before{box-shadow:no
 .home-card:hover .home-arrow{opacity:1}
 .home-desc{font-size:12px;color:var(--mut);line-height:1.65}
 .home-stats{font-size:11.5px;color:var(--gr);margin-top:auto;padding-top:4px}
+.home-card.hot{border-color:rgba(255,179,71,.45);background:linear-gradient(120deg,rgba(255,179,71,.09),var(--panel) 55%);box-shadow:0 0 18px rgba(255,179,71,.12)}
+.home-card.hot:hover{border-color:var(--amber);background:linear-gradient(120deg,rgba(255,179,71,.14),var(--panel2) 55%)}
+.home-card.hot .home-k,
+.home-card.hot .home-title,
+.home-card.hot .home-arrow,
+.home-card.hot .home-stats{color:var(--amber)}
 </style>
 </head>
 <body class="flicker">
@@ -1658,7 +1664,7 @@ function renderHome() {
   const cards = [
     { key: "overview", k: "01 // OVERVIEW", title: "数据总览", desc: "今日增量、逐日快照跟踪与星域数据（活跃时段、Issue 主题、高频词）。",
       stats: cmp ? `今日新增消息 ${fmt(cmp.newMessageCount)} · 信号 ${cmp.newSignalMessageIds?.length ?? 0}${topTopic ? ` · ${topTopic.label} +${topTopic.delta}` : ""}` : "加载中…" },
-    { key: "guide", k: "02 // GUIDE", title: "新人导引", desc: "《DSH 内测安装指南》等固定入门内容，不随日期切换。", stats: "固定内容 · 随时可读" },
+    { key: "guide", k: "02 // GUIDE", title: "🔥 新人导引", desc: "《DSH 内测安装指南》等固定入门内容，不随日期切换。", stats: "固定内容 · 随时可读", hot: true },
     { key: "cards", k: "03 // CARDS", title: "成员星卡", desc: "跨全部自然日累计的成员发言与精选表现，不推断真实身份。", stats: `${fmt(history.members?.length)} 位成员` },
     { key: "signals", k: "04 // SIGNALS", title: "信号收录", desc: "可行动的问题、建议、实测与明确完成态事件，按类别筛选。", stats: `${fmt(history.signals?.length)} 条精选信号` },
     { key: "chronicle", k: "05 // CHRONICLE", title: "事件纪事", desc: "产品方完成态更新与来源明确的公告。", stats: `${fmt(history.chronicles?.length)} 条纪事` },
@@ -1666,7 +1672,7 @@ function renderHome() {
       stats: SITE_MANIFEST?.agentNotes ? `${fmt(SITE_MANIFEST.agentNotes.total)} 篇 · ${fmt(SITE_MANIFEST.agentNotes.proposed)} 计划中` : "" },
   ];
   grid.innerHTML = cards.map(c => `
-    <button type="button" class="home-card" data-tab="${c.key}">
+    <button type="button" class="home-card${c.hot ? " hot" : ""}" data-tab="${c.key}">
       <span class="home-k">${c.k}</span>
       <span class="home-title">${c.title}<span class="home-arrow">→</span></span>
       <span class="home-desc">${c.desc}</span>

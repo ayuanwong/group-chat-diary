@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>DSH 档案馆 · 官方内测群</title>
-<link rel="icon" type="image/png" href="/favicon.png?v=20260806">
+<link rel="icon" type="image/png" href="/favicon.png?v=20260807">
 <style>:root{
   --bg:#030703; --panel:rgba(15,90,36,.10); --panel2:rgba(15,90,36,.18);
   --gr:#33ff66; --gr2:#1a9c40; --dim:#0f5a24; --ink:#c8ffd6; --mut:#7fe0a0; --faint:#3d8f55;
@@ -143,21 +143,57 @@ main{position:relative;z-index:2;min-height:80vh}
 .issue-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
 .issue-controls .filters{margin:0}
 .issue-controls .label{font-size:10px;color:var(--faint);letter-spacing:.14em}
+.issue-controls input{font:inherit;font-size:12px;color:var(--gr);background:var(--panel);border:1px solid var(--dim);padding:4px 10px;width:min(250px,100%);outline:none}
+.issue-controls input:focus{border-color:var(--gr)}
+.issue-controls input::placeholder{color:var(--faint)}
 .board-tabs{display:flex;gap:6px;margin:-12px 0 22px;padding-bottom:12px;border-bottom:1px solid var(--dim)}
 .board-tabs button{font:inherit;font-size:12px;color:var(--mut);background:none;border:1px solid var(--dim);padding:6px 16px;cursor:pointer;letter-spacing:.08em}
 .board-tabs button:hover{color:var(--ink);border-color:var(--gr2)}
 .board-tabs button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
-.repo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
-.repo-card{display:flex;flex-direction:column;min-height:190px;border:1px solid var(--dim);background:var(--panel);padding:14px;text-decoration:none;transition:border-color .15s,background .15s}
-.repo-card:hover{border-color:var(--gr2);background:var(--panel2)}
-.repo-card .top{display:flex;gap:8px;align-items:flex-start}
-.repo-card .name{color:var(--ink);font-size:13px;font-weight:700;overflow-wrap:anywhere}
-.repo-card .badge{margin-left:auto;flex:none;border:1px solid var(--dim);color:var(--faint);font-size:8.5px;padding:1px 5px;letter-spacing:.08em}
-.repo-card .badge.new{color:var(--bg);background:var(--gr);border-color:var(--gr)}
-.repo-card .desc{color:var(--mut);font-size:11px;line-height:1.65;margin-top:9px}
-.repo-card .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
-.repo-card .tags span{font-size:9px;color:var(--faint);border:1px solid var(--dim);padding:1px 5px}
-.repo-card .meta{margin-top:auto;padding-top:12px;color:var(--faint);font-size:9.5px;line-height:1.6}
+.repo-brief{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:16px;border:1px solid rgba(91,238,255,.24);background:linear-gradient(120deg,rgba(91,238,255,.065),rgba(51,255,102,.025));padding:15px 16px;margin-bottom:12px}
+.repo-brief h3{color:#bffaff;font-size:13px;letter-spacing:.08em}
+.repo-brief p{color:var(--mut);font-size:11px;line-height:1.7;margin-top:5px}
+.repo-brief .source{align-self:center;color:var(--faint);font-size:9.5px;line-height:1.65;border-left:1px solid var(--dim);padding-left:14px}
+.repo-brief .source b{display:block;color:var(--gr);font-size:9px;letter-spacing:.14em;margin-bottom:3px}
+.repo-focus-title{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:18px 0 9px}
+.repo-focus-title h3{color:var(--ink);font-size:13px;letter-spacing:.06em}
+.repo-focus-title span{color:var(--faint);font-size:9.5px}
+.repo-focus{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:20px}
+.repo-focus-card{display:block;border:1px solid var(--dim);border-left:2px solid var(--gr);background:var(--panel);padding:11px 12px;text-decoration:none;min-width:0;transition:border-color .15s,background .15s}
+.repo-focus-card:hover{border-color:var(--gr);background:var(--panel2)}
+.repo-focus-card .top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.repo-focus-card .rank{color:var(--amber);font-size:9px;letter-spacing:.1em}
+.repo-focus-card .cat{color:#5beeff;font-size:9px;border:1px solid rgba(91,238,255,.22);padding:0 5px}
+.repo-focus-card .name{color:var(--ink);font-size:12px;font-weight:700;overflow-wrap:anywhere}
+.repo-focus-card .summary{color:var(--mut);font-size:10.5px;line-height:1.6;margin-top:6px}
+.repo-focus-card .activity{color:var(--gr);font-size:10px;line-height:1.55;margin-top:5px}
+.repo-groups{display:grid;gap:9px}
+.repo-group{border:1px solid var(--dim);background:var(--panel)}
+.repo-group:hover{border-color:var(--gr2)}
+.repo-group .group-head{width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;padding:13px 14px;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 14px}
+.repo-group .group-head:focus-visible{outline:1px solid var(--gr);outline-offset:2px}
+.repo-group .group-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.repo-group .group-title b{color:var(--ink);font-size:13px}
+.repo-group .group-title span{color:var(--gr);font-size:9px;border:1px solid var(--gr2);padding:0 5px}
+.repo-group .group-summary{color:var(--mut);font-size:10.5px;line-height:1.6;margin-top:4px}
+.repo-group .group-lead{color:var(--faint);font-size:9.5px;line-height:1.55;margin-top:5px}
+.repo-group .toggle{align-self:center;color:var(--gr);font-size:10px;white-space:nowrap}
+.repo-group .repo-drop{display:none;border-top:1px dashed var(--dim);padding:8px}
+.repo-group.open .repo-drop{display:grid;gap:7px}
+.repo-item{display:grid;grid-template-columns:minmax(180px,.72fr) minmax(0,1.28fr);gap:11px 16px;border:1px solid rgba(51,255,102,.13);background:rgba(2,10,5,.62);padding:11px 12px;text-decoration:none;min-width:0}
+.repo-item:hover{border-color:var(--gr2);background:rgba(51,255,102,.035)}
+.repo-item .identity{min-width:0}
+.repo-item .repo-name{color:var(--ink);font-size:12px;font-weight:700;overflow-wrap:anywhere}
+.repo-item .badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.repo-item .badges span{font-size:8.5px;color:var(--faint);border:1px solid var(--dim);padding:0 5px}
+.repo-item .badges .attention{color:var(--bg);background:var(--gr);border-color:var(--gr)}
+.repo-item .meta{color:var(--faint);font-size:9px;line-height:1.55;margin-top:8px}
+.repo-item .explain{display:grid;gap:6px;min-width:0}
+.repo-item .line{color:var(--mut);font-size:10.5px;line-height:1.6}
+.repo-item .line b{display:inline-block;min-width:62px;color:#5beeff;font-size:9.5px;letter-spacing:.04em}
+.repo-item .line.activity{color:var(--gr)}
+.repo-item .line.why{color:var(--ink)}
+@media(max-width:760px){.repo-brief{grid-template-columns:1fr}.repo-brief .source{border-left:0;border-top:1px solid var(--dim);padding:10px 0 0}.repo-focus{grid-template-columns:1fr}.repo-item{grid-template-columns:1fr}.repo-group .group-head{grid-template-columns:1fr}.repo-group .toggle{justify-self:start}}
 .collbar{display:flex;align-items:center;gap:10px;margin-bottom:20px}
 .collbar .bar{flex:1;height:10px;border:1px solid var(--dim);padding:2px}
 .collbar .bar i{display:block;height:100%;width:0;background:var(--gr);transition:width 1s}
@@ -251,11 +287,41 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 .guide-empty h3{color:var(--ink);font-size:20px;margin-top:18px;letter-spacing:.06em}
 .guide-empty p{max-width:540px;color:var(--mut);font-size:12px;margin-top:10px;line-height:1.8}
 .guide-empty .status{display:inline-block;margin-top:18px;border:1px solid rgba(255,179,71,.4);color:var(--amber);font-size:10px;padding:4px 10px;letter-spacing:.14em}
-.guide-content{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-.guide-section{border:1px solid var(--dim);background:var(--panel);padding:18px}
+.guide-content{display:grid;gap:12px;max-width:980px;margin:0 auto}
+.guide-hero{border:1px solid rgba(255,179,71,.32);background:linear-gradient(120deg,rgba(255,179,71,.08),rgba(51,255,102,.025));padding:20px}
+.guide-hero .eyebrow{color:var(--amber);font-size:9px;letter-spacing:.16em}
+.guide-hero h3{color:var(--ink);font-size:20px;line-height:1.35;margin-top:7px}
+.guide-hero h3 .muted{color:var(--mut);font-size:.72em;font-weight:400}
+.guide-hero p{color:var(--mut);font-size:12px;line-height:1.75;margin-top:8px;max-width:760px}
+.guide-byline{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:13px;color:var(--faint);font-size:9.5px}
+.guide-byline b{color:var(--ink);font-size:10px}
+.guide-byline span{border:1px solid var(--dim);padding:2px 7px}
+.guide-toc{display:flex;gap:6px;flex-wrap:wrap;border:1px solid var(--dim);background:var(--panel);padding:10px}
+.guide-toc a{color:var(--mut);border:1px solid var(--dim);padding:3px 7px;font-size:9.5px;text-decoration:none}
+.guide-toc a:hover{color:var(--ink);border-color:var(--gr2)}
+.guide-section{border:1px solid var(--dim);background:var(--panel);padding:18px;scroll-margin-top:20px}
 .guide-section h3{color:var(--ink);font-size:15px;letter-spacing:.05em}
-.guide-section p{color:var(--mut);font-size:12px;line-height:1.8;margin-top:8px}
-.guide-section ul{margin:12px 0 0 18px;color:var(--mut);font-size:11.5px;line-height:1.8}
+.guide-section h4{color:var(--gr);font-size:12px;line-height:1.5;margin-top:18px}
+.guide-section p{color:var(--mut);font-size:12px;line-height:1.8;margin-top:8px;white-space:pre-line}
+.guide-section ul{margin:10px 0 0 19px;color:var(--mut);font-size:11.5px;line-height:1.85}
+.guide-section li+li{margin-top:3px}
+.guide-code{position:relative;margin-top:10px;border:1px solid rgba(51,255,102,.22);background:rgba(0,4,1,.9);overflow:auto}
+.guide-code .lang{position:absolute;right:8px;top:6px;color:var(--faint);font-size:8px;letter-spacing:.12em}
+.guide-code pre{margin:0;padding:17px 14px 13px;color:#aaf7bc;font:10.5px/1.65 'SFMono-Regular',Consolas,monospace;white-space:pre;min-width:max-content}
+.guide-callout{margin-top:11px;border-left:2px solid var(--gr);background:rgba(51,255,102,.04);padding:10px 12px}
+.guide-callout.warning{border-left-color:var(--amber);background:rgba(255,179,71,.055)}
+.guide-callout b{display:block;color:var(--ink);font-size:10.5px;margin-bottom:3px}
+.guide-callout span{color:var(--mut);font-size:10.5px;line-height:1.7;white-space:pre-line}
+.guide-table-wrap{overflow:auto;margin-top:11px;border:1px solid var(--dim)}
+.guide-table{width:100%;border-collapse:collapse;min-width:520px}
+.guide-table th,.guide-table td{text-align:left;vertical-align:top;border-bottom:1px solid rgba(15,90,36,.55);padding:8px 10px;font-size:10.5px;line-height:1.65;color:var(--mut)}
+.guide-table th{color:var(--ink);background:rgba(51,255,102,.035);font-size:9.5px;letter-spacing:.06em}
+.guide-table tr:last-child td{border-bottom:0}
+.guide-links{display:grid;gap:7px;margin-top:10px}
+.guide-link{display:grid;grid-template-columns:minmax(120px,.35fr) minmax(0,.65fr);gap:8px 13px;border:1px solid var(--dim);padding:9px 10px;text-decoration:none}
+.guide-link:hover{border-color:var(--gr2);background:var(--panel2)}
+.guide-link b{color:var(--ink);font-size:10.5px;overflow-wrap:anywhere}
+.guide-link span{color:var(--faint);font-size:10px;line-height:1.6}
 .guide-scope{display:inline-flex;align-items:center;gap:6px;margin-top:10px;border:1px solid rgba(255,179,71,.28);padding:4px 8px;color:var(--amber);font-size:9px;letter-spacing:.12em}
 .account-menu{display:flex;align-items:center;gap:6px;margin-left:4px;white-space:nowrap}
 .account-login{max-width:116px;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-size:10.5px;letter-spacing:.03em}
@@ -263,7 +329,7 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 .account-logout{font:inherit;font-size:10px;color:var(--faint);background:none;border:1px solid var(--dim);padding:4px 8px;cursor:pointer;letter-spacing:.06em}
 .account-logout:hover,.account-logout:focus-visible{color:var(--gr);border-color:var(--gr);outline:none}
 @media(max-width:860px){.nav{height:auto;min-height:50px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}.nav .tabs{order:3;flex-basis:100%}.date-switch{margin-left:auto}.nav .meta{display:none}}
-@media(max-width:520px){.date-switch .label{display:none}.date-switch select{width:116px}.account-login{max-width:92px}.guide-empty{min-height:340px}}
+@media(max-width:520px){.date-switch .label{display:none}.date-switch select{width:116px}.account-login{max-width:92px}.guide-empty{min-height:340px}.guide-hero,.guide-section{padding:15px}.guide-link{grid-template-columns:1fr}}
 
 .qa-console{position:relative;isolation:isolate;margin:-4px 0 30px;border:1px solid rgba(51,255,102,.42);background:linear-gradient(135deg,rgba(6,28,12,.97),rgba(3,10,6,.96) 48%,rgba(4,21,20,.94));box-shadow:0 24px 80px rgba(0,0,0,.34),inset 0 0 48px rgba(51,255,102,.035);overflow:hidden}
 .qa-console::before{content:"";position:absolute;z-index:-1;inset:-45% -20%;background:linear-gradient(105deg,transparent 41%,rgba(91,238,255,.07) 48%,rgba(51,255,102,.13) 50%,transparent 57%);transform:translateX(-42%);animation:qaSweep 8s ease-in-out infinite}
@@ -452,7 +518,8 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
   <section class="panel" id="panel-chronicle" hidden>
     <div class="wrap">
       <div class="p-head"><div class="k">01 // CHRONICLE</div><h2>事件纪事</h2>
-      <p class="desc">从本机微信原始记录中提取完成态事件；当前条目均标为候选，可回到来源指纹复核。</p></div>
+      <p class="desc">跨全部已归档自然日汇总完成态事件；不随顶部日期切换，条目可回到来源指纹复核。</p></div>
+      <div class="sig-bar"><b>&gt;</b> 全量纪事 <b id="chronicleNum">0</b> 条 · 时间范围 <b id="chronicleRange">--</b></div>
       <div class="chr" id="chronicle"></div>
     </div>
   </section>
@@ -500,12 +567,19 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
       </section>
       <section id="boardRepos" hidden>
         <div class="sig-bar"><b>&gt;</b> 共 <b id="repoTotal">0</b> 个 Repo · 活跃 <b id="repoActive">0</b> · 归档 <b id="repoArchived">0</b> · 同步于 <b id="repoUpdated">--</b></div>
-        <div class="toolbar">
-          <div id="repoRangeBtns" class="filters" style="margin:0"></div>
-          <input type="search" id="repoSearch" placeholder="搜索 Repo…">
+        <div class="repo-brief">
+          <div><h3>这不是另一份仓库清单</h3><p id="repoNarrative">这里会先解释仓库解决什么问题、最近发生了什么，再给出为什么值得关注的阅读建议。</p></div>
+          <div class="source"><b>解读依据</b>用途来自 GitHub 仓库说明；动态来自默认分支最新提交；关注建议来自类别、创建时间与活跃度。</div>
+        </div>
+        <div class="repo-focus-title"><h3>当前先看</h3><span>按近期变化与项目新鲜度排序</span></div>
+        <div class="repo-focus" id="repoHighlights"></div>
+        <div class="issue-controls">
+          <span class="label">排序</span><div id="repoSortBtns" class="filters"></div>
+          <span class="label">方向</span><div id="repoCatFilters" class="filters"></div>
+          <input type="search" id="repoSearch" placeholder="搜索用途、动态或 Repo…">
           <span class="count" id="repoVisible"></span>
         </div>
-        <div class="repo-grid" id="repoList"></div>
+        <div class="repo-groups" id="repoList"></div>
       </section>
     </div>
   </section>
@@ -559,17 +633,26 @@ const snapshotResponse = await fetch(liveContent
   : `/data/${SELECTED_DATE}.json`, { cache: "no-store" });
 if (!snapshotResponse.ok) throw new Error(`${SELECTED_DATE}.json: HTTP ${snapshotResponse.status}`);
 const EMBEDDED_SNAPSHOT = await snapshotResponse.json();
+let EMBEDDED_GROUP_HISTORY = null;
+if (!liveContent) {
+  if (SELECTED_DATE === SITE_MANIFEST.latest) EMBEDDED_GROUP_HISTORY = EMBEDDED_SNAPSHOT.group ?? null;
+  else {
+    const historyFallback = await fetch(`/data/${SITE_MANIFEST.latest}.json`, { cache: "no-store" });
+    if (historyFallback.ok) EMBEDDED_GROUP_HISTORY = (await historyFallback.json()).group ?? null;
+  }
+}
 const guideResponse = await fetch("/data/newcomer-guide.json", { cache: "no-store" });
-const NEWCOMER_GUIDE = guideResponse.ok ? await guideResponse.json() : { version: 1, status: "empty", sections: [] };
+const NEWCOMER_GUIDE = guideResponse.ok ? await guideResponse.json() : { version: 2, status: "empty", sections: [] };
 document.title = `DSH 档案馆 · ${SELECTED_DATE}`;
 
 const DATA_URLS = {
   group: `/api/content/group?date=${encodeURIComponent(SELECTED_DATE)}`,
+  history: "/api/content/group-history",
   issues: "/api/content/issues",
   repos: "/api/content/repos",
 };
 
-const state = { group: null, issues: null, repos: null, comparison: null, busy: false };
+const state = { group: null, history: null, issues: null, repos: null, comparison: null, busy: false };
 const $ = (id) => document.getElementById(id);
 const escapeHtml = (value) => String(value ?? "")
   .replaceAll("&", "&amp;")
@@ -879,11 +962,31 @@ function initQa() {
 
 async function fetchJson(url) {
   if (url === DATA_URLS.group && EMBEDDED_SNAPSHOT?.group) return EMBEDDED_SNAPSHOT.group;
+  if (url === DATA_URLS.history && EMBEDDED_GROUP_HISTORY) {
+    const stats = EMBEDDED_GROUP_HISTORY.stats ?? {};
+    return {
+      version: 1,
+      scope: "static-latest-snapshot",
+      group: EMBEDDED_GROUP_HISTORY.source?.group,
+      dates: SITE_MANIFEST.dates,
+      generatedAt: EMBEDDED_SNAPSHOT.generatedAt ?? null,
+      stats: {
+        ...stats,
+        days: SITE_MANIFEST.dates.length,
+        signal_count: EMBEDDED_GROUP_HISTORY.signals?.length ?? 0,
+        participant_count: EMBEDDED_GROUP_HISTORY.members?.length ?? 0,
+        chronicle_count: EMBEDDED_GROUP_HISTORY.chronicles?.length ?? 0,
+      },
+      signals: EMBEDDED_GROUP_HISTORY.signals ?? [],
+      chronicles: EMBEDDED_GROUP_HISTORY.chronicles ?? [],
+      members: EMBEDDED_GROUP_HISTORY.members ?? [],
+    };
+  }
   const separator = url.includes("?") ? "&" : "?";
   const response = await fetch(`${url}${separator}t=${Date.now()}`, { cache: "no-store" });
   if (!response.ok) {
     if (url === DATA_URLS.issues && EMBEDDED_SNAPSHOT?.issues) return EMBEDDED_SNAPSHOT.issues;
-    if (url === DATA_URLS.repos) return { version: 1, updatedAt: null, stats: { total: 0, active: 0, archived: 0 }, repositories: [] };
+    if (url === DATA_URLS.repos) return { version: 2, updatedAt: null, stats: { total: 0, active: 0, archived: 0 }, groups: [], highlights: [], repositories: [] };
     throw new Error(`${url}: HTTP ${response.status}`);
   }
   return response.json();
@@ -895,12 +998,19 @@ function validGroup(data) {
     Array.isArray(data.chronicles) && Array.isArray(data.members);
 }
 
+function validGroupHistory(data) {
+  return data && data.version === 1 && ["all-active-group-days", "static-latest-snapshot"].includes(data.scope) &&
+    data.group === "【官方】DSH内测群" && Array.isArray(data.dates) && data.dates.length > 0 &&
+    Number.isInteger(data.stats?.accepted_messages) && Number.isInteger(data.stats?.days) &&
+    Array.isArray(data.signals) && Array.isArray(data.chronicles) && Array.isArray(data.members);
+}
+
 function validIssues(data) {
   return data && data.version === 2 && Array.isArray(data.issues) && Array.isArray(data.issue_groups);
 }
 
 function validRepos(data) {
-  return data && data.version === 1 && Array.isArray(data.repositories) && data.stats;
+  return data && [1, 2].includes(data.version) && Array.isArray(data.repositories) && data.stats;
 }
 
 function emptyBlock(message) {
@@ -950,14 +1060,52 @@ function renderGuide() {
   const content = $("guideContent");
   const sections = Array.isArray(NEWCOMER_GUIDE?.sections) ? NEWCOMER_GUIDE.sections : [];
   if (!sections.length) return;
+  const safeUrl = (value) => {
+    try {
+      const url = new URL(String(value ?? ""));
+      return url.protocol === "https:" ? url.toString() : "#";
+    } catch {
+      return "#";
+    }
+  };
+  const sectionId = (section, index) => `guide-${String(section.id || index + 1).toLowerCase().replace(/[^a-z0-9-]+/g, "-")}`;
+  const renderBlock = (block) => {
+    if (!block || typeof block !== "object") return "";
+    if (block.type === "heading") return `<h4>${escapeHtml(block.text)}</h4>`;
+    if (block.type === "paragraph") return `<p>${escapeHtml(block.text)}</p>`;
+    if (block.type === "list" && Array.isArray(block.items)) {
+      return `<ul>${block.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+    }
+    if (block.type === "code") {
+      return `<div class="guide-code"><span class="lang">${escapeHtml(block.language || "text")}</span><pre>${escapeHtml(block.code)}</pre></div>`;
+    }
+    if (block.type === "callout") {
+      const tone = block.tone === "warning" ? " warning" : "";
+      return `<div class="guide-callout${tone}"><b>${escapeHtml(block.title || "提示")}</b><span>${escapeHtml(block.text)}</span></div>`;
+    }
+    if (block.type === "table" && Array.isArray(block.columns) && Array.isArray(block.rows)) {
+      return `<div class="guide-table-wrap"><table class="guide-table"><thead><tr>${block.columns.map((column) => `<th>${escapeHtml(column)}</th>`).join("")}</tr></thead>` +
+        `<tbody>${block.rows.map((row) => `<tr>${block.columns.map((_, index) => `<td>${escapeHtml(Array.isArray(row) ? row[index] : "")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+    }
+    if (block.type === "links" && Array.isArray(block.items)) {
+      return `<div class="guide-links">${block.items.map((item) => `<a class="guide-link" href="${escapeHtml(safeUrl(item.url))}" target="_blank" rel="noopener noreferrer">` +
+        `<b>${escapeHtml(item.label || item.url)}</b><span>${escapeHtml(item.description || "打开 GitHub ↗")}</span></a>`).join("")}</div>`;
+    }
+    return "";
+  };
   content.className = "guide-content";
-  content.innerHTML = sections.map((section) => {
-    const items = Array.isArray(section.items) && section.items.length
-      ? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
-      : "";
-    return `<article class="guide-section"><h3>${escapeHtml(section.title || "未命名章节")}</h3>` +
-      `<p>${escapeHtml(section.body || "")}</p>${items}</article>`;
-  }).join("");
+  const title = NEWCOMER_GUIDE.title || "DSH 内测安装指南";
+  const subtitle = NEWCOMER_GUIDE.subtitle || "新人起步资料";
+  const author = NEWCOMER_GUIDE.author || "未署名";
+  const toc = sections.map((section, index) => `<a href="#${sectionId(section, index)}">${escapeHtml(section.title || `第 ${index + 1} 节`)}</a>`).join("");
+  content.innerHTML = `<header class="guide-hero"><div class="eyebrow">FIXED GUIDE // 固定内容</div>` +
+    `<h3>${escapeHtml(title)} <span class="muted">· ${escapeHtml(subtitle)}</span></h3>` +
+    `<p>${escapeHtml(NEWCOMER_GUIDE.intro || "基于内测实际经验整理，帮助新成员完成安装并避开常见问题。")}</p>` +
+    `<div class="guide-byline"><span>作者 <b>${escapeHtml(author)}</b></span><span>固定页面 · 不随日期切换</span>` +
+    `${NEWCOMER_GUIDE.updatedAt ? `<span>更新 ${escapeHtml(NEWCOMER_GUIDE.updatedAt)}</span>` : ""}</div></header>` +
+    `<nav class="guide-toc" aria-label="新人导引目录">${toc}</nav>` +
+    sections.map((section, index) => `<article class="guide-section" id="${sectionId(section, index)}"><h3>${escapeHtml(section.title || "未命名章节")}</h3>` +
+      (Array.isArray(section.blocks) ? section.blocks.map(renderBlock).join("") : "") + `</article>`).join("");
 }
 
 function initTabs() {
@@ -999,13 +1147,18 @@ function initWarp() {
 }
 
 function renderChronicle() {
-  const items = [...(state.group?.chronicles ?? [])].sort((left, right) =>
+  const items = [...(state.history?.chronicles ?? [])].sort((left, right) =>
     String(right.timestamp || right.time || "").localeCompare(String(left.timestamp || left.time || "")),
   );
   const box = $("chronicle");
   box.innerHTML = "";
+  $("chronicleNum").textContent = items.length.toLocaleString("zh-CN");
+  const historyStats = state.history?.stats ?? {};
+  const historyStart = String(historyStats.date_start || state.history?.dates?.[0] || "").slice(0, 10);
+  const historyEnd = String(historyStats.date_end || state.history?.dates?.at(-1) || "").slice(0, 10);
+  $("chronicleRange").textContent = historyStart && historyEnd ? `${historyStart} → ${historyEnd}` : "--";
   if (!items.length) {
-    box.innerHTML = emptyBlock("当前没有满足“完成态原话 + 事件词”的纪事候选。");
+    box.innerHTML = emptyBlock("全部已归档日期中没有满足“完成态原话 + 事件词”的纪事候选。");
     return;
   }
   for (const event of items) {
@@ -1267,14 +1420,17 @@ function renderDelta() {
 }
 
 function renderSignals() {
-  const items = state.group?.signals ?? [];
-  const acceptedCount = state.group?.stats?.accepted_messages ?? 0;
-  const sourceCount = state.group?.stats?.source_messages ?? 0;
+  const items = state.history?.signals ?? [];
+  const acceptedCount = state.history?.stats?.accepted_messages ?? 0;
+  const sourceCount = state.history?.stats?.source_messages ?? 0;
+  const dayCount = state.history?.stats?.days ?? state.history?.dates?.length ?? 0;
+  const rangeStart = String(state.history?.stats?.date_start || state.history?.dates?.[0] || "").slice(0, 10);
+  const rangeEnd = String(state.history?.stats?.date_end || state.history?.dates?.at(-1) || "").slice(0, 10);
   $("sigNum").textContent = items.length;
   $("sigTotal").textContent = acceptedCount;
   if ($("signalDesc")) $("signalDesc").innerHTML = items.length
-    ? `从 <b>${sourceCount}</b> 条本机原始记录中确认 <b>${acceptedCount}</b> 条有效发言，平衡收录 <b>${items.length}</b> 条高质量信号。`
-    : "当前没有通过来源、归属、相关性与信息量门槛的信号。";
+    ? `汇总 <b>${dayCount}</b> 个自然日（${escapeHtml(rangeStart)} → ${escapeHtml(rangeEnd)}）：从 <b>${sourceCount}</b> 条本机原始记录中确认 <b>${acceptedCount}</b> 条有效发言，收录 <b>${items.length}</b> 条高质量信号。顶部日期不会改变本页。`
+    : "全部已归档日期中没有通过来源、归属、相关性与信息量门槛的信号。";
 
   const filters = $("sigFilters");
   const list = $("sigList");
@@ -1317,7 +1473,7 @@ function rarityFor(index, total) {
 }
 
 function renderCards() {
-  const original = (state.group?.members ?? []).map((member, index, all) => ({
+  const original = (state.history?.members ?? []).map((member, index, all) => ({
     ...member,
     rarity: rarityFor(index, all.length),
   }));
@@ -1332,8 +1488,11 @@ function renderCards() {
   $("collNum").textContent = original.length;
   $("collTotal").textContent = original.length;
   $("collBar").style.width = original.length ? "100%" : "0%";
+  const dayCount = state.history?.stats?.days ?? state.history?.dates?.length ?? 0;
+  const rangeStart = String(state.history?.stats?.date_start || state.history?.dates?.[0] || "").slice(0, 10);
+  const rangeEnd = String(state.history?.stats?.date_end || state.history?.dates?.at(-1) || "").slice(0, 10);
   if ($("personaDesc")) $("personaDesc").innerHTML = original.length
-    ? `基于微信发送者 ID 与联系人表确认 <b>${original.length}</b> 位实际发言成员。`
+    ? `汇总 <b>${dayCount}</b> 个自然日（${escapeHtml(rangeStart)} → ${escapeHtml(rangeEnd)}），基于微信发送者 ID 与联系人表确认 <b>${original.length}</b> 位实际发言成员。顶部日期不会改变本页。`
     : "旧成员画像已全部撤下；没有新证据的成员不会生成星卡。";
   if (!original.length) {
     $("cardCount").textContent = "收录 0 张";
@@ -1495,58 +1654,137 @@ function initBoardTabs() {
 }
 
 function renderRepos() {
-  const repositories = state.repos?.repositories ?? [];
+  const repositories = (state.repos?.repositories ?? []).map((repo) => ({
+    ...repo,
+    category: repo.category || "all",
+    categoryName: repo.categoryName || "全部仓库",
+    summary: repo.summary || repo.description || "GitHub 暂未填写仓库说明。",
+    activity: repo.activity || `最近推送：${compactTime(repo.pushedAt) || "暂无时间"}`,
+    why: repo.why || "当前仅有 GitHub 元数据，进一步解读将在下一次同步后补齐。",
+    attention: repo.attention || { score: 0, label: repo.archived ? "历史参考" : "持续维护", reasons: [] },
+  }));
   const stats = state.repos?.stats ?? {};
   $("repoTotal").textContent = Number(stats.total ?? repositories.length).toLocaleString("zh-CN");
   $("repoActive").textContent = Number(stats.active ?? repositories.filter((repo) => !repo.archived).length).toLocaleString("zh-CN");
   $("repoArchived").textContent = Number(stats.archived ?? repositories.filter((repo) => repo.archived).length).toLocaleString("zh-CN");
   $("repoUpdated").textContent = compactTime(state.repos?.updatedAt) || "--";
   const list = $("repoList");
-  const ranges = $("repoRangeBtns");
+  const highlights = $("repoHighlights");
+  const filters = $("repoCatFilters");
+  const sorts = $("repoSortBtns");
   const search = $("repoSearch");
   list.innerHTML = "";
-  ranges.innerHTML = "";
+  highlights.innerHTML = "";
+  filters.innerHTML = "";
+  sorts.innerHTML = "";
   search.value = "";
   if (!repositories.length) {
     $("repoVisible").textContent = "显示 0 / 0";
     list.innerHTML = emptyBlock("Repo 数据尚未生成。");
+    highlights.innerHTML = emptyBlock("还没有可解读的 Repo 动态。");
     return;
   }
-  let range = "all";
-  let query = "";
+  const byId = new Map(repositories.map((repo) => [String(repo.id), repo]));
+  const payloadGroups = Array.isArray(state.repos?.groups) ? state.repos.groups : [];
+  const groups = payloadGroups.length ? payloadGroups : [{
+    id: "legacy",
+    name: "全部仓库",
+    summary: "当前数据仍是兼容版本，下一次 GitHub 同步后会按方向归类。",
+    why: "先按最近推送顺序阅读。",
+    count: repositories.length,
+    repositories: repositories.map((repo) => repo.id),
+  }];
+  const quality = state.repos?.quality ?? {};
+  const priorityCount = repositories.filter((repo) => repo.attention?.label === "优先看").length;
+  $("repoNarrative").textContent = `已把 ${repositories.length} 个仓库归为 ${groups.length} 个方向，并标出 ${priorityCount} 个优先阅读项。` +
+    (Number.isInteger(quality.latestCommits) ? ` ${quality.latestCommits} 个仓库已核对默认分支最新提交。` : "");
   const referenceTime = new Date(state.repos?.updatedAt || Date.now()).valueOf();
-  const daysSince = (value) => Math.max(0, (referenceTime - new Date(value).valueOf()) / 86_400_000);
-  const draw = () => {
-    const visible = repositories.filter((repo) => {
-      if (range !== "all" && daysSince(repo.createdAt) > Number(range)) return false;
-      if (!query) return true;
-      return `${repo.name} ${repo.fullName} ${repo.description} ${repo.language} ${(repo.topics || []).join(" ")}`.toLowerCase().includes(query);
-    }).slice().sort((left, right) => String(right.createdAt).localeCompare(String(left.createdAt))
-      || String(right.pushedAt).localeCompare(String(left.pushedAt)) || left.name.localeCompare(right.name, "en"));
-    $("repoVisible").textContent = `显示 ${visible.length} / ${repositories.length}`;
-    list.innerHTML = visible.length ? visible.map((repo) => {
-      const newlyCreated = daysSince(repo.createdAt) <= 7;
-      const stateLabel = repo.archived ? "已归档" : repo.disabled ? "已停用" : newlyCreated ? "7 日内新建" : "活跃";
-      const tags = [repo.language, repo.visibility, ...(repo.topics || []).slice(0, 3)].filter(Boolean);
-      return `<a class="repo-card" href="${escapeHtml(repo.url)}" target="_blank" rel="noopener noreferrer">` +
-        `<div class="top"><span class="name">${escapeHtml(repo.fullName || repo.name)}</span>` +
-        `<span class="badge${newlyCreated ? " new" : ""}">${escapeHtml(stateLabel)}</span></div>` +
-        `<div class="desc">${escapeHtml(repo.description || "暂无仓库说明。")}</div>` +
-        `<div class="tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>` +
-        `<div class="meta">创建 ${escapeHtml(compactTime(repo.createdAt))} · 最近推送 ${escapeHtml(compactTime(repo.pushedAt))}` +
-        `${repo.firstSeenAt ? ` · 首次观察 ${escapeHtml(compactTime(repo.firstSeenAt))}` : ""}<br>打开 Repo ↗</div></a>`;
-    }).join("") : emptyBlock("当前筛选下没有 Repo。");
+  const daysSince = (value) => {
+    const timestamp = new Date(value).valueOf();
+    return Number.isFinite(timestamp) ? Math.max(0, (referenceTime - timestamp) / 86_400_000) : Number.POSITIVE_INFINITY;
   };
-  for (const [value, label] of [["all", "全部"], ["7", "近 7 天新建"], ["30", "近 30 天新建"]]) {
+  const recentAt = (repo) => repo.latestCommit?.committedAt || repo.pushedAt || repo.updatedAt || repo.createdAt || "";
+  const attentionSort = (left, right) => Number(right.attention?.score ?? 0) - Number(left.attention?.score ?? 0)
+    || String(recentAt(right)).localeCompare(String(recentAt(left))) || left.name.localeCompare(right.name, "en");
+  const recentSort = (left, right) => String(recentAt(right)).localeCompare(String(recentAt(left)))
+    || Number(right.attention?.score ?? 0) - Number(left.attention?.score ?? 0) || left.name.localeCompare(right.name, "en");
+  const createdSort = (left, right) => String(right.createdAt).localeCompare(String(left.createdAt))
+    || String(recentAt(right)).localeCompare(String(recentAt(left))) || left.name.localeCompare(right.name, "en");
+  const highlightIds = Array.isArray(state.repos?.highlights) ? state.repos.highlights.map(String) : [];
+  const focusRepos = [...highlightIds.map((id) => byId.get(id)).filter(Boolean), ...repositories.slice().sort(attentionSort)]
+    .filter((repo, index, all) => all.findIndex((item) => item.id === repo.id) === index).slice(0, 6);
+  highlights.innerHTML = focusRepos.map((repo, index) => `<a class="repo-focus-card" href="${escapeHtml(repo.url)}" target="_blank" rel="noopener noreferrer">` +
+    `<div class="top"><span class="rank">0${index + 1}</span><span class="cat">${escapeHtml(repo.categoryName)}</span>` +
+    `<span class="name">${escapeHtml(repo.name)}</span></div>` +
+    `<div class="summary">${escapeHtml(repo.summary)}</div><div class="activity">${escapeHtml(repo.activity)}</div></a>`).join("");
+  let current = "all";
+  let sortMode = "attention";
+  let query = "";
+  const draw = () => {
+    const comparator = sortMode === "recent" ? recentSort : sortMode === "created" ? createdSort : attentionSort;
+    let visibleCount = 0;
+    const visibleGroups = groups.map((group) => {
+      if (current !== "all" && group.id !== current) return null;
+      const members = (group.repositories || []).map((id) => byId.get(String(id))).filter(Boolean).filter((repo) => {
+        if (!query) return true;
+        return `${repo.name} ${repo.fullName} ${repo.summary} ${repo.activity} ${repo.why} ${repo.categoryName} ${repo.language} ${(repo.topics || []).join(" ")}`.toLowerCase().includes(query);
+      }).sort(comparator);
+      if (!members.length) return null;
+      visibleCount += members.length;
+      return { group, members };
+    }).filter(Boolean).sort((left, right) => comparator(left.members[0], right.members[0]) || left.group.name.localeCompare(right.group.name, "zh"));
+    $("repoVisible").textContent = `显示 ${visibleCount} / ${repositories.length} · ${visibleGroups.length} 个方向`;
+    list.innerHTML = visibleGroups.length ? visibleGroups.map(({ group, members }, groupIndex) => {
+      const lead = members[0];
+      const cards = members.map((repo) => {
+        const newlyCreated = daysSince(repo.createdAt) <= 7;
+        const stateLabel = repo.archived ? "已归档" : repo.disabled ? "已停用" : newlyCreated ? "7 日内新建" : "活跃";
+        const tags = [repo.attention?.label, stateLabel, repo.language, ...(repo.topics || []).slice(0, 2)].filter(Boolean);
+        return `<a class="repo-item" href="${escapeHtml(repo.url)}" target="_blank" rel="noopener noreferrer">` +
+          `<div class="identity"><div class="repo-name">${escapeHtml(repo.fullName || repo.name)}</div>` +
+          `<div class="badges">${tags.map((tag, index) => `<span${index === 0 ? ' class="attention"' : ""}>${escapeHtml(tag)}</span>`).join("")}</div>` +
+          `<div class="meta">创建 ${escapeHtml(compactTime(repo.createdAt))}<br>最近提交 ${escapeHtml(compactTime(recentAt(repo)) || "--")} · 打开 GitHub ↗</div></div>` +
+          `<div class="explain"><div class="line"><b>它是什么</b>${escapeHtml(repo.summary)}</div>` +
+          `<div class="line activity"><b>最近发生</b>${escapeHtml(repo.activity)}</div>` +
+          `<div class="line why"><b>为什么看</b>${escapeHtml(repo.why)}</div></div></a>`;
+      }).join("");
+      const open = Boolean(query) || current !== "all" || groupIndex === 0;
+      return `<section class="repo-group${open ? " open" : ""}"><button type="button" class="group-head" aria-expanded="${open}">` +
+        `<div><div class="group-title"><b>${escapeHtml(group.name)}</b><span>${members.length} 个 Repo</span></div>` +
+        `<div class="group-summary">${escapeHtml(group.summary || group.why || "")}</div>` +
+        `<div class="group-lead">当前先看：${escapeHtml(lead.name)} · ${escapeHtml(lead.activity)}</div></div>` +
+        `<span class="toggle">${open ? "▴ 收起" : `▾ 展开 ${members.length} 个`}</span></button><div class="repo-drop">${cards}</div></section>`;
+    }).join("") : emptyBlock("当前筛选下没有 Repo。");
+    list.querySelectorAll(".repo-group .group-head").forEach((button) => button.addEventListener("click", () => {
+      const group = button.closest(".repo-group");
+      group.classList.toggle("open");
+      const open = group.classList.contains("open");
+      button.setAttribute("aria-expanded", String(open));
+      const count = group.querySelectorAll(".repo-item").length;
+      button.querySelector(".toggle").textContent = open ? "▴ 收起" : `▾ 展开 ${count} 个`;
+    }));
+  };
+  for (const [value, label] of [["attention", "按值得关注"], ["recent", "按最近提交"], ["created", "按新建时间"]]) {
     const button = document.createElement("button");
     button.textContent = label;
-    button.classList.toggle("on", value === range);
+    button.classList.toggle("on", value === sortMode);
     button.addEventListener("click", () => {
-      range = value;
-      ranges.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      sortMode = value;
+      sorts.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
       draw();
     });
-    ranges.appendChild(button);
+    sorts.appendChild(button);
+  }
+  for (const group of [{ id: "all", name: "全部", count: repositories.length }, ...groups]) {
+    const button = document.createElement("button");
+    button.textContent = `${group.name} ${group.count}`;
+    button.classList.toggle("on", group.id === current);
+    button.addEventListener("click", () => {
+      current = group.id;
+      filters.querySelectorAll("button").forEach((item) => item.classList.toggle("on", item === button));
+      draw();
+    });
+    filters.appendChild(button);
   }
   search.oninput = () => { query = search.value.trim().toLowerCase(); draw(); };
   draw();
@@ -1616,22 +1854,25 @@ async function refreshAll({ initial = false } = {}) {
   $("refreshFill").style.width = "20%";
   refreshStatus("正在载入群聊自然日与最新 GitHub Issue/Repo 数据…");
   try {
-    const [group, issues, repos] = await Promise.all([
+    const [group, history, issues, repos] = await Promise.all([
       fetchJson(DATA_URLS.group),
+      fetchJson(DATA_URLS.history),
       fetchJson(DATA_URLS.issues),
       fetchJson(DATA_URLS.repos),
     ]);
     if (!validGroup(group)) throw new Error("group-data.json 格式或群名不匹配");
+    if (!validGroupHistory(history)) throw new Error("group-history.json 格式或群名不匹配");
     if (!validIssues(issues)) throw new Error("issues.json 格式不匹配");
     if (!validRepos(repos)) throw new Error("repos.json 格式不匹配");
     state.group = group;
+    state.history = history;
     state.issues = issues;
     state.repos = repos;
     state.comparison = EMBEDDED_SNAPSHOT?.comparison ?? null;
     renderAll();
     $("refreshFill").style.width = "100%";
     const groupCount = group.stats.accepted_messages;
-    refreshStatus(`已载入：群消息 ${groupCount} 条 / Issue ${issues.issues.length} 条 / Repo ${repos.repositories.length} 个。` +
+    refreshStatus(`已载入：所选日群消息 ${groupCount} 条 / 全量信号 ${history.signals.length} 条 / 全量成员 ${history.members.length} 位 / Issue ${issues.issues.length} 条 / Repo ${repos.repositories.length} 个。` +
       `群聊生成于 ${EMBEDDED_SNAPSHOT.generatedAt || "--"}；GitHub 同步于 ${repos.updatedAt || issues.updated_at || "--"}。`);
   } catch (error) {
     $("refreshFill").style.width = "100%";

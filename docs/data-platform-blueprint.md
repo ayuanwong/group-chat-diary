@@ -7,6 +7,7 @@
 - 群聊按 `Asia/Shanghai` 自然日归档，本地任务只负责读取、校验、脱敏和上传；
 - GitHub 成员名单继续只进入 `ACCESS_DB`；
 - GitHub Issue 与 Repo 独立更新，不再跟随群聊日期或页面部署；
+- 新人导引使用独立固定内容源，不随群聊日期或 GitHub 数据同步变化；
 - `QA_DB` 继续保存完整私有语料并支持实时问答，新增 Repo 检索；
 - 展示安全数据进入独立 `CONTENT_DB`，完整群聊正文不进入 Pages 构建产物；
 - 所有导入先写新版本、校验计数，再切换 active 指针；失败时保留旧版本。
@@ -38,12 +39,15 @@
 - 同一天重跑生成新的 `ingest_id`，只在消息 ID、条数、发送者和左右归属校验通过后激活；
 - 右侧消息发送者必须全部是“少女阿原”，左侧必须有其他成员署名；
 - 完整脱敏消息进入 `QA_DB`，展示摘要进入 `CONTENT_DB`。
+- “今日最新”等日视图读取一个明确自然日；成员星卡、信号与纪事从全部 active 自然日聚合，不受页面日期选择器影响。
 
 ### GitHub
 
 - Issue 使用私有 `dsh-external/issues` API 的完整列表；
 - Repo 使用 `dsh-external` 当前可访问的完整私有仓库列表；
 - Repo 的 `created_at` 表示真正新建，`first_seen_at` 只表示系统首次观察；
+- Repo 展示不是元数据清单：用途来自 GitHub description，最近变化来自默认分支最新 commit，系统按产品方向分组并生成可追溯的阅读建议；
+- Repo 解读不调用 LLM；缺少仓库说明时明确标注信息不足，不根据名称虚构具体能力；
 - Issue 与 Repo 共用一次 `github_sync_id`，两类计数均为正并校验后才共同激活。
 
 ## 消费者与激活证明
@@ -51,6 +55,7 @@
 | 消费者 | 激活方式 | 完成证明 | 失败回退 |
 | --- | --- | --- | --- |
 | 页面群聊视图 | `CONTENT_DB` 当日 active 指针 | API 日期、计数与本地日语料一致 | 保留该日旧 active 版本 |
+| 页面群聊全量视图 | 汇总全部群聊 active 指针 | 日期无重复，信号、纪事去重，成员累计值一致 | 不把单日数据伪装成全量 |
 | Issue/Repo Board | GitHub active 指针 | API Issue/Repo 数与本机 API 一致 | 两类数据均保持旧版本 |
 | 实时 QA | QA group/github 双 active 指针 | 状态计数一致且问答返回带来源结果 | 保留旧检索版本 |
 | 成员门禁 | `ACCESS_DB` active 名单 | 匿名被拦截、成员可登录、OAuth 无组织 scope | 保留旧名单 |

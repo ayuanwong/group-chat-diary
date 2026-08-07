@@ -2,6 +2,7 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { tokenize } from "../qa/retrieval.mjs";
+import { buildRepositoryDigest } from "./lib/repo-digest.mjs";
 import {
   assertPrivateContent,
   d1Target,
@@ -51,6 +52,50 @@ function ghPages(endpoint) {
   throw new Error("GitHub API 分页超过安全上限。");
 }
 
+const REPO_HEAD_QUERY = `
+  query RepoHeads($org: String!, $after: String) {
+    organization(login: $org) {
+      repositories(first: 100, after: $after, orderBy: { field: NAME, direction: ASC }) {
+        pageInfo { hasNextPage endCursor }
+        nodes {
+          name
+          defaultBranchRef {
+            target {
+              ... on Commit { oid messageHeadline committedDate }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+function collectRepoHeads() {
+  const heads = new Map();
+  let cursor = null;
+  for (let page = 1; page <= 10; page += 1) {
+    const args = ["api", "graphql", "-f", `query=${REPO_HEAD_QUERY}`, "-F", `org=${ORGANIZATION}`];
+    if (cursor) args.push("-F", `after=${cursor}`);
+    const payload = JSON.parse(run("gh", args));
+    const connection = payload?.data?.organization?.repositories;
+    if (!connection || !Array.isArray(connection.nodes)) throw new Error("GitHub Repo 默认分支响应格式不正确。");
+    for (const node of connection.nodes) {
+      const name = String(node?.name ?? "");
+      const target = node?.defaultBranchRef?.target;
+      if (!name || heads.has(name)) throw new Error("GitHub Repo 默认分支列表存在空名称或重复项。");
+      heads.set(name, target?.oid ? {
+        sha: String(target.oid),
+        headline: sanitizeText(target.messageHeadline ?? ""),
+        committedAt: String(target.committedDate ?? ""),
+      } : null);
+    }
+    if (!connection.pageInfo?.hasNextPage) return heads;
+    cursor = String(connection.pageInfo?.endCursor ?? "");
+    if (!cursor) throw new Error("GitHub Repo 默认分支分页游标缺失。");
+  }
+  throw new Error("GitHub Repo 默认分支分页超过安全上限。");
+}
+
 function sanitizeValue(value) {
   if (typeof value === "string") return sanitizeText(value);
   if (Array.isArray(value)) return value.map(sanitizeValue);
@@ -88,9 +133,12 @@ function collectIssues(classified) {
   return raw;
 }
 
-function collectRepos(now) {
+function collectRepos(now, repoHeads) {
   const raw = ghPages(`orgs/${ORGANIZATION}/repos?type=all&sort=full_name&direction=asc`).map(sanitizeValue);
   if (!raw.length) throw new Error("组织 Repo 列表为空，拒绝覆盖。");
+  if (raw.some((repo) => !repoHeads.has(String(repo.name ?? ""))) || repoHeads.size !== raw.length) {
+    throw new Error("Repo REST 列表与默认分支列表计数或名称不一致。");
+  }
   const ids = new Set();
   const repositories = raw.map((repo) => {
     const id = Number(repo.id);
@@ -116,19 +164,21 @@ function collectRepos(now) {
       defaultBranch: String(repo.default_branch ?? ""),
       openIssueCount: Math.max(0, Number(repo.open_issues_count ?? 0)),
       firstSeenAt: now,
+      latestCommit: repoHeads.get(name),
     };
   }).sort((left, right) => left.name.localeCompare(right.name, "en"));
   return { raw, repositories };
 }
 
-function repoPayload(repositories, now, syncId) {
+function repoPayload(digest, now, syncId) {
+  const repositories = digest.repositories;
   const languageCounts = new Map();
   for (const repo of repositories) {
     const language = repo.language || "未标注";
     languageCounts.set(language, (languageCounts.get(language) ?? 0) + 1);
   }
   return {
-    version: 1,
+    version: 2,
     organization: ORGANIZATION,
     syncId,
     updatedAt: now,
@@ -141,6 +191,9 @@ function repoPayload(repositories, now, syncId) {
         .map(([language, count]) => ({ language, count }))
         .sort((left, right) => right.count - left.count || left.language.localeCompare(right.language, "zh")),
     },
+    groups: digest.groups,
+    highlights: digest.highlights,
+    quality: digest.quality,
     repositories,
   };
 }
@@ -194,20 +247,26 @@ function qaRows(syncId, classified, rawIssues, repositories) {
     const content = [
       repo.fullName,
       repo.description,
+      repo.summary,
+      repo.activity,
+      repo.why,
+      repo.categoryName,
       `状态 ${state}`,
       repo.language ? `主要语言 ${repo.language}` : "",
       repo.topics.length ? `主题 ${repo.topics.join(" ")}` : "",
       `创建 ${repo.createdAt}`,
       `最近推送 ${repo.pushedAt}`,
+      repo.latestCommit?.headline ? `默认分支最新提交 ${repo.latestCommit.headline}` : "",
+      repo.latestCommit?.committedAt ? `提交时间 ${repo.latestCommit.committedAt}` : "",
       `首次观察 ${repo.firstSeenAt}`,
     ].filter(Boolean).join("\n");
     assertPrivateContent(content, `Repo ${repo.name}`);
     const tokens = tokenize(content).slice(0, 2_000).join(" ");
     documents.push(`(${[
-      sqlString(documentKey), sqlString(syncId), sqlString("repo"), sqlString(repo.pushedAt.slice(0, 10) || repo.createdAt.slice(0, 10)),
-      String(position), sqlString(repo.pushedAt || repo.updatedAt || repo.createdAt), "NULL", sqlString(repo.fullName),
-      nullableString(repo.url), sqlString(state), nullableString(repo.language || "未标注"), "0", "0",
-      nullableString(trimText(repo.description || `${repo.fullName} · ${state}`, 900)), sqlString(content),
+      sqlString(documentKey), sqlString(syncId), sqlString("repo"), sqlString((repo.latestCommit?.committedAt || repo.pushedAt || repo.createdAt).slice(0, 10)),
+      String(position), sqlString(repo.latestCommit?.committedAt || repo.pushedAt || repo.updatedAt || repo.createdAt), "NULL", sqlString(repo.fullName),
+      nullableString(repo.url), sqlString(state), nullableString(repo.categoryName || "未分类"), String(repo.attention?.score ?? 0), "0",
+      nullableString(trimText(repo.summary || `${repo.fullName} · ${state}`, 900)), sqlString(content),
     ].join(", ")})`);
     fts.push(`(${sqlString(documentKey)}, ${sqlString(tokens)})`);
   });
@@ -270,10 +329,16 @@ function stageContent(syncId, now, classified, repos) {
   }
 }
 
-function stageQa(syncId, now, classified, rawIssues, rawRepos, repos) {
+function stageQa(syncId, now, classified, rawIssues, rawRepos, repoHeads, repos) {
   const { documents, fts, issueDocumentCount } = qaRows(syncId, classified, rawIssues, repos.repositories);
   const rawIssueText = JSON.stringify({ version: 1, repository: ISSUE_REPOSITORY, generatedAt: now, issues: rawIssues });
-  const rawRepoText = JSON.stringify({ version: 1, organization: ORGANIZATION, generatedAt: now, repositories: rawRepos });
+  const rawRepoText = JSON.stringify({
+    version: 2,
+    organization: ORGANIZATION,
+    generatedAt: now,
+    repositories: rawRepos,
+    defaultBranchHeads: [...repoHeads.entries()].map(([name, latestCommit]) => ({ name, latestCommit })),
+  });
   assertPrivateContent(rawIssueText, "完整 Issue API 快照");
   assertPrivateContent(rawRepoText, "完整 Repo API 快照");
   const issueSnapshotChunks = textChunks(rawIssueText);
@@ -402,11 +467,18 @@ function activate(syncId, now, issueCount, repoCount) {
 const now = new Date().toISOString();
 const classified = loadClassifiedIssues();
 const rawIssues = collectIssues(classified);
-const collectedRepos = collectRepos(now);
+const repoHeads = collectRepoHeads();
+const collectedRepos = collectRepos(now, repoHeads);
 const repositories = activeRepoFirstSeen(collectedRepos.repositories, now);
-const provisional = { issues: classified.issues, repositories };
-const syncId = hashJson("github-live-v1", provisional);
-const repos = repoPayload(repositories, now, syncId);
+const digest = buildRepositoryDigest(repositories, now);
+const provisional = {
+  issues: classified.issues,
+  repositories: digest.repositories,
+  groups: digest.groups,
+  highlights: digest.highlights,
+};
+const syncId = hashJson("github-live-v2", provisional);
+const repos = repoPayload(digest, now, syncId);
 
 const activeContent = queryD1(CONTENT_DB, "SELECT source, sync_id FROM content_active_sources ORDER BY source;");
 const activeQa = new Map(queryD1(QA_DB, `
@@ -429,7 +501,7 @@ if (activeContent.length === 2 && activeContent.every((row) => row.sync_id === s
 }
 
 stageContent(syncId, now, classified, repos);
-stageQa(syncId, now, classified, rawIssues, collectedRepos.raw, repos);
+stageQa(syncId, now, classified, rawIssues, collectedRepos.raw, repoHeads, repos);
 activate(syncId, now, rawIssues.length, repositories.length);
 
 console.log(JSON.stringify({

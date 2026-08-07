@@ -2,6 +2,7 @@ import { handleQaAsk, qaStatus, type ModelFetch } from "./qa";
 import {
   contentGithubSource,
   contentGroupDay,
+  contentGroupHistory,
   contentManifest,
   contentStatus,
 } from "./content";
@@ -519,6 +520,15 @@ export function createHandler(
         return payload ? jsonResponse(payload) : jsonResponse({ error: "指定日期不存在。" }, 404);
       } catch {
         return jsonResponse({ error: "群聊日数据暂时不可用。" }, 503);
+      }
+    }
+    if (url.pathname === "/api/content/group-history") {
+      if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+      try {
+        const payload = await contentGroupHistory(env);
+        return payload ? jsonResponse(payload) : jsonResponse({ error: "群聊全量视图尚未就绪。" }, 503);
+      } catch {
+        return jsonResponse({ error: "群聊全量视图暂时不可用。" }, 503);
       }
     }
     if (url.pathname === "/api/content/issues" || url.pathname === "/api/content/repos") {

@@ -1,1 +1,267 @@
-{"version":1,"status":"empty","updatedAt":null,"sections":[]}
+{
+  "version": 2,
+  "status": "published",
+  "title": "DSH 内测安装指南",
+  "subtitle": "WSL2 Ubuntu 26.04",
+  "author": "@inschrift-spruch-raum",
+  "updatedAt": "2026-08-07",
+  "intro": "基于内测实际经验整理，帮助新成员通过 GitHub 仓库完成 DSH 的安装与配置，并提前避开常见问题。",
+  "sections": [
+    {
+      "id": "overview",
+      "title": "概述",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "内测开始后，你会获得两个 GitHub 组织的访问权限：一个用于反馈与共创，一个用于拉取程序。请先在 GitHub 信息列表中确认邀请和仓库权限，再开始安装。"
+        },
+        {
+          "type": "links",
+          "items": [
+            {
+              "label": "dsh2026",
+              "url": "https://github.com/dsh2026",
+              "description": "反馈 Issue 与共创社区"
+            },
+            {
+              "label": "dsh-external",
+              "url": "https://github.com/dsh-external",
+              "description": "拉取 DSH 程序与内测仓库"
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "title": "本文环境",
+          "text": "以下流程以 WSL2 Ubuntu 26.04 为例；其他系统的依赖名称和安装方式可能不同。"
+        }
+      ]
+    },
+    {
+      "id": "prerequisites",
+      "title": "前置准备",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": ["项目", "说明"],
+          "rows": [
+            ["GitHub 账号名", "用于 Git 操作的身份标识"],
+            ["GitHub SSH Key", "用于安全拉取私有仓库，建议提前完成 SSH 配置"],
+            ["DS API Key", "用于调用模型服务，请妥善保管，不要写入仓库或公开页面"]
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "warning",
+          "title": "先确认权限",
+          "text": "如果 GitHub 邀请尚未接受，或目标私有仓库无法打开，请先处理访问权限；安装命令无法绕过组织授权。"
+        }
+      ]
+    },
+    {
+      "id": "dependencies",
+      "title": "安装依赖",
+      "blocks": [
+        {
+          "type": "list",
+          "items": [
+            "Git：版本控制与仓库拉取",
+            "Node.js 与 npm：推荐通过 nvm 安装，便于管理版本并减少依赖冲突",
+            "build-essential：提供 gcc、g++、make 等原生模块构建工具"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "sudo apt update\nsudo apt install -y git build-essential\n\n# 安装 nvm\ncurl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash\n\n# 重启终端或执行 source ~/.bashrc 后安装 Node LTS\nnvm install --lts\nnvm use --lts"
+        },
+        {
+          "type": "callout",
+          "title": "推荐做法",
+          "text": "优先使用 nvm 管理 Node.js；不要只依赖 Ubuntu 系统包中的 Node 版本。"
+        }
+      ]
+    },
+    {
+      "id": "installation",
+      "title": "正式安装",
+      "blocks": [
+        {
+          "type": "heading",
+          "text": "1. 克隆测试仓库"
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "git clone <你的测试仓库地址>\ncd <你的测试仓库目录名>"
+        },
+        {
+          "type": "heading",
+          "text": "2. 执行安装脚本"
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "DSH_REPO=<你的测试仓库> DSH_REF=<仓库中的分支> scripts/install.sh"
+        },
+        {
+          "type": "list",
+          "items": [
+            "DSH_REPO：填写测试仓库名称，例如 org/repo",
+            "DSH_REF：填写需要安装的分支，例如 main 或 dev"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "# 示例\nDSH_REPO=my-org/dsh-test DSH_REF=main scripts/install.sh"
+        }
+      ]
+    },
+    {
+      "id": "troubleshooting",
+      "title": "踩坑与修复",
+      "blocks": [
+        {
+          "type": "heading",
+          "text": "缺少 unrun 依赖"
+        },
+        {
+          "type": "paragraph",
+          "text": "如果 Node.js 不是通过 nvm 安装，而是使用 Ubuntu 系统包安装，运行安装脚本时可能遇到 unrun 依赖缺失并中断。"
+        },
+        {
+          "type": "callout",
+          "title": "经验判断",
+          "text": "系统 Node 环境可能缺少项目构建所需的开发依赖。根本建议仍是改用 nvm；如果需要临时修复，可在自己的 Fork 中补充依赖。"
+        },
+        {
+          "type": "list",
+          "items": [
+            "将测试仓库 Fork 到自己的 GitHub 账号",
+            "在 Fork 中把 unrun 加入 devDependencies",
+            "提交 package.json 与 package-lock.json",
+            "使用 Fork 后的仓库地址重新克隆和安装"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "npm install --save-dev unrun\ngit add package.json package-lock.json\ngit commit -m \"fix: add unrun dependency to avoid missing bug\"\ngit push origin main"
+        },
+        {
+          "type": "heading",
+          "text": "node-pty 编译失败"
+        },
+        {
+          "type": "paragraph",
+          "text": "node-pty 是原生模块，需要 gcc、g++、make 等构建工具。若看到 g++: command not found 或 node-gyp 相关错误，通常是 build-essential 尚未安装。"
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "sudo apt update\nsudo apt install -y build-essential"
+        },
+        {
+          "type": "callout",
+          "title": "安装后怎么做",
+          "text": "回到原仓库目录重新运行 scripts/install.sh 即可，通常无需重新克隆仓库。"
+        }
+      ]
+    },
+    {
+      "id": "development",
+      "title": "测试与开发",
+      "blocks": [
+        {
+          "type": "heading",
+          "text": "编译项目"
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "pnpm run build"
+        },
+        {
+          "type": "heading",
+          "text": "运行 Web 界面"
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "pnpm run dsh web"
+        },
+        {
+          "type": "callout",
+          "title": "编译版本",
+          "text": "完成 pnpm run build 后，重新安装或启动编译版本时不再需要在安装脚本中传入 DSH_REPO 和 DSH_REF。这个方式主要用于本地开发和频繁测试。"
+        }
+      ]
+    },
+    {
+      "id": "cordis",
+      "title": "启用 Cordis 自修改功能",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "DSH 可以通过 Cordis 工具在运行时进行自修改。下面的可选覆盖层会注入 tool-cordis（@deepseek-ai/dsh-tool-cordis）。"
+        },
+        {
+          "type": "code",
+          "language": "yaml",
+          "code": "# Optional overlay that enables the self-referential Cordis tools.\n# Apply it with dsh --config or dsh web --config, or copy it to\n# ~/.dsh/config.yaml for future launches.\n- insert:\n    - id: tool-cordis\n      name: '@deepseek-ai/dsh-tool-cordis'"
+        },
+        {
+          "type": "callout",
+          "tone": "warning",
+          "title": "重要安全提示",
+          "text": "cordis_mount 会改变运行时内存状态，并不是安全边界。启用它相当于开放类似 Shell 的访问能力，只应在受信任、隔离的开发或测试环境中使用。"
+        },
+        {
+          "type": "heading",
+          "text": "临时启用（单次运行）"
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "dsh --config cordis-tools.overlay.yml\n# 或\ndsh web --config cordis-tools.overlay.yml"
+        },
+        {
+          "type": "heading",
+          "text": "永久启用（全局配置）"
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "mkdir -p ~/.dsh\ncp cordis-tools.overlay.yml ~/.dsh/config.yaml"
+        },
+        {
+          "type": "callout",
+          "title": "验证",
+          "text": "启用后，可通过 DSH 提供的接口调用 tool-cordis 执行自修改操作。具体命令以项目文档为准，建议先在隔离环境验证。"
+        }
+      ]
+    },
+    {
+      "id": "checklist",
+      "title": "安装清单",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": ["步骤", "关键动作"],
+          "rows": [
+            ["前置", "准备 GitHub 账号、SSH Key、DS API Key，并接受组织邀请"],
+            ["依赖", "安装 Git、build-essential，并通过 nvm 安装 Node.js"],
+            ["克隆", "git clone 目标测试仓库并进入目录"],
+            ["安装", "设置 DSH_REPO 和 DSH_REF 后运行 scripts/install.sh"],
+            ["验证", "完成构建并启动 Web 界面，确认基础功能可用"]
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "如果仍有问题，请前往 Issue 仓库反馈，并附上操作系统、Node 安装方式、执行命令和经过脱敏的报错信息。"
+        }
+      ]
+    }
+  ]
+}

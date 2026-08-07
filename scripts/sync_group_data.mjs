@@ -89,7 +89,11 @@ function buildDigest(date, rows) {
     if (digest?.version !== 3 || digest?.source?.group !== GROUP || digest?.stats?.source_messages !== rows.length) {
       throw new Error(`${date} 群聊摘要与完整语料计数不一致。`);
     }
-    digest.source.privacy = "完整脱敏语料仅保存在私有 QA_DB；页面只读取聚合与精选内容";
+    digest.source = {
+      group: GROUP,
+      identity_rules: digest.source.identity_rules,
+      privacy: "完整脱敏语料仅保存在私有 QA_DB；页面只读取聚合与精选内容",
+    };
     return digest;
   } finally {
     rmSync(directory, { recursive: true, force: true });

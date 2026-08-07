@@ -15,6 +15,7 @@ const blockedContent = [
   { pattern: /\/Users\/[^/]+\//, label: "macOS 本机绝对路径" },
   { pattern: /github_pat_[A-Za-z0-9_]+/, label: "GitHub token" },
   { pattern: /gho_[A-Za-z0-9]+/, label: "GitHub OAuth token" },
+  { pattern: /raw-messages\.local\.json/iu, label: "本地原始消息文件名" },
 ];
 
 async function assertReadable(filePath, message) {
@@ -31,6 +32,21 @@ function assertPublishable(text, name) {
   }
 }
 
+function publishableSnapshot(snapshot) {
+  const source = snapshot?.group?.source ?? {};
+  return {
+    ...snapshot,
+    group: {
+      ...snapshot.group,
+      source: {
+        group: source.group,
+        identity_rules: source.identity_rules,
+        privacy: source.privacy,
+      },
+    },
+  };
+}
+
 function validateSnapshot(snapshot, name, expectedDate) {
   if (!snapshot || snapshot.group?.version !== 3 || snapshot.group?.source?.group !== "【官方】DSH内测群") {
     throw new Error(`${name} 不是合法的 DSH 内测群快照`);
@@ -42,6 +58,10 @@ function validateSnapshot(snapshot, name, expectedDate) {
     throw new Error(`${name} 的 Issue 数据不完整`);
   }
   if (snapshot.snapshotDate !== expectedDate) throw new Error(`${name} 的 snapshotDate 与文件日期不一致`);
+  const sourceKeys = Object.keys(snapshot.group.source ?? {});
+  if (sourceKeys.some((key) => !["group", "identity_rules", "privacy"].includes(key))) {
+    throw new Error(`${name} 的页面快照包含证据源元数据`);
+  }
 }
 
 const latestName = (await readFile(path.join(root, "latest.txt"), "utf8")).trim();
@@ -56,6 +76,7 @@ const snapshotNames = (await readdir(snapshotsDir))
 if (!snapshotNames.includes(latestName)) throw new Error(`最新快照不存在：${latestName}`);
 
 const entries = [];
+const publishableSnapshots = new Map();
 for (const name of snapshotNames) {
   const filePath = path.join(snapshotsDir, name);
   const text = await readFile(filePath, "utf8");
@@ -68,6 +89,9 @@ for (const name of snapshotNames) {
   }
   const date = name.match(snapshotPattern)?.[1];
   validateSnapshot(snapshot, name, date);
+  const publishable = publishableSnapshot(snapshot);
+  assertPublishable(JSON.stringify(publishable), `${name} 发布副本`);
+  publishableSnapshots.set(name, publishable);
   entries.push({
     date,
     generatedAt: snapshot.generatedAt ?? null,
@@ -90,14 +114,19 @@ assertPublishable(guideText, "content/newcomer-guide.json");
 if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide"') || !siteHtml.includes("/data/manifest.json")) {
   throw new Error("站点外壳缺少日期切换或新人导引入口");
 }
-if (!siteHtml.includes('/api/content/manifest') || !siteHtml.includes('id="boardRepos"')
+if (!siteHtml.includes('/api/content/manifest') || !siteHtml.includes('/api/content/group-history') || !siteHtml.includes('id="boardRepos"')
   || !siteHtml.includes('id="repoList"') || !siteHtml.includes('Issue / Repo')) {
   throw new Error("站点外壳缺少实时内容 API 或 Issue/Repo Board");
 }
-if (!siteHtml.includes('rel="icon"') || !siteHtml.includes('/favicon.png?v=20260806')) {
+if (!siteHtml.includes('id="repoNarrative"') || !siteHtml.includes('id="repoHighlights"')
+  || !siteHtml.includes("它是什么") || !siteHtml.includes("最近发生") || !siteHtml.includes("为什么看")) {
+  throw new Error("Repo Board 必须提供用途、动态、价值解释与优先阅读区");
+}
+if (!siteHtml.includes('rel="icon"') || !siteHtml.includes('/favicon.png?v=20260807')) {
   throw new Error("站点外壳缺少指定 favicon");
 }
-if (!siteHtml.includes('fetch("/data/newcomer-guide.json"') || !siteHtml.includes("固定内容 · 不随日期切换")) {
+if (!siteHtml.includes('fetch("/data/newcomer-guide.json"') || !siteHtml.includes("固定内容 · 不随日期切换")
+  || !siteHtml.includes("NEWCOMER_GUIDE.author") || !siteHtml.includes("renderBlock")) {
   throw new Error("新人导引必须使用独立的全局内容源，并明确不随日期切换");
 }
 if (siteHtml.includes('date === SITE_MANIFEST.latest ? " · 最新"')) {
@@ -118,8 +147,9 @@ if (!siteHtml.includes('id="qaConsole"') || !siteHtml.includes('id="qaForm"') ||
 if (!siteHtml.includes('Repo 用 R') || !siteHtml.includes('repoCount')) {
   throw new Error("实时问答必须显示并支持 Repo 私有语料");
 }
-if (!siteHtml.includes('[...(state.group?.chronicles ?? [])].sort((left, right) =>')) {
-  throw new Error("纪事必须按时间倒序渲染");
+if (!siteHtml.includes('[...(state.history?.chronicles ?? [])].sort((left, right) =>')
+  || !siteHtml.includes('state.history?.signals ?? []') || !siteHtml.includes('state.history?.members ?? []')) {
+  throw new Error("纪事、信号与星卡必须从全量群聊视图读取，纪事按时间倒序渲染");
 }
 if (!siteHtml.includes("@少女阿原")) {
   throw new Error("页脚必须保留内容疑问联系人");
@@ -130,7 +160,14 @@ try {
 } catch {
   throw new Error("newcomer-guide.json 不是合法 JSON");
 }
-if (guide?.version !== 1 || !Array.isArray(guide.sections)) throw new Error("newcomer-guide.json 格式不合法");
+const guideBlockTypes = new Set(["heading", "paragraph", "list", "code", "callout", "table", "links"]);
+if (guide?.version !== 2 || guide.status !== "published" || typeof guide.title !== "string"
+  || guide.author !== "@inschrift-spruch-raum" || !Array.isArray(guide.sections) || guide.sections.length === 0
+  || guide.sections.some((section) => typeof section.id !== "string" || typeof section.title !== "string"
+    || !Array.isArray(section.blocks) || section.blocks.length === 0
+    || section.blocks.some((block) => !guideBlockTypes.has(block?.type)))) {
+  throw new Error("newcomer-guide.json 格式、发布状态或作者署名不合法");
+}
 
 if (process.argv.includes("--check")) {
   console.log(`校验通过：${snapshotNames.length} 份 JSON 快照，首页默认 ${latestMatch[1]}，站点 HTML 仅 1 份`);
@@ -141,7 +178,9 @@ await rm(output, { recursive: true, force: true });
 await mkdir(dataOutput, { recursive: true });
 await copyFile(sitePath, path.join(output, "index.html"));
 await copyFile(faviconPath, path.join(output, "favicon.png"));
-for (const name of snapshotNames) await copyFile(path.join(snapshotsDir, name), path.join(dataOutput, name));
+for (const name of snapshotNames) {
+  await writeFile(path.join(dataOutput, name), `${JSON.stringify(publishableSnapshots.get(name))}\n`, "utf8");
+}
 await copyFile(guidePath, path.join(dataOutput, "newcomer-guide.json"));
 
 await writeFile(path.join(dataOutput, "manifest.json"), `${JSON.stringify({

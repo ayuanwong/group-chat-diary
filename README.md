@@ -9,15 +9,16 @@
 ### 档案包含什么
 
 - **今日最新**：按北京时间自然日展示群聊消息、主题、精选信号与当日创建的 Issue；
-- **信号与纪事**：从有效群消息中收录可行动的问题、建议、实测与明确完成态事件；
-- **成员星卡**：只依据群内已验证发言归纳参与情况，不推断真实身份；
-- **Issue / Repo Board**：同步私有仓库 [`dsh-external/issues`](https://github.com/dsh-external/issues) 的 Issue，以及 `dsh-external` 组织 Repo 列表、创建和推送情况。
+- **信号与纪事**：跨全部已归档自然日汇总可行动的问题、建议、实测与明确完成态事件；
+- **成员星卡**：跨全部已归档自然日累计成员发言与精选表现，不推断真实身份；
+- **Issue / Repo Board**：Issue 按问题方向归纳；Repo 按用途分组，并解释“它是什么、最近发生了什么、为什么值得看”，避免把 GitHub 清单原样搬到页面。
 
 ### 数据来源与边界
 
 - 群聊只来自本机微信 4.x 数据库中的 `【官方】DSH内测群`；
 - Issue 只来自私有仓库 `dsh-external/issues`；
 - Repo 只来自本机已授权 `gh` 会话能够读取的 `dsh-external` 完整组织仓库列表；
+- Repo 用途只依据 GitHub 仓库说明，最近动态只依据默认分支最新提交；阅读优先级由类别、创建时间和活跃度确定，不使用模型编造仓库能力；
 - 页面不包含完整聊天记录、微信数据库、解密密钥、GitHub 凭据、本机配置或本机绝对路径；
 - 历史 `corpus/` 保留既有私有归档；新式运行把当天脱敏群聊写入忽略提交的 `.local/`，再原子同步到 `QA_DB`，不会进入 Pages 构建产物；
 - 完整语料保留每条消息及其时间、发送者、左右归属、类型和正文，仅移除隐藏 XML/媒体密钥、凭据与本机绝对路径；
@@ -27,8 +28,8 @@
 ### 如何查看
 
 - 外发网站：访问受保护的 [`dsh.hiwangjie.com`](https://dsh.hiwangjie.com) 后，使用 GitHub 登录；只有 `dsh-external` 组织的有效成员可以进入；
-- 网站默认展示最新完整群聊日，也可以从顶部日期选择器切换历史自然日；Issue / Repo Board 不随该日期切换；
-- “新人导引”是独立内容入口，源文件为 `content/newcomer-guide.json`，当前为空，后续可直接从私有 GitHub 仓库更新。
+- 网站默认展示最新完整群聊日，也可以从顶部日期选择器切换“今日最新”等日视图；成员星卡、信号、纪事与 Issue / Repo Board 始终展示当前全量数据，不随该日期切换；
+- “新人导引”是独立固定内容入口，不随群聊日期切换；当前发布《DSH 内测安装指南（WSL2 Ubuntu 26.04）》，作者为 `@inschrift-spruch-raum`。
 
 ## 受保护网站
 
@@ -159,7 +160,7 @@
 ## 自动更新方式
 
 - `npm run refresh:group-day` 默认采集并上传前一北京时间自然日；也可以在命令后传入 `YYYY-MM-DD` 做幂等修复；
-- `npm run sync:github-data` 使用本机已授权 `gh` 会话读取完整私有 Issue/Repo，并共同更新 `CONTENT_DB` 与 GitHub QA 索引；不依赖组织 Owner 或终端用户 OAuth；
+- `npm run sync:github-data` 使用本机已授权 `gh` 会话读取完整私有 Issue/Repo、Repo 默认分支最新提交，并共同更新 `CONTENT_DB` 与 GitHub QA 索引；不依赖组织 Owner 或终端用户 OAuth；
 - `npm run backfill:content` 首次回填历史群聊自然日和当前 GitHub 数据；
 - 群聊和 GitHub 数据均先写新版本、校验数量及 JSON，再切换 active 指针；失败时旧版本继续可用；
 - 页面只有在代码变化时才构建和部署。日常数据更新不修改 `snapshots/`、`latest.txt`、README 或 `dist/`；

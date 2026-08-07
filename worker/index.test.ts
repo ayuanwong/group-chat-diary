@@ -183,12 +183,60 @@ function makeContentDb(): D1Database {
   const groupPayload = {
     version: 2,
     snapshotDate: "2026-08-06",
-    group: { version: 3, source: { group: "【官方】DSH内测群" }, stats: { accepted_messages: 3219 } },
+    group: {
+      version: 3,
+      source: { group: "【官方】DSH内测群" },
+      stats: {
+        source_messages: 5,
+        accepted_messages: 4,
+        excluded_messages: 1,
+        date_start: "2026-08-06T00:01:00+08:00",
+        date_end: "2026-08-06T23:59:00+08:00",
+        type_breakdown: { 文本: 4 },
+      },
+      signals: [{ message_id: "signal-2", sender: "成员甲", timestamp: "2026-08-06T12:00:00+08:00", text: "第二条信号" }],
+      chronicles: [{ message_id: "event-2", sender: "Baymax", timestamp: "2026-08-06T13:00:00+08:00", title: "第二个事件" }],
+      members: [{
+        name: "成员甲", count: 3, signals: 1, role: "协作推动者", traits: ["Issue 与协作"], self: false,
+        representative: { headline: "第二天表现", time: "2026-08-06 12:00" },
+      }],
+    },
     comparison: { version: 2, status: "ready" },
     generatedAt: "2026-08-07T00:00:00.000Z",
   };
+  const priorGroupPayload = {
+    version: 2,
+    snapshotDate: "2026-08-05",
+    group: {
+      version: 3,
+      source: { group: "【官方】DSH内测群" },
+      stats: {
+        source_messages: 4,
+        accepted_messages: 3,
+        excluded_messages: 1,
+        date_start: "2026-08-05T00:02:00+08:00",
+        date_end: "2026-08-05T23:58:00+08:00",
+        type_breakdown: { 文本: 2, 图片: 1 },
+      },
+      signals: [{ message_id: "signal-1", sender: "成员乙", timestamp: "2026-08-05T11:00:00+08:00", text: "第一条信号" }],
+      chronicles: [{ message_id: "event-1", sender: "Baymax", timestamp: "2026-08-05T09:00:00+08:00", title: "第一个事件" }],
+      members: [
+        { name: "成员甲", count: 2, signals: 0, role: "讨论参与者", traits: ["插件与生态"], self: false, representative: null },
+        { name: "成员乙", count: 1, signals: 1, role: "实测贡献者", traits: ["性能稳定性"], self: false,
+          representative: { headline: "第一天表现", time: "2026-08-05 11:00" } },
+      ],
+    },
+    comparison: { version: 2, status: "ready" },
+    generatedAt: "2026-08-06T00:00:00.000Z",
+  };
   const issuePayload = { version: 2, issues: [{ n: 357 }], issue_groups: [] };
-  const repoPayload = { version: 1, repositories: [{ id: 80, name: "example-repo" }], stats: { total: 1 } };
+  const repoPayload = {
+    version: 2,
+    repositories: [{ id: 80, name: "example-repo", summary: "一个示例仓库", activity: "24 小时内更新", why: "近期仍在推进" }],
+    groups: [{ id: "examples", name: "示例", count: 1, repositories: [80] }],
+    highlights: [80],
+    stats: { total: 1 },
+  };
   return {
     prepare: vi.fn((sql: string) => {
       let values: unknown[] = [];
@@ -217,6 +265,12 @@ function makeContentDb(): D1Database {
           return null;
         }),
         all: vi.fn(async () => {
+          if (sql.includes("content_active_group_days") && sql.includes("v.payload")) {
+            return { results: [
+              { date: "2026-08-05", generated_at: priorGroupPayload.generatedAt, payload: JSON.stringify(priorGroupPayload) },
+              { date: "2026-08-06", generated_at: groupPayload.generatedAt, payload: JSON.stringify(groupPayload) },
+            ] };
+          }
           if (sql.includes("content_active_group_days")) {
             return { results: [{
               date: "2026-08-06",
@@ -350,6 +404,8 @@ describe("archive gate", () => {
     const anonymous = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/repos`), env);
     expect(anonymous.status).toBe(302);
     expect(anonymous.headers.get("Location")).toBe(`${env.SITE_ORIGIN}/login`);
+    const anonymousHistory = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/group-history`), env);
+    expect(anonymousHistory.status).toBe(302);
 
     const token = await signSession(
       { version: 2, githubId: 123, login: "member", exp: Math.floor(Date.now() / 1000) + 300 },
@@ -360,7 +416,26 @@ describe("archive gate", () => {
     expect(manifest.status).toBe(200);
     await expect(manifest.json()).resolves.toMatchObject({ version: 2, latest: "2026-08-06", github: { repos: 1 } });
     const repos = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/repos`, { headers }), env);
-    await expect(repos.json()).resolves.toMatchObject({ version: 1, stats: { total: 1 } });
+    await expect(repos.json()).resolves.toMatchObject({
+      version: 2,
+      stats: { total: 1 },
+      groups: [{ count: 1 }],
+      highlights: [80],
+    });
+    const history = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/group-history`, { headers }), env);
+    expect(history.status).toBe(200);
+    await expect(history.json()).resolves.toMatchObject({
+      version: 1,
+      scope: "all-active-group-days",
+      dates: ["2026-08-05", "2026-08-06"],
+      stats: { days: 2, source_messages: 9, accepted_messages: 7, signal_count: 2, participant_count: 2, chronicle_count: 2 },
+      signals: [{ message_id: "signal-2" }, { message_id: "signal-1" }],
+      chronicles: [{ message_id: "event-2" }, { message_id: "event-1" }],
+      members: [
+        { name: "成员甲", count: 5, signals: 1, activeDays: 2 },
+        { name: "成员乙", count: 1, signals: 1, activeDays: 1 },
+      ],
+    });
   });
 
   it("revokes an existing session when the member leaves the allowlist", async () => {

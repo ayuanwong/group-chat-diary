@@ -378,13 +378,14 @@ async function candidateRows(
 
   const table = kind === "group" ? "qa_group_documents" : "qa_github_documents";
   const syncId = kind === "group" ? meta.groupSyncId : meta.githubSyncId;
+  const fallbackOrder = kind === "repo" ? "COALESCE(d.priority, 0) DESC, d.occurred_at DESC" : "d.position DESC";
   const fallback = await db.prepare(`
     SELECT d.document_key, d.kind, d.source_date, d.position, d.occurred_at,
       d.sender, d.title, d.url, d.state, d.category, d.priority, d.is_changelog, d.excerpt, d.content,
       0 AS fts_rank, 0 AS fusion_score
     FROM ${table} AS d
     WHERE d.sync_id = ?1 AND d.kind = ?2
-    ORDER BY d.position DESC
+    ORDER BY ${fallbackOrder}
     LIMIT 24
   `).bind(syncId, kind).all<QaDocumentRow>();
   return fallback.results ?? [];
@@ -412,7 +413,9 @@ function scoreRow(row: QaDocumentRow, question: string, queryTokens: string[], s
   } else if (row.kind === "repo") {
     const title = normalized(row.title);
     if (queryTokens.some((token) => token.length >= 2 && title.includes(token))) score += 7;
-    if (/新建|新增|最近|活跃|推送/u.test(questionText)) score += Math.max(0, row.position / Math.max(sourceCount - 1, 1));
+    const priority = Math.min(Number(row.priority ?? 0), 10);
+    score += priority * (/值得关注|重点|先看|推荐/u.test(questionText) ? 1.6 : 0.08);
+    if (/新建|新增|最近|活跃|推送|提交/u.test(questionText)) score += priority * 0.35;
     if (/归档|archive/u.test(questionText)) score += row.state === "archived" ? 9 : -2;
   } else {
     if (plan.intent === "release") {
@@ -855,7 +858,7 @@ function intentGuidance(plan: QaPlan): string {
     return "这是版本更新题。只把产品方直接发布的完成态 Changelog 当成已完成更新；成员回复、猜测和转述不能算版本事实。";
   }
   if (plan.intent === "issue") return "这是 Issue 题。优先核对编号、状态、类别和优先级，群聊讨论不能替代 Issue 当前记录。";
-  if (plan.intent === "repository") return "这是 Repo 题。优先核对仓库名称、用途、创建时间、最近推送与归档状态；first seen 不能冒充新建时间。";
+  if (plan.intent === "repository") return "这是 Repo 题。先用仓库说明解释它做什么，再用默认分支最新提交说明最近发生了什么；阅读建议必须来自资料中的类别与活跃度，不得凭名称补写能力。first seen 不能冒充新建时间。";
   return "这是定向事实检索题。优先回答直接命中的事实；相互矛盾时明确指出，不要把相似措辞当成同一事实。";
 }
 

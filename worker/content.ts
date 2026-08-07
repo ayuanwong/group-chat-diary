@@ -24,6 +24,14 @@ interface SourceVersionRow {
   activated_at: string;
 }
 
+interface GroupPayloadRow {
+  date: string;
+  generated_at: string;
+  payload: string;
+}
+
+type JsonRecord = Record<string, unknown>;
+
 function parsePayload(value: string | undefined): unknown | null {
   if (!value) return null;
   try {
@@ -31,6 +39,42 @@ function parsePayload(value: string | undefined): unknown | null {
   } catch {
     return null;
   }
+}
+
+function record(value: unknown): JsonRecord | null {
+  return value && typeof value === "object" && !Array.isArray(value) ? value as JsonRecord : null;
+}
+
+function nonnegativeInteger(value: unknown, label: string): number {
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < 0) throw new Error(`${label} 不是非负整数。`);
+  return number;
+}
+
+function itemIdentity(item: JsonRecord, date: string, index: number): string {
+  return String(item.message_id || item.source_ref || `${date}:${item.timestamp || item.time || ""}:${item.sender || ""}:${index}`);
+}
+
+function newestFirst(left: JsonRecord, right: JsonRecord): number {
+  return String(right.timestamp || right.time || "").localeCompare(String(left.timestamp || left.time || ""));
+}
+
+function sanitizedGroupSnapshot(value: unknown): unknown | null {
+  const snapshot = record(value);
+  const group = record(snapshot?.group);
+  const source = record(group?.source);
+  if (!snapshot || !group || !source) return value ?? null;
+  return {
+    ...snapshot,
+    group: {
+      ...group,
+      source: {
+        group: source.group,
+        identity_rules: source.identity_rules,
+        privacy: source.privacy,
+      },
+    },
+  };
 }
 
 export function validArchiveDate(value: string): boolean {
@@ -103,7 +147,158 @@ export async function contentGroupDay(env: ContentRuntimeEnv, date: string): Pro
     WHERE a.date = ?1
     LIMIT 1
   `).bind(date).first<{ payload: string }>();
-  return parsePayload(row?.payload);
+  return sanitizedGroupSnapshot(parsePayload(row?.payload));
+}
+
+export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Record<string, unknown> | null> {
+  const rows = await env.CONTENT_DB.prepare(`
+    SELECT v.date, v.generated_at, v.payload
+    FROM content_active_group_days AS a
+    JOIN content_group_versions AS v ON v.date = a.date AND v.ingest_id = a.ingest_id
+    ORDER BY v.date ASC
+  `).all<GroupPayloadRow>();
+  const active = rows.results ?? [];
+  if (!active.length) return null;
+
+  const signals = new Map<string, JsonRecord>();
+  const chronicles = new Map<string, JsonRecord>();
+  const members = new Map<string, {
+    name: string;
+    count: number;
+    signals: number;
+    activeDates: Set<string>;
+    traits: Map<string, number>;
+    role: string;
+    roleScore: number;
+    representative: JsonRecord | null;
+    representativeTime: string;
+    self: boolean;
+  }>();
+  const typeBreakdown = new Map<string, number>();
+  let sourceMessages = 0;
+  let acceptedMessages = 0;
+  let excludedMessages = 0;
+  let dateStart = "";
+  let dateEnd = "";
+  let generatedAt = "";
+
+  for (const row of active) {
+    const snapshot = record(parsePayload(row.payload));
+    const group = record(snapshot?.group);
+    const source = record(group?.source);
+    const stats = record(group?.stats);
+    const daySignals = Array.isArray(group?.signals) ? group.signals : null;
+    const dayChronicles = Array.isArray(group?.chronicles) ? group.chronicles : null;
+    const dayMembers = Array.isArray(group?.members) ? group.members : null;
+    if (group?.version !== 3 || source?.group !== "【官方】DSH内测群" || !stats
+      || !daySignals || !dayChronicles || !dayMembers) {
+      throw new Error(`${row.date} 群聊展示数据不完整。`);
+    }
+    sourceMessages += nonnegativeInteger(stats.source_messages, `${row.date} source_messages`);
+    acceptedMessages += nonnegativeInteger(stats.accepted_messages, `${row.date} accepted_messages`);
+    excludedMessages += nonnegativeInteger(stats.excluded_messages, `${row.date} excluded_messages`);
+    const start = String(stats.date_start ?? "");
+    const end = String(stats.date_end ?? "");
+    if (start && (!dateStart || start < dateStart)) dateStart = start;
+    if (end && end > dateEnd) dateEnd = end;
+    if (row.generated_at > generatedAt) generatedAt = row.generated_at;
+    const breakdown = record(stats.type_breakdown);
+    for (const [type, count] of Object.entries(breakdown ?? {})) {
+      typeBreakdown.set(type, (typeBreakdown.get(type) ?? 0) + nonnegativeInteger(count, `${row.date} ${type}`));
+    }
+
+    daySignals.forEach((value, index) => {
+      const item = record(value);
+      if (item) signals.set(itemIdentity(item, row.date, index), item);
+    });
+    dayChronicles.forEach((value, index) => {
+      const item = record(value);
+      if (item) chronicles.set(itemIdentity(item, row.date, index), item);
+    });
+    dayMembers.forEach((value) => {
+      const member = record(value);
+      const name = String(member?.name ?? "").trim();
+      if (!member || !name) throw new Error(`${row.date} 成员画像缺少名称。`);
+      const count = nonnegativeInteger(member.count, `${row.date} ${name} count`);
+      const signalCount = nonnegativeInteger(member.signals, `${row.date} ${name} signals`);
+      const current = members.get(name) ?? {
+        name,
+        count: 0,
+        signals: 0,
+        activeDates: new Set<string>(),
+        traits: new Map<string, number>(),
+        role: "讨论参与者",
+        roleScore: -1,
+        representative: null,
+        representativeTime: "",
+        self: false,
+      };
+      current.count += count;
+      current.signals += signalCount;
+      current.activeDates.add(row.date);
+      current.self ||= member.self === true;
+      for (const trait of Array.isArray(member.traits) ? member.traits : []) {
+        const label = String(trait ?? "").trim();
+        if (label) current.traits.set(label, (current.traits.get(label) ?? 0) + Math.max(1, count));
+      }
+      const roleScore = signalCount * 1_000_000 + count;
+      if (typeof member.role === "string" && member.role && roleScore > current.roleScore) {
+        current.role = member.role;
+        current.roleScore = roleScore;
+      }
+      const representative = record(member.representative);
+      const representativeTime = String(representative?.time ?? "");
+      if (representative && representativeTime >= current.representativeTime) {
+        current.representative = representative;
+        current.representativeTime = representativeTime;
+      }
+      members.set(name, current);
+    });
+  }
+
+  const signalList = [...signals.values()].sort(newestFirst);
+  const chronicleList = [...chronicles.values()].sort(newestFirst);
+  const memberList = [...members.values()].map((member) => {
+    const traits = [...member.traits.entries()]
+      .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0], "zh"))
+      .slice(0, 3).map(([trait]) => trait);
+    const focus = traits.slice(0, 2).join("、") || "DSH 内测讨论";
+    return {
+      name: member.name,
+      count: member.count,
+      signals: member.signals,
+      role: member.role,
+      persona: `累计 ${member.activeDates.size} 个自然日发言 ${member.count} 条，${member.signals} 条进入精选；主要关注 ${focus}。`,
+      traits,
+      representative: member.representative,
+      self: member.self,
+      activeDays: member.activeDates.size,
+    };
+  }).sort((left, right) => right.count - left.count || right.signals - left.signals || left.name.localeCompare(right.name, "zh"));
+
+  return {
+    version: 1,
+    scope: "all-active-group-days",
+    group: "【官方】DSH内测群",
+    timeZone: "Asia/Shanghai",
+    dates: active.map((row) => row.date),
+    generatedAt,
+    stats: {
+      days: active.length,
+      source_messages: sourceMessages,
+      accepted_messages: acceptedMessages,
+      excluded_messages: excludedMessages,
+      signal_count: signalList.length,
+      participant_count: memberList.length,
+      chronicle_count: chronicleList.length,
+      date_start: dateStart,
+      date_end: dateEnd,
+      type_breakdown: Object.fromEntries(typeBreakdown),
+    },
+    signals: signalList,
+    chronicles: chronicleList,
+    members: memberList,
+  };
 }
 
 export async function contentGithubSource(

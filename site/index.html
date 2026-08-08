@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="terminal">
 <head>
 <meta charset="UTF-8">
 <title>DSH 档案馆 · 官方内测群</title>
@@ -393,34 +393,48 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 @media(max-width:560px){.qa-inner{padding:16px 13px 13px}.qa-form{grid-template-columns:1fr}.qa-send{min-height:42px}.qa-controls{justify-content:flex-start}.qa-empty{justify-content:flex-start}.qa-prompt{flex:1 1 46%;text-align:left}}
 </style>
 <style id="loserfoxTheme">
-/* ── LoserFox 主题（参考 agent-notes 全量清单设计）────────────────
-   三档主题均由用户明确选择，不再跟随操作系统明暗模式。
-   设计 token 与 .agents/skills/dsh-archive-theme/theme.mjs 一致。 */
+/* ── 三套固定主题 ────────────────────────────────────────────────
+   每套主题使用完整、互不继承的静态色板；主题切换不读取系统明暗。 */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after{transition:none!important}
 .theme-control{display:flex;align-items:center;gap:7px;color:var(--faint);font-size:10px;letter-spacing:.1em;white-space:nowrap}
 .theme-control select{min-width:0;flex:1;font:inherit;font-size:11px;color:var(--ink);background:var(--panel);border:1px solid var(--dim);border-radius:7px;padding:5px 24px 5px 9px;outline:none;cursor:pointer}
 .theme-control select:hover,.theme-control select:focus-visible{border-color:var(--gr2)}
+html[data-theme="terminal"]{
+  color-scheme:dark;
+  --bg:#030703; --panel:rgba(15,90,36,.10); --panel2:rgba(15,90,36,.18);
+  --gr:#33ff66; --gr2:#1a9c40; --dim:#0f5a24; --ink:#c8ffd6; --mut:#7fe0a0; --faint:#3d8f55;
+  --amber:#ffb347;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+}
 html[data-theme="loserfox-light"]{
   color-scheme:light;
-  --bg:#f9f9f7; --panel:rgba(11,11,11,.04); --panel2:rgba(11,11,11,.07);
-  --gr:#2a78d6; --gr2:#1f5fb0; --dim:#e1e0d9; --ink:#0b0b0b; --mut:#52514e; --faint:#898781;
-  --amber:#eda100;
+  --bg:#f6f7f8; --panel:#ffffff; --panel2:#edf1f4;
+  --gr:#286497; --gr2:#1f4f79; --dim:#cfd6dc; --ink:#1c252d; --mut:#56636e; --faint:#77838d;
+  --amber:#98661a; --lf-sidebar:#eef2f5; --lf-field:#ffffff; --lf-code:#edf1f4; --lf-user:#e7f0f7;
+  --lf-on-accent:#ffffff; --lf-accent-border:#a9c2d7;
   --mono:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
 }
 html[data-theme="loserfox-dark"]{
   color-scheme:dark;
-  --bg:#0d0d0d; --panel:rgba(255,255,255,.05); --panel2:rgba(255,255,255,.08);
-  --gr:#3987e5; --gr2:#4a93ea; --dim:#2c2c2a; --ink:#ffffff; --mut:#c3c2b7; --faint:#898781;
-  --amber:#c98500;
+  --bg:#0f1316; --panel:#171c20; --panel2:#20272d;
+  --gr:#70a9d8; --gr2:#8bb9df; --dim:#333c43; --ink:#f1f4f6; --mut:#b6c0c8; --faint:#84919a;
+  --amber:#d2a04e; --lf-sidebar:#0b0f12; --lf-field:#11171b; --lf-code:#0b1013; --lf-user:#192b39;
+  --lf-on-accent:#0b1922; --lf-accent-border:#426681;
   --mono:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
 }
 html[data-theme^="loserfox-"] body::before,
 html[data-theme^="loserfox-"] body::after{display:none}
 html[data-theme^="loserfox-"] body{background:var(--bg);color:var(--ink)}
 html[data-theme^="loserfox-"] .flicker{animation:none}
-html[data-theme^="loserfox-"] header{background:var(--bg)}
+html[data-theme^="loserfox-"] header.sidebar{background:var(--lf-sidebar)}
 html[data-theme^="loserfox-"] #warp .warp-txt{text-shadow:none}
 html[data-theme^="loserfox-"] .side-tabs button.on,
-html[data-theme^="loserfox-"] .filters button.on{color:#fff;background:var(--gr);border-color:var(--gr)}
+html[data-theme^="loserfox-"] .filters button.on,
+html[data-theme^="loserfox-"] .delta-subtabs button.on,
+html[data-theme^="loserfox-"] .toolbar button.on,
+html[data-theme^="loserfox-"] .board-tabs button.on{color:var(--lf-on-accent);background:var(--gr);border-color:var(--gr)}
 html[data-theme^="loserfox-"] .iss .mi:hover{background:var(--panel)}
 html[data-theme^="loserfox-"] .repo-item{border-color:var(--dim);background:var(--panel)}
 html[data-theme^="loserfox-"] .repo-item:hover{border-color:var(--gr2);background:var(--panel2)}
@@ -429,9 +443,8 @@ html[data-theme^="loserfox-"] .qa-kicker{color:var(--gr)}
 html[data-theme^="loserfox-"] .pcard .ava{background:var(--panel)}
 html[data-theme^="loserfox-"] .pcard .ava .ch,
 html[data-theme^="loserfox-"] .cloud .wd:hover{text-shadow:none}
-html[data-theme^="loserfox-"] .guide-hero{border-color:rgba(237,161,0,.35);background:linear-gradient(120deg,rgba(237,161,0,.07),transparent)}
-html[data-theme^="loserfox-"] .guide-code{border-color:var(--dim);background:#f2f2ee;color:var(--ink)}
-html[data-theme="loserfox-dark"] .guide-code{background:#141414}
+html[data-theme^="loserfox-"] .guide-hero{border-color:var(--dim);background:var(--panel)}
+html[data-theme^="loserfox-"] .guide-code{border-color:var(--dim);background:var(--lf-code);color:var(--ink)}
 html[data-theme^="loserfox-"] .guide-callout{background:var(--panel)}
 html[data-theme^="loserfox-"] .guide-table th{background:var(--panel)}
 html[data-theme^="loserfox-"] .qa-console{border-color:var(--dim);background:var(--panel);box-shadow:none}
@@ -439,8 +452,34 @@ html[data-theme^="loserfox-"] .qa-console::before,
 html[data-theme^="loserfox-"] .qa-console::after{display:none}
 html[data-theme^="loserfox-"] .qa-top{border-bottom-color:var(--dim)}
 html[data-theme^="loserfox-"] .qa-title .orb{box-shadow:none}
-html[data-theme^="loserfox-"] .qa-status[data-state="ready"]{border-color:var(--dim)}
+html[data-theme^="loserfox-"] .qa-status,
+html[data-theme^="loserfox-"] .qa-prompt,
+html[data-theme^="loserfox-"] .qa-input-wrap,
+html[data-theme^="loserfox-"] .qa-avatar,
+html[data-theme^="loserfox-"] .qa-bubble{background:var(--lf-field);border-color:var(--dim)}
+html[data-theme^="loserfox-"] .qa-status[data-state="ready"]{border-color:var(--lf-accent-border)}
 html[data-theme^="loserfox-"] .qa-status[data-state="ready"]::before{box-shadow:none}
+html[data-theme^="loserfox-"] ::selection{background:var(--gr);color:var(--lf-on-accent)}
+html[data-theme^="loserfox-"] .delta-subtabs,
+html[data-theme^="loserfox-"] #refreshBar{background:var(--lf-sidebar)}
+html[data-theme^="loserfox-"] .guide-code pre{color:var(--ink)}
+html[data-theme^="loserfox-"] .qa-empty .core,
+html[data-theme^="loserfox-"] .qa-turn.user .qa-avatar{color:var(--gr);border-color:var(--lf-accent-border);box-shadow:none}
+html[data-theme^="loserfox-"] .qa-turn.user .qa-bubble{color:var(--ink);background:var(--lf-user);border-color:var(--lf-accent-border)}
+html[data-theme^="loserfox-"] .qa-answer.rendered strong{color:var(--ink)}
+html[data-theme^="loserfox-"] .qa-answer.rendered code{color:var(--gr2);border-color:var(--lf-accent-border);background:var(--panel2)}
+html[data-theme^="loserfox-"] .qa-answer-heading,
+html[data-theme^="loserfox-"] .qa-answer .qa-cite:hover,
+html[data-theme^="loserfox-"] .qa-source a{color:var(--gr2);border-color:var(--gr2)}
+html[data-theme^="loserfox-"] .qa-source{background:var(--panel2)}
+html[data-theme^="loserfox-"] .qa-source:target,
+html[data-theme^="loserfox-"] .qa-source.flash{border-color:var(--gr);background:var(--lf-user)}
+html[data-theme^="loserfox-"] .qa-input{color:var(--ink)}
+html[data-theme^="loserfox-"] .qa-hint{color:var(--faint)}
+html[data-theme^="loserfox-"] .qa-input-wrap:focus-within{border-color:var(--gr);box-shadow:none}
+html[data-theme^="loserfox-"] .qa-send{color:var(--lf-on-accent)}
+html[data-theme^="loserfox-"] .qa-send:hover:not(:disabled),
+html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:none}
 </style>
 <style id="agentNotesStyles">
 /* ── Agent Notes tab（组件与 dsh-archive-theme 一致，变量驱动随主题切换）── */
@@ -2448,13 +2487,16 @@ refreshAll({ initial: true });
   const select = document.getElementById("themeSelect");
   const choices = new Set(["terminal", "loserfox-light", "loserfox-dark"]);
   const apply = (value) => {
-    if (value === "loserfox-light" || value === "loserfox-dark") root.setAttribute("data-theme", value);
-    else root.removeAttribute("data-theme");
-    if (select) select.value = value;
+    const next = choices.has(value) ? value : "terminal";
+    root.classList.add("theme-switching");
+    root.setAttribute("data-theme", next);
+    if (select) select.value = next;
+    void root.offsetWidth;
+    root.classList.remove("theme-switching");
   };
   const saved = localStorage.getItem(KEY);
   const initial = saved === "loserfox"
-    ? (matchMedia("(prefers-color-scheme: dark)").matches ? "loserfox-dark" : "loserfox-light")
+    ? "loserfox-light"
     : (choices.has(saved) ? saved : "terminal");
   apply(initial);
   if (saved === "loserfox") localStorage.setItem(KEY, initial);

@@ -945,6 +945,10 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
 
 <script type="module">"use strict";
 
+// 先启动页面外壳；即使 file:// 预览无法读取受保护数据，导航仍可用于主题与布局验收。
+const $ = (id) => document.getElementById(id);
+initTabs();
+
 let liveContent = false;
 let manifestResponse = await fetch("/api/content/manifest", { cache: "no-store" });
 if (!manifestResponse.ok) manifestResponse = await fetch("/data/manifest.json", { cache: "no-store" });
@@ -981,7 +985,6 @@ const DATA_URLS = {
 };
 
 const state = { group: null, history: null, issues: null, repos: null, comparison: null, busy: false };
-const $ = (id) => document.getElementById(id);
 const escapeHtml = (value) => String(value ?? "")
   .replaceAll("&", "&amp;")
   .replaceAll("<", "&lt;")
@@ -2456,7 +2459,6 @@ initAccount();
 initQa();
 initDatePicker();
 renderGuide();
-initTabs();
 initBoardTabs();
 renderHome();
 initAgentNotes();

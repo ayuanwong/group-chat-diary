@@ -15,6 +15,7 @@ import {
   run,
   runWrangler,
   sqlString,
+  splitSqlText,
   trimText,
 } from "./lib/data-sync.mjs";
 
@@ -184,6 +185,24 @@ function stageGroupDay(date, rows, text, digest, previousDigest) {
   if (values.source !== rows.length || values.accepted <= 0 || values.participants <= 0) {
     throw new Error(`${date} 展示摘要统计无效。`);
   }
+  const versionWhere = `date = ${sqlString(date)} AND ingest_id = ${sqlString(ingestId)}`;
+  const payloadStatements = splitSqlText(payloadText).map((chunk) => `
+    UPDATE content_group_versions
+    SET payload = json_insert(payload, '$.chunks[#]', ${sqlString(chunk)})
+    WHERE ${versionWhere};
+  `);
+  payloadStatements.push(`
+    UPDATE content_group_versions
+    SET payload = (
+      SELECT group_concat(value, '')
+      FROM (
+        SELECT value
+        FROM json_each(content_group_versions.payload, '$.chunks')
+        ORDER BY CAST(key AS INTEGER)
+      )
+    )
+    WHERE ${versionWhere};
+  `);
   executeSqlFile(CONTENT_DB, `
     INSERT OR REPLACE INTO content_sync_runs
       (sync_id, source, source_date, status, item_count, started_at)
@@ -192,7 +211,8 @@ function stageGroupDay(date, rows, text, digest, previousDigest) {
       (date, ingest_id, generated_at, source_message_count, accepted_message_count,
        signal_count, participant_count, chronicle_count, payload)
     VALUES (${sqlString(date)}, ${sqlString(ingestId)}, ${sqlString(generatedAt)},
-      ${values.source}, ${values.accepted}, ${values.signals}, ${values.participants}, ${values.chronicles}, ${sqlString(payloadText)});
+      ${values.source}, ${values.accepted}, ${values.signals}, ${values.participants}, ${values.chronicles}, '{"chunks":[]}');
+    ${payloadStatements.join("\n")}
   `, "dsh-content-group-");
   const staged = queryD1(CONTENT_DB, `
     SELECT source_message_count, accepted_message_count, signal_count, participant_count,

@@ -95,6 +95,27 @@ export function sqlString(value) {
   return `'${String(value ?? "").replaceAll("\0", "").replaceAll("'", "''")}'`;
 }
 
+export function splitSqlText(value, maxEncodedBytes = 20_000) {
+  if (!Number.isInteger(maxEncodedBytes) || maxEncodedBytes <= 0) {
+    throw new Error("SQL 文本分块上限必须是正整数。");
+  }
+  const chunks = [];
+  let chunk = "";
+  let encodedBytes = 0;
+  for (const character of String(value ?? "").replaceAll("\0", "")) {
+    const characterBytes = Buffer.byteLength(character, "utf8") + (character === "'" ? 1 : 0);
+    if (chunk && encodedBytes + characterBytes > maxEncodedBytes) {
+      chunks.push(chunk);
+      chunk = "";
+      encodedBytes = 0;
+    }
+    chunk += character;
+    encodedBytes += characterBytes;
+  }
+  if (chunk || !chunks.length) chunks.push(chunk);
+  return chunks;
+}
+
 export function nullableString(value) {
   return value === null || value === undefined || value === "" ? "NULL" : sqlString(value);
 }

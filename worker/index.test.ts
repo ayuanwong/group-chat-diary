@@ -120,6 +120,13 @@ function makeQaDb(requestCount = 1): D1Database {
     sender: "Baymax",
     content: "Changelog 2026-08-07\n✨ 新增\n新增当日实时纪事",
   };
+  const sameDayChronicle = {
+    document_key: "test-sync:g:message-same-day",
+    source_date: "2026-08-06",
+    occurred_at: "2026-08-06T23:30:00+08:00",
+    sender: "Baymax",
+    content: "Changelog 2026-08-06\n🐛 修复\n补全归档日遗漏的完成态纪事",
+  };
   const overviewGroupRows = [
     { ...group, document_key: "test-sync:g:old", source_date: "2026-08-03", position: 20_001,
       occurred_at: "2026-08-03T12:00:00+08:00", sender: "旧成员", is_changelog: 0, content: "不应进入回答的 08-03 旧消息" },
@@ -180,7 +187,9 @@ function makeQaDb(requestCount = 1): D1Database {
         }),
         first: vi.fn(async () => sql.includes("qa_rate_limits") ? { request_count: requestCount } : null),
         all: vi.fn(async () => {
-          if (sql.includes("FROM qa_group_documents") && sql.includes("source_date > ?1")) return { results: [liveChronicle] };
+          if (sql.includes("FROM qa_group_documents") && sql.includes("source_date >= ?1")) {
+            return { results: [sameDayChronicle, liveChronicle] };
+          }
           if (sql.includes("qa_corpus_meta")) return { results: meta };
           if (sql.includes("PARTITION BY d.sender")) return { results: speakerRows };
           if (sql.includes("length(trim(d.content)) > 0")) {
@@ -224,7 +233,7 @@ function makeContentDb(): D1Database {
       chronicles: [
         {
           message_id: "event-2", sender: "崔小天", timestamp: "2026-08-06T13:00:00+08:00",
-          title: "内测版本更新", quote: "Changelog 2026-08-06", detail: "DeepSeek Harness 新版本已发布。",
+          title: "内测版本更新", quote: "GitHub repo 已推送新版本", detail: "DeepSeek Harness 新版本已发布。",
         },
         {
           message_id: "personal-project", sender: "少女阿原", timestamp: "2026-08-06T15:04:50+08:00",
@@ -452,7 +461,12 @@ describe("archive gate", () => {
     const headers = { Cookie: `__Host-portal_session=${token}` };
     const manifest = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/manifest`, { headers }), env);
     expect(manifest.status).toBe(200);
-    await expect(manifest.json()).resolves.toMatchObject({ version: 2, latest: "2026-08-06", github: { repos: 1 } });
+    await expect(manifest.json()).resolves.toMatchObject({
+      version: 2,
+      latest: "2026-08-06",
+      github: { repos: 1 },
+      liveGroup: { latestDate: "2026-08-09", syncedAt: "2026-08-06T08:00:00.000Z" },
+    });
     const repos = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/repos`, { headers }), env);
     await expect(repos.json()).resolves.toMatchObject({
       version: 2,
@@ -466,9 +480,23 @@ describe("archive gate", () => {
       version: 1,
       scope: "all-active-group-days",
       dates: ["2026-08-05", "2026-08-06", "2026-08-07"],
-      stats: { days: 2, live_chronicle_dates: 1, source_messages: 9, accepted_messages: 7, signal_count: 2, participant_count: 2, chronicle_count: 3 },
+      stats: {
+        days: 2,
+        live_chronicle_dates: 1,
+        supplemented_chronicle_dates: 2,
+        source_messages: 9,
+        accepted_messages: 7,
+        signal_count: 2,
+        participant_count: 2,
+        chronicle_count: 4,
+      },
       signals: [{ message_id: "signal-2" }, { message_id: "signal-1" }],
-      chronicles: [{ message_id: "message-live" }, { message_id: "event-2" }, { message_id: "event-1" }],
+      chronicles: [
+        { message_id: "message-live" },
+        { message_id: "message-same-day" },
+        { message_id: "event-2" },
+        { message_id: "event-1" },
+      ],
       members: [
         { name: "成员甲", count: 5, signals: 1, activeDays: 2 },
         { name: "成员乙", count: 1, signals: 1, activeDays: 1 },

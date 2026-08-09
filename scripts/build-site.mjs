@@ -162,6 +162,10 @@ if (!siteHtml.includes('/api/content/manifest') || !siteHtml.includes('/api/cont
   || !siteHtml.includes('id="repoList"') || !siteHtml.includes('Issue / Repo')) {
   throw new Error("站点外壳缺少实时内容 API 或 Issue/Repo Board");
 }
+if (!siteHtml.includes("ALLOW_STATIC_CONTENT") || !siteHtml.includes("未启用静态快照")
+  || !siteHtml.includes("checkForContentUpdate") || !siteHtml.includes("manifest.liveGroup?.syncedAt")) {
+  throw new Error("生产站必须使用 D1 实时内容、禁止静默回退旧快照，并自动检查数据版本");
+}
 if (!siteHtml.includes("它是什么") || !siteHtml.includes("最近发生") || !siteHtml.includes("为什么看")) {
   throw new Error("Repo Board 必须逐仓库提供用途、动态与价值解释");
 }
@@ -220,7 +224,7 @@ if (guide?.version !== 2 || guide.status !== "published" || typeof guide.title !
 }
 
 if (process.argv.includes("--check")) {
-  console.log(`校验通过：${snapshotNames.length} 份 JSON 快照，首页默认 ${latestMatch[1]}，站点 HTML 仅 1 份`);
+  console.log(`校验通过：${snapshotNames.length} 份迁移期静态回退快照，回退基线 ${latestMatch[1]}；生产内容读取 CONTENT_DB，站点 HTML 仅 1 份`);
   process.exit(0);
 }
 
@@ -253,4 +257,4 @@ await writeFile(path.join(output, "_headers"), `/*
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
 `, "utf8");
 
-console.log(`构建完成：1 个站点 HTML，${snapshotNames.length} 份日期快照，默认 ${latestMatch[1]}`);
+console.log(`构建完成：1 个站点 HTML，${snapshotNames.length} 份迁移期静态回退快照，回退基线 ${latestMatch[1]}；生产内容读取 CONTENT_DB`);

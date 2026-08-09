@@ -39,6 +39,11 @@ interface LiveChronicleRow {
   content: string;
 }
 
+interface QaMetaRow {
+  key: string;
+  value: string;
+}
+
 type JsonRecord = Record<string, unknown>;
 
 const OFFICIAL_PRODUCT_SENDERS = new Set(["Baymax", "崔小天"]);
@@ -159,8 +164,25 @@ async function activeSource(db: D1Database, source: "issues" | "repos", includeP
   `).bind(source).first<SourceVersionRow>();
 }
 
+async function liveGroupRevision(db: D1Database): Promise<{ latestDate: string | null; syncedAt: string | null }> {
+  try {
+    const rows = await db.prepare(`
+      SELECT key, value FROM qa_corpus_meta
+      WHERE key IN ('latest_group_date_v2', 'group_synced_at')
+    `).all<QaMetaRow>();
+    const values = new Map((rows.results ?? []).map((row) => [row.key, row.value]));
+    return {
+      latestDate: values.get("latest_group_date_v2") ?? null,
+      syncedAt: values.get("group_synced_at") ?? null,
+    };
+  } catch {
+    // CONTENT_DB remains authoritative for page dates even if live QA metadata is briefly unavailable.
+    return { latestDate: null, syncedAt: null };
+  }
+}
+
 export async function contentManifest(env: ContentRuntimeEnv): Promise<Record<string, unknown> | null> {
-  const [groups, issue, repo] = await Promise.all([
+  const [groups, issue, repo, liveGroup] = await Promise.all([
     env.CONTENT_DB.prepare(`
       SELECT v.date, v.ingest_id, v.generated_at, v.source_message_count,
         v.accepted_message_count, v.signal_count, v.participant_count,
@@ -171,6 +193,7 @@ export async function contentManifest(env: ContentRuntimeEnv): Promise<Record<st
     `).all<GroupVersionRow>(),
     activeSource(env.CONTENT_DB, "issues", false),
     activeSource(env.CONTENT_DB, "repos", false),
+    liveGroupRevision(env.QA_DB),
   ]);
   const entries = groups.results ?? [];
   if (!entries.length) return null;
@@ -200,6 +223,7 @@ export async function contentManifest(env: ContentRuntimeEnv): Promise<Record<st
         ? issue.activated_at
         : null,
     },
+    liveGroup,
   };
 }
 
@@ -323,24 +347,27 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
     });
   }
 
+  const earliestCompletedDate = active[0]?.date ?? "";
   const latestCompletedDate = active.at(-1)?.date ?? "";
   const liveRows = await env.QA_DB.prepare(`
     SELECT document_key, source_date, occurred_at, sender, content
     FROM qa_group_documents
     WHERE sync_id = (SELECT value FROM qa_corpus_meta WHERE key = 'active_group_sync_id' LIMIT 1)
-      AND source_date > ?1
+      AND source_date >= ?1
       AND sender IN ('Baymax', '崔小天')
       AND is_changelog = 1
     ORDER BY occurred_at ASC
-  `).bind(latestCompletedDate).all<LiveChronicleRow>();
+  `).bind(earliestCompletedDate).all<LiveChronicleRow>();
   const liveDates = new Set<string>();
+  const supplementedChronicleDates = new Set<string>();
   for (const row of liveRows.results ?? []) {
     const item = liveChronicle(row);
     if (!item) continue;
     const key = chronicleIdentity(item, row.source_date, 0);
     if (chronicles.has(key)) continue;
     chronicles.set(key, item);
-    liveDates.add(row.source_date);
+    supplementedChronicleDates.add(row.source_date);
+    if (row.source_date > latestCompletedDate) liveDates.add(row.source_date);
     if (row.occurred_at > dateEnd) dateEnd = row.occurred_at;
   }
 
@@ -374,6 +401,7 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
     stats: {
       days: active.length,
       live_chronicle_dates: liveDates.size,
+      supplemented_chronicle_dates: supplementedChronicleDates.size,
       source_messages: sourceMessages,
       accepted_messages: acceptedMessages,
       excluded_messages: excludedMessages,

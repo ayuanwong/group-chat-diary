@@ -951,19 +951,56 @@ const $ = (id) => document.getElementById(id);
 initTabs();
 
 let liveContent = false;
-let manifestResponse = await fetch("/api/content/manifest", { cache: "no-store" });
-if (!manifestResponse.ok) manifestResponse = await fetch("/data/manifest.json", { cache: "no-store" });
-else liveContent = true;
+const ALLOW_STATIC_CONTENT = location.protocol === "file:" || ["localhost", "127.0.0.1"].includes(location.hostname);
+const waitForContentRetry = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+async function fetchLiveContent(url, attempts = 3) {
+  let lastError = null;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      const response = await fetch(url, { cache: "no-store" });
+      if (response.ok) return response;
+      lastError = new Error(`${url}: HTTP ${response.status}`);
+      if (response.status < 500 && response.status !== 429) break;
+    } catch (error) {
+      lastError = error;
+    }
+    if (attempt + 1 < attempts) await waitForContentRetry(300 * (2 ** attempt));
+  }
+  throw lastError || new Error(`${url}: 实时内容暂时不可用`);
+}
+
+let manifestResponse;
+try {
+  manifestResponse = await fetchLiveContent("/api/content/manifest");
+  liveContent = true;
+} catch (error) {
+  if (!ALLOW_STATIC_CONTENT) {
+    $("refreshBar").classList.add("on");
+    $("refreshFill").style.width = "100%";
+    $("refreshLine").textContent = "> 实时内容暂时不可用；为避免显示旧数据，未启用静态快照。请稍后刷新。";
+    throw error;
+  }
+  manifestResponse = await fetch("/data/manifest.json", { cache: "no-store" });
+}
 if (!manifestResponse.ok) throw new Error(`内容日期清单：HTTP ${manifestResponse.status}`);
-const SITE_MANIFEST = await manifestResponse.json();
+let SITE_MANIFEST = await manifestResponse.json();
 if (!Array.isArray(SITE_MANIFEST.dates) || !SITE_MANIFEST.dates.length || !SITE_MANIFEST.latest) {
   throw new Error("站点日期清单无效");
 }
+const manifestRevision = (manifest) => JSON.stringify([
+  manifest.latest,
+  manifest.entries?.[0]?.activatedAt ?? null,
+  manifest.github?.syncId ?? null,
+  manifest.github?.generatedAt ?? null,
+  manifest.liveGroup?.latestDate ?? null,
+  manifest.liveGroup?.syncedAt ?? null,
+]);
+let activeContentRevision = manifestRevision(SITE_MANIFEST);
 const requestedDate = new URL(location.href).searchParams.get("date");
 const SELECTED_DATE = SITE_MANIFEST.dates.includes(requestedDate) ? requestedDate : SITE_MANIFEST.latest;
-const snapshotResponse = await fetch(liveContent
-  ? `/api/content/group?date=${encodeURIComponent(SELECTED_DATE)}`
-  : `/data/${SELECTED_DATE}.json`, { cache: "no-store" });
+const snapshotResponse = liveContent
+  ? await fetchLiveContent(`/api/content/group?date=${encodeURIComponent(SELECTED_DATE)}`)
+  : await fetch(`/data/${SELECTED_DATE}.json`, { cache: "no-store" });
 if (!snapshotResponse.ok) throw new Error(`${SELECTED_DATE}.json: HTTP ${snapshotResponse.status}`);
 const EMBEDDED_SNAPSHOT = await snapshotResponse.json();
 let EMBEDDED_GROUP_HISTORY = null;
@@ -1327,7 +1364,10 @@ async function fetchJson(url) {
     };
   }
   const separator = url.includes("?") ? "&" : "?";
-  const response = await fetch(`${url}${separator}t=${Date.now()}`, { cache: "no-store" });
+  const requestUrl = `${url}${separator}t=${Date.now()}`;
+  const response = liveContent
+    ? await fetchLiveContent(requestUrl)
+    : await fetch(requestUrl, { cache: "no-store" });
   if (!response.ok) {
     if (url === DATA_URLS.issues && EMBEDDED_SNAPSHOT?.issues) return EMBEDDED_SNAPSHOT.issues;
     if (url === DATA_URLS.repos) return { version: 2, updatedAt: null, stats: { total: 0, active: 0, archived: 0 }, groups: [], highlights: [], repositories: [] };
@@ -2491,15 +2531,49 @@ async function refreshAll({ initial = false } = {}) {
     const groupCount = group.stats.accepted_messages;
     refreshStatus(`已载入：所选日群消息 ${groupCount} 条 / 全量信号 ${history.signals.length} 条 / 全量成员 ${history.members.length} 位 / Issue ${issues.issues.length} 条 / Repo ${repos.repositories.length} 个。` +
       `群聊生成于 ${EMBEDDED_SNAPSHOT.generatedAt || "--"}；GitHub 同步于 ${repos.updatedAt || issues.updated_at || "--"}。`);
+    return true;
   } catch (error) {
     $("refreshFill").style.width = "100%";
     refreshStatus(`更新失败：${String(error.message || error).slice(0, 100)}`);
+    return false;
   } finally {
     state.busy = false;
     setTimeout(() => {
       $("refreshBar").classList.remove("on");
       $("refreshFill").style.width = "0";
     }, initial ? 1200 : 3200);
+  }
+}
+
+let checkingContentRevision = false;
+async function checkForContentUpdate() {
+  if (!liveContent || document.hidden || state.busy || qaState.busy || checkingContentRevision) return;
+  checkingContentRevision = true;
+  try {
+    const response = await fetchLiveContent(`/api/content/manifest?t=${Date.now()}`, 2);
+    const nextManifest = await response.json();
+    if (!Array.isArray(nextManifest.dates) || !nextManifest.dates.length || !nextManifest.latest) {
+      throw new Error("实时内容日期清单无效");
+    }
+    const nextRevision = manifestRevision(nextManifest);
+    if (nextRevision === activeContentRevision) return;
+    const datesChanged = nextManifest.latest !== SITE_MANIFEST.latest
+      || nextManifest.dates.join("|") !== SITE_MANIFEST.dates.join("|");
+    if (datesChanged) {
+      location.reload();
+      return;
+    }
+    const refreshed = await refreshAll();
+    if (refreshed) {
+      SITE_MANIFEST = nextManifest;
+      activeContentRevision = nextRevision;
+    }
+  } catch (error) {
+    $("refreshBar").classList.add("on");
+    $("refreshFill").style.width = "100%";
+    refreshStatus(`实时内容检查失败：${String(error.message || error).slice(0, 100)}；当前页面不会回退到旧快照。`);
+  } finally {
+    checkingContentRevision = false;
   }
 }
 
@@ -2515,6 +2589,11 @@ if (document.body.dataset.panel === "agentnotes") window.loadAgentNotes?.();
 if (document.body.dataset.panel === "overview") window.loadSnapshotDiffs?.();
 initWarp();
 refreshAll({ initial: true });
+setInterval(checkForContentUpdate, 5 * 60 * 1000);
+window.addEventListener("focus", checkForContentUpdate);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) checkForContentUpdate();
+});
 </script>
 <script>
 // ── 侧边栏折叠（localStorage 持久化）──

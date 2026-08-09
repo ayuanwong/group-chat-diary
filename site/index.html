@@ -1020,7 +1020,8 @@ async function refreshQaStatus() {
     const messages = Number(status.corpus?.messageCount || 0).toLocaleString("zh-CN");
     const issues = Number(status.corpus?.issueCount || 0).toLocaleString("zh-CN");
     const repos = Number(status.corpus?.repoCount || 0).toLocaleString("zh-CN");
-    qaSetStatus("qaCorpusStatus", `群聊 ${messages} · Issue ${issues} · Repo ${repos}`, Boolean(status.corpus?.messageCount && status.corpus?.issueCount));
+    const latest = String(status.corpus?.latestGroupDate || "").slice(5) || "--";
+    qaSetStatus("qaCorpusStatus", `实时至 ${latest} · 群聊 ${messages} · Issue ${issues} · Repo ${repos}`, Boolean(status.corpus?.messageCount && status.corpus?.issueCount));
     qaSetStatus("qaModelStatus", status.deepseekReady ? qaModelLabel(status.model, status.thinking) : "等待 DEEPSEEK KEY", Boolean(status.deepseekReady));
     qaState.ready = Boolean(status.deepseekReady);
     $("qaSend").disabled = !qaState.ready || qaState.busy;
@@ -1226,7 +1227,9 @@ async function qaAsk(question) {
         qaState.sources = Array.isArray(payload.sources) ? payload.sources : [];
         const intentLabels = { lookup: "事实检索", issue: "Issue 检索", repository: "Repo 检索", release: "版本核验", overview: "全局归纳", speaker: "成员比较" };
         const intent = intentLabels[payload.retrieval?.intent] || "融合检索";
-        $("qaNotice").textContent = `${intent} · ${qaState.sources.length} 个来源 · ${qaModelLabel(payload.model, true, payload.reasoningEffort)} 正在生成…`;
+        const coverage = payload.retrieval?.strategy === "full-range-chunked" ? "全量分块" : "全量直读";
+        const timeRange = payload.retrieval?.timeRange?.label ? ` · ${payload.retrieval.timeRange.label}` : "";
+        $("qaNotice").textContent = `${intent} · ${coverage}${timeRange} · ${qaState.sources.length} 个来源 · ${qaModelLabel(payload.model, true, payload.reasoningEffort)} 正在生成…`;
       } else if (event === "token") {
         answer += String(payload.text || "");
         assistantTurn.answer.textContent = answer;

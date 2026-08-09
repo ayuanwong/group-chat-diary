@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createHandler, signSession, verifySession, type WorkerEnv } from "./index";
-import { defaultQaPlan } from "./qa";
+import { defaultQaPlan, resolveQaTimeRange } from "./qa";
 
 function makeAccessDb(
   allowedIds = [123],
@@ -91,8 +91,8 @@ function makeQaDb(requestCount = 1): D1Database {
     { key: "github_issue_count", value: "357" },
     { key: "github_repo_count", value: "80" },
     { key: "group_date_count_v2", value: "7" },
-    { key: "latest_group_date_v2", value: "2026-08-06" },
-    { key: "latest_issue_date_v2", value: "2026-08-06" },
+    { key: "latest_group_date_v2", value: "2026-08-09" },
+    { key: "latest_issue_date_v2", value: "2026-08-09" },
     { key: "group_synced_at", value: "2026-08-06T08:00:00.000Z" },
     { key: "github_synced_at", value: "2026-08-06T08:05:00.000Z" },
   ];
@@ -120,6 +120,16 @@ function makeQaDb(requestCount = 1): D1Database {
     sender: "Baymax",
     content: "Changelog 2026-08-07\n✨ 新增\n新增当日实时纪事",
   };
+  const overviewGroupRows = [
+    { ...group, document_key: "test-sync:g:old", source_date: "2026-08-03", position: 20_001,
+      occurred_at: "2026-08-03T12:00:00+08:00", sender: "旧成员", is_changelog: 0, content: "不应进入回答的 08-03 旧消息" },
+    { ...group, document_key: "test-sync:g:early", source_date: "2026-08-08", position: 20_002,
+      occurred_at: "2026-08-08T17:59:59+08:00", sender: "早到成员", is_changelog: 0, content: "不应进入晚间范围的 17:59 消息" },
+    { ...group, document_key: "test-sync:g:evening", source_date: "2026-08-08", position: 20_003,
+      occurred_at: "2026-08-08T18:00:04+08:00", sender: "晚间成员", is_changelog: 0, content: "08-08 晚间第一条完整消息" },
+    { ...group, document_key: "test-sync:g:latest", source_date: "2026-08-09", position: 20_004,
+      occurred_at: "2026-08-09T09:09:43+08:00", sender: "今日成员", is_changelog: 0, content: "08-09 最新完整消息" },
+  ];
   const issue = {
     document_key: "test-sync:i:357",
     kind: "issue",
@@ -170,9 +180,17 @@ function makeQaDb(requestCount = 1): D1Database {
         }),
         first: vi.fn(async () => sql.includes("qa_rate_limits") ? { request_count: requestCount } : null),
         all: vi.fn(async () => {
-          if (sql.includes("FROM qa_group_documents") && sql.includes("source_date >")) return { results: [liveChronicle] };
+          if (sql.includes("FROM qa_group_documents") && sql.includes("source_date > ?1")) return { results: [liveChronicle] };
           if (sql.includes("qa_corpus_meta")) return { results: meta };
           if (sql.includes("PARTITION BY d.sender")) return { results: speakerRows };
+          if (sql.includes("length(trim(d.content)) > 0")) {
+            const startAt = values[2] ? Date.parse(String(values[2])) : Number.NEGATIVE_INFINITY;
+            const endAt = values[3] ? Date.parse(String(values[3])) : Number.POSITIVE_INFINITY;
+            return { results: overviewGroupRows.filter((row) => {
+              const occurredAt = Date.parse(row.occurred_at);
+              return occurredAt >= startAt && occurredAt <= endAt;
+            }) };
+          }
           if (sql.includes("qa_group_fts")) return { results: [group] };
           if (sql.includes("qa_github_fts")) return { results: values[2] === "repo" ? [repo] : [issue] };
           if (sql.includes("is_changelog = 1")) return { results: [group] };
@@ -510,6 +528,65 @@ describe("protected DeepSeek Q&A", () => {
     });
   });
 
+  it("treats a compact evening-to-now range as a hard group-message boundary", () => {
+    const question = "帮我归类总结0808晚上到现在的消息，给到分类、观点摘要、代表性原声";
+    expect(defaultQaPlan(question)).toMatchObject({ intent: "overview", source: "group" });
+    expect(resolveQaTimeRange(question, "2026-08-09")).toEqual({
+      startAt: "2026-08-08T18:00:00+08:00",
+      endAt: null,
+      label: "2026-08-08 18:00 至语料最新时间",
+    });
+  });
+
+  it("does not treat an explicit Issue number as a compact date", () => {
+    expect(resolveQaTimeRange("帮我看一下 Issue #0808 的状态", "2026-08-09")).toBeNull();
+    expect(defaultQaPlan("帮我看一下 Issue #0808 的状态")).toMatchObject({
+      intent: "issue",
+      source: "issue",
+      issueNumber: "0808",
+    });
+  });
+
+  it("uses every message inside an explicit range and excludes earlier records", async () => {
+    const env = makeEnv();
+    const upstream = [
+      'data: {"choices":[{"delta":{"content":"已按完整范围归纳 [G1][G2]"}}]}',
+      "data: [DONE]",
+      "",
+    ].join("\n\n");
+    const modelFetch = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      const payload = JSON.parse(String(init?.body ?? "{}")) as { stream?: boolean };
+      if (payload.stream === false) {
+        return Response.json({ choices: [{ message: { content: JSON.stringify({
+          intent: "overview", source: "all", queries: ["消息 分类 观点 原声"], days: 7, people: [], issueNumber: null,
+        }) } }] });
+      }
+      return new Response(upstream, { headers: { "Content-Type": "text/event-stream" } });
+    });
+    const request = await authenticatedRequest(env, "/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: "帮我归类总结0808晚上到现在的消息，给到分类、观点摘要、代表性原声" }),
+    });
+    const response = await createHandler(fetch, modelFetch)(request, env);
+    const responseBody = await response.text();
+    expect(responseBody).toContain('"source":"group"');
+    expect(responseBody).toContain('"strategy":"full-range-direct"');
+    expect(responseBody).toContain('"startAt":"2026-08-08T18:00:00+08:00"');
+    expect(modelFetch).toHaveBeenCalledTimes(2);
+    const answerBody = JSON.parse(String(modelFetch.mock.calls[1]?.[1]?.body)) as {
+      messages: Array<{ role: string; content: string }>;
+      max_tokens: number;
+    };
+    const answerContext = answerBody.messages.at(-1)?.content ?? "";
+    expect(answerContext).toContain("08-08 晚间第一条完整消息");
+    expect(answerContext).toContain("08-09 最新完整消息");
+    expect(answerContext).not.toContain("08-03 旧消息");
+    expect(answerContext).not.toContain("17:59 消息");
+    expect(answerContext).toContain("没有抽样");
+    expect(answerBody.max_tokens).toBe(32_768);
+  });
+
   it("streams a cited answer from DeepSeek without exposing the API key", async () => {
     const env = makeEnv();
     const upstream = [
@@ -560,7 +637,7 @@ describe("protected DeepSeek Q&A", () => {
     const answerBody = JSON.parse(String(modelFetch.mock.calls[1]?.[1]?.body)) as Record<string, unknown>;
     expect(plannerBody).toMatchObject({ stream: false, thinking: { type: "disabled" } });
     expect(answerBody).toMatchObject({ stream: true, thinking: { type: "enabled" }, reasoning_effort: "high" });
-    expect(answerBody).toHaveProperty("max_tokens", 384_000);
+    expect(answerBody).toHaveProperty("max_tokens", 32_768);
   });
 
   it("uses member-balanced retrieval and max reasoning for speaker comparison questions", async () => {
@@ -598,7 +675,7 @@ describe("protected DeepSeek Q&A", () => {
     expect(body).toContain("成员乙 · 成员样本");
     const answerBody = JSON.parse(String(modelFetch.mock.calls[1]?.[1]?.body)) as Record<string, unknown>;
     expect(answerBody).toMatchObject({ thinking: { type: "enabled" }, reasoning_effort: "max" });
-    expect(answerBody).toHaveProperty("max_tokens", 384_000);
+    expect(answerBody).toHaveProperty("max_tokens", 32_768);
     expect(JSON.stringify(answerBody)).not.toContain("这不是成员甲的观点");
   });
 

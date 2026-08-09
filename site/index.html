@@ -98,10 +98,11 @@ main{position:relative;z-index:2;min-height:80vh;margin-left:220px}
 .iss .exp:hover{color:var(--gr)}
 .iss .drop{display:none;margin-top:9px;border-top:1px dashed var(--dim);padding-top:8px}
 .iss.open .drop{display:block}
-.iss .mi{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:baseline;padding:5px 2px;font-size:12px;color:var(--mut);text-decoration:none;border-bottom:1px dotted rgba(255,255,255,.06)}
+.iss .mi{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:8px;align-items:baseline;padding:5px 2px;font-size:12px;color:var(--mut);text-decoration:none;border-bottom:1px dotted rgba(255,255,255,.06)}
 .iss .mi:hover{color:var(--gr);background:rgba(51,255,102,.04)}
 .iss .mi .n{color:var(--faint);font-size:10.5px;flex:none}
 .iss .mi .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iss .mi .like{color:var(--amber);font-size:10px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .iss .mi .go{color:var(--gr2);font-size:10px}
 .iss .mi .ms{grid-column:2 / -1;font-size:11px;color:var(--faint);line-height:1.6}
 .delta-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:26px}
@@ -2159,6 +2160,27 @@ function renderIssues() {
   const issues = state.issues?.issues ?? [];
   const groups = state.issues?.issue_groups ?? [];
   const byNumber = Object.fromEntries(issues.map((issue) => [issue.n, issue]));
+  const thumbsUp = (issue) => {
+    const count = Number(issue?.thumbs_up ?? 0);
+    return Number.isInteger(count) && count > 0 ? count : 0;
+  };
+  const compareIssuesByLikes = (leftNumber, rightNumber) => {
+    const left = byNumber[leftNumber] ?? {};
+    const right = byNumber[rightNumber] ?? {};
+    return thumbsUp(right) - thumbsUp(left)
+      || Number(right.state === "open") - Number(left.state === "open")
+      || Number(right.priority ?? 0) - Number(left.priority ?? 0)
+      || String(right.updated ?? "").localeCompare(String(left.updated ?? ""))
+      || Number(right.n ?? 0) - Number(left.n ?? 0);
+  };
+  const groupLikes = (group) => {
+    const counts = group.issues.map((number) => thumbsUp(byNumber[number]));
+    return {
+      max: counts.length ? Math.max(...counts) : 0,
+      total: counts.reduce((sum, count) => sum + count, 0),
+      reacted: counts.filter(Boolean).length,
+    };
+  };
   $("issTotal").textContent = issues.length;
   $("issOpen").textContent = issues.filter((issue) => issue.state === "open").length;
   $("issCount").textContent = groups.length;
@@ -2178,19 +2200,33 @@ function renderIssues() {
   let sortMode = "importance";
   const render = () => {
     const visible = (current === "全部" ? groups : groups.filter((group) => group.cat === current))
-      .slice().sort((a, b) => sortMode === "frequency"
-        ? b.issues.length - a.issues.length || b.score - a.score || a.name.localeCompare(b.name, "zh")
-        : b.score - a.score || b.issues.length - a.issues.length || a.name.localeCompare(b.name, "zh"));
+      .slice().sort((a, b) => {
+        if (sortMode === "frequency") {
+          return b.issues.length - a.issues.length || b.score - a.score || a.name.localeCompare(b.name, "zh");
+        }
+        if (sortMode === "reactions") {
+          const left = groupLikes(a);
+          const right = groupLikes(b);
+          return right.max - left.max || right.total - left.total || right.reacted - left.reacted
+            || b.score - a.score || b.issues.length - a.issues.length || a.name.localeCompare(b.name, "zh");
+        }
+        return b.score - a.score || b.issues.length - a.issues.length || a.name.localeCompare(b.name, "zh");
+      });
     list.innerHTML = visible.map((group) => {
-      const rows = group.issues.map((number) => {
+      const likes = groupLikes(group);
+      const issueNumbers = sortMode === "reactions" ? group.issues.slice().sort(compareIssuesByLikes) : group.issues;
+      const rows = issueNumbers.map((number) => {
         const issue = byNumber[number];
         if (!issue) return "";
+        const likeCount = thumbsUp(issue);
         return `<a class="mi" href="${escapeHtml(issue.url)}" target="_blank" rel="noopener">` +
           `<span class="n">#${number}</span><span class="tt">${escapeHtml(issue.title)}</span>` +
-          `<span class="go">↗</span><span class="ms">${escapeHtml(issue.summary)}</span></a>`;
+          `<span class="like">${likeCount ? `👍 ${likeCount}` : ""}</span><span class="go">↗</span>` +
+          `<span class="ms">${escapeHtml(issue.summary)}</span></a>`;
       }).join("");
       return `<div class="iss"><div class="hd"><span class="no">${"★".repeat(group.score)}${"☆".repeat(5 - group.score)}</span>` +
-        `<span class="t">${escapeHtml(group.name)}</span><span class="st open">${group.issues.length} 条</span></div>` +
+        `<span class="t">${escapeHtml(group.name)}</span><span class="st open">${group.issues.length} 条</span>` +
+        `${likes.total ? `<span class="st">👍 ${likes.total}</span>` : ""}</div>` +
         `<div class="sm"><b>最新一条：</b>${escapeHtml(group.summary)}</div>` +
         `<div class="wh">来源摘录：${escapeHtml(group.why)}</div>` +
         `<div class="exp">▾ 展开 ${group.issues.length} 条关联 Issue</div><div class="drop">${rows}</div></div>`;
@@ -2202,7 +2238,7 @@ function renderIssues() {
       element.querySelector(".exp").textContent = element.classList.contains("open") ? "▴ 收起" : `▾ 展开 ${count} 条关联 Issue`;
     }));
   };
-  for (const [key, label] of [["importance", "按重要性"], ["frequency", "按频次"]]) {
+  for (const [key, label] of [["importance", "按重要性"], ["frequency", "按频次"], ["reactions", "按点赞"]]) {
     const button = document.createElement("button");
     button.textContent = label;
     button.classList.toggle("on", key === sortMode);

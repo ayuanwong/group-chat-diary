@@ -2,6 +2,7 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { tokenize } from "../qa/retrieval.mjs";
+import { attachIssueReactions } from "./lib/issue-reactions.mjs";
 import { buildRepositoryDigest } from "./lib/repo-digest.mjs";
 import {
   assertPrivateContent,
@@ -226,7 +227,16 @@ function qaRows(syncId, classified, rawIssues, repositories) {
     const bodyChunks = textChunks(body || "（Issue 正文为空）");
     bodyChunks.forEach((bodyChunk, chunkIndex) => {
       const documentKey = `${syncId}:i:${number}:${chunkIndex}`;
-      const content = [title, bodyChunk, issue.summary, issue.excerpt, issue.cat, issue.group, ...labels]
+      const content = [
+        title,
+        `GitHub 👍 ${Number(issue.thumbs_up ?? 0)}`,
+        bodyChunk,
+        issue.summary,
+        issue.excerpt,
+        issue.cat,
+        issue.group,
+        ...labels,
+      ]
         .filter(Boolean).join("\n");
       assertPrivateContent(content, `Issue #${number}`);
       const tokens = tokenize(content).slice(0, 1_500).join(" ");
@@ -465,8 +475,9 @@ function activate(syncId, now, issueCount, repoCount) {
 }
 
 const now = new Date().toISOString();
-const classified = loadClassifiedIssues();
-const rawIssues = collectIssues(classified);
+const classifiedWithoutReactions = loadClassifiedIssues();
+const rawIssues = collectIssues(classifiedWithoutReactions);
+const classified = attachIssueReactions(classifiedWithoutReactions, rawIssues);
 const repoHeads = collectRepoHeads();
 const collectedRepos = collectRepos(now, repoHeads);
 const repositories = activeRepoFirstSeen(collectedRepos.repositories, now);

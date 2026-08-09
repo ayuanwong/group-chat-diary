@@ -4,7 +4,7 @@
   "title": "DSH 内测安装指南",
   "subtitle": "WSL2 Ubuntu 26.04",
   "author": "@inschrift-spruch-raum",
-  "updatedAt": "2026-08-07",
+  "updatedAt": "2026-08-09",
   "intro": "基于内测实际经验整理，帮助新成员通过 GitHub 仓库完成 DSH 的安装与配置，并提前避开常见问题。",
   "sections": [
     {
@@ -13,7 +13,7 @@
       "blocks": [
         {
           "type": "paragraph",
-          "text": "内测开始后，你会获得两个 GitHub 组织的访问权限：一个用于反馈与共创，一个用于拉取程序。请先在 GitHub 信息列表中确认邀请和仓库权限，再开始安装。"
+          "text": "内测开始后，你会获得两个 GitHub 组织的访问权限：dsh2026 用于拉取程序，dsh-external 用于反馈 Issue 与参与共创社区。请先在 GitHub 信息列表中确认邀请和仓库权限，再开始安装。"
         },
         {
           "type": "links",
@@ -21,12 +21,12 @@
             {
               "label": "dsh2026",
               "url": "https://github.com/dsh2026",
-              "description": "反馈 Issue 与共创社区"
+              "description": "拉取 DSH 程序"
             },
             {
               "label": "dsh-external",
               "url": "https://github.com/dsh-external",
-              "description": "拉取 DSH 程序与内测仓库"
+              "description": "反馈 Issue 与共创社区"
             }
           ]
         },
@@ -259,7 +259,7 @@
         },
         {
           "type": "paragraph",
-          "text": "如果仍有问题，请前往 Issue 仓库反馈，并附上操作系统、Node 安装方式、执行命令和经过脱敏的报错信息。"
+          "text": "如果仍有问题，请前往 dsh-external 的 Issue 仓库反馈，并附上操作系统、Node 安装方式、执行命令和经过脱敏的报错信息。"
         }
       ]
     }

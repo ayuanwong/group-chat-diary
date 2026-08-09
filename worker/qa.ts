@@ -6,6 +6,7 @@ const QA_DIRECT_CONTEXT_CHARS = 600_000;
 const QA_CONTEXT_CHUNK_CHARS = 160_000;
 const QA_CHUNK_SUMMARY_TOKENS = 8_192;
 const QA_ANSWER_MAX_TOKENS = 32_768;
+const QA_STREAM_HEARTBEAT_MS = 10_000;
 const QA_INTENTS = new Set<QaIntent>(["lookup", "issue", "repository", "release", "overview", "speaker"]);
 const QA_SOURCES = new Set<QaSourcePreference>(["group", "issue", "repo", "both", "all"]);
 const GENERIC_QUERY_PARTS = new Set([
@@ -1173,7 +1174,41 @@ function sendEvent(controller: ReadableStreamDefaultController<Uint8Array>, even
   controller.enqueue(new TextEncoder().encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
 }
 
-function streamAnswer(upstream: Response, meta: unknown): ReadableStream<Uint8Array> {
+type StreamReadOutcome =
+  | { kind: "read"; value: ReadableStreamReadResult<Uint8Array> }
+  | { kind: "error"; error: unknown }
+  | { kind: "heartbeat" };
+
+async function readWithHeartbeat(
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  heartbeatMs: number,
+  heartbeat: () => void,
+): Promise<ReadableStreamReadResult<Uint8Array>> {
+  const pending = reader.read().then<StreamReadOutcome, StreamReadOutcome>(
+    (value) => ({ kind: "read", value }),
+    (error: unknown) => ({ kind: "error", error }),
+  );
+  while (true) {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const tick = new Promise<StreamReadOutcome>((resolve) => {
+      timer = setTimeout(() => resolve({ kind: "heartbeat" }), Math.max(1, heartbeatMs));
+    });
+    const outcome = await Promise.race([pending, tick]);
+    if (timer !== null) clearTimeout(timer);
+    if (outcome.kind === "heartbeat") {
+      heartbeat();
+      continue;
+    }
+    if (outcome.kind === "error") throw outcome.error;
+    return outcome.value;
+  }
+}
+
+export function streamAnswer(
+  upstream: Response,
+  meta: unknown,
+  heartbeatMs = QA_STREAM_HEARTBEAT_MS,
+): ReadableStream<Uint8Array> {
   return new ReadableStream<Uint8Array>({
     async start(controller) {
       sendEvent(controller, "meta", meta);
@@ -1188,9 +1223,14 @@ function streamAnswer(upstream: Response, meta: unknown): ReadableStream<Uint8Ar
       let usage: unknown = null;
       let finishReason: string | null = null;
       let hasAnswer = false;
+      let lastClientEventAt = Date.now();
+      const sendHeartbeat = () => {
+        sendEvent(controller, "progress", { phase: "thinking" });
+        lastClientEventAt = Date.now();
+      };
       try {
         while (true) {
-          const { done, value } = await reader.read();
+          const { done, value } = await readWithHeartbeat(reader, heartbeatMs, sendHeartbeat);
           buffer += decoder.decode(value ?? new Uint8Array(), { stream: !done }).replaceAll("\r\n", "\n");
           let boundary = buffer.indexOf("\n\n");
           while (boundary >= 0) {
@@ -1210,11 +1250,13 @@ function streamAnswer(upstream: Response, meta: unknown): ReadableStream<Uint8Ar
               if (token) {
                 hasAnswer = true;
                 sendEvent(controller, "token", { text: token });
+                lastClientEventAt = Date.now();
               }
             }
             boundary = buffer.indexOf("\n\n");
           }
           if (done) break;
+          if (Date.now() - lastClientEventAt >= heartbeatMs) sendHeartbeat();
         }
         if (hasAnswer) sendEvent(controller, "done", { usage });
         else sendEvent(controller, "error", {

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createHandler, signSession, verifySession, type WorkerEnv } from "./index";
-import { defaultQaPlan, resolveQaTimeRange } from "./qa";
+import { defaultQaPlan, resolveQaTimeRange, streamAnswer } from "./qa";
 
 function makeAccessDb(
   allowedIds = [123],
@@ -706,6 +706,30 @@ describe("protected DeepSeek Q&A", () => {
     expect(body).toContain("event: error");
     expect(body).toContain("模型输出上限");
     expect(body).not.toContain("event: done");
+  });
+
+  it("keeps the browser stream alive while DeepSeek is still thinking", async () => {
+    const encoder = new TextEncoder();
+    const upstream = new Response(new ReadableStream<Uint8Array>({
+      async start(controller) {
+        controller.enqueue(encoder.encode(
+          'data: {"choices":[{"delta":{"reasoning_content":"内部推理不应外发"}}]}\n\n',
+        ));
+        await new Promise((resolve) => setTimeout(resolve, 40));
+        controller.enqueue(encoder.encode(
+          'data: {"choices":[{"delta":{"content":"已完成归纳 [G1]"}}]}\n\n',
+        ));
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        controller.close();
+      },
+    }));
+
+    const body = await new Response(streamAnswer(upstream, { sources: [] }, 5)).text();
+    expect(body).toContain("event: meta");
+    expect(body).toContain("event: progress");
+    expect(body).toContain("已完成归纳 [G1]");
+    expect(body).toContain("event: done");
+    expect(body).not.toContain("内部推理不应外发");
   });
 
   it("rate-limits an authenticated member before contacting DeepSeek", async () => {

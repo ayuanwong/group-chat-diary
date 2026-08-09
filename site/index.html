@@ -1207,6 +1207,7 @@ async function qaAsk(question) {
   assistantTurn.answer.textContent = "";
   let answer = "";
   let eventError = null;
+  let progressLabel = "";
   qaState.sources = [];
 
   try {
@@ -1230,7 +1231,10 @@ async function qaAsk(question) {
         const intent = intentLabels[payload.retrieval?.intent] || "融合检索";
         const coverage = payload.retrieval?.strategy === "full-range-chunked" ? "全量分块" : "全量直读";
         const timeRange = payload.retrieval?.timeRange?.label ? ` · ${payload.retrieval.timeRange.label}` : "";
-        $("qaNotice").textContent = `${intent} · ${coverage}${timeRange} · ${qaState.sources.length} 个来源 · ${qaModelLabel(payload.model, true, payload.reasoningEffort)} 正在生成…`;
+        progressLabel = `${intent} · ${coverage}${timeRange} · ${qaState.sources.length} 个来源 · ${qaModelLabel(payload.model, true, payload.reasoningEffort)}`;
+        $("qaNotice").textContent = `${progressLabel} 正在生成…`;
+      } else if (event === "progress") {
+        $("qaNotice").textContent = `${progressLabel || "检索完成"} · 连接正常，DeepSeek 正在深度分析…`;
       } else if (event === "token") {
         answer += String(payload.text || "");
         assistantTurn.answer.textContent = answer;
@@ -1248,7 +1252,12 @@ async function qaAsk(question) {
     $("qaNotice").textContent = `回答完成 · ${qaState.sources.length} 个可核对来源`;
   } catch (error) {
     const aborted = error.name === "AbortError";
-    const message = aborted ? "已停止生成。" : String(error.message || error);
+    const rawMessage = String(error.message || error);
+    const message = aborted
+      ? "已停止生成。"
+      : /network error|failed to fetch|load failed/iu.test(rawMessage)
+        ? "回答连接意外中断，请重试；已完成的检索结果仍然有效。"
+        : rawMessage;
     qaRenderAnswer(assistantTurn.answer, answer ? `${answer}\n\n${message}` : message);
     if (qaState.sources.length) qaRenderSources(assistantTurn.bubble, qaState.sources);
     $("qaNotice").textContent = aborted ? "已停止，可继续输入新问题。" : message;

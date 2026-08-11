@@ -70,6 +70,27 @@ main{position:relative;z-index:2;min-height:80vh;margin-left:220px}
 .chr .ev .detail{color:var(--ink);margin-top:4px;line-height:1.75}
 .chr .ev .d{color:var(--mut);margin-top:2px}
 .chr .ev .d .q{color:var(--gr)}
+.chronicle-tabs{display:flex;gap:6px;margin:-10px 0 22px;padding-bottom:12px;border-bottom:1px solid var(--dim)}
+.chronicle-tabs button{font:inherit;font-size:12px;color:var(--mut);background:none;border:1px solid var(--dim);padding:7px 18px;cursor:pointer;letter-spacing:.08em}
+.chronicle-tabs button:hover,.chronicle-tabs button:focus-visible{color:var(--ink);border-color:var(--gr2);outline:none}
+.chronicle-tabs button.on{color:var(--bg);background:var(--gr);border-color:var(--gr);font-weight:700}
+.group-chronicle{display:grid}
+.gc-event{display:grid;grid-template-columns:180px minmax(0,1fr);gap:22px;padding-bottom:26px;position:relative}
+.gc-when{padding-top:2px;text-align:right;color:var(--faint);font-size:10.5px;line-height:1.65;letter-spacing:.05em;font-variant-numeric:tabular-nums}
+.gc-live{display:block;width:max-content;margin:4px 0 0 auto;border:1px solid var(--amber);padding:1px 5px;color:var(--amber);font-size:8.5px;letter-spacing:.05em}
+.gc-card{position:relative;border-left:1px solid var(--dim);padding:0 0 0 27px;min-width:0}
+.gc-card::before{content:"";position:absolute;left:-5px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--gr);box-shadow:0 0 0 4px var(--bg),0 0 14px rgba(51,255,102,.46)}
+.gc-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;color:var(--ink);font-size:15px;font-weight:700;line-height:1.5}
+.gc-title .count{color:var(--faint);font-size:9.5px;font-weight:400;letter-spacing:.08em}
+.gc-explanation{color:var(--mut);font-size:12px;line-height:1.8;margin-top:7px;max-width:780px}
+.gc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+.gc-tags span{border:1px solid var(--dim);color:var(--faint);font-size:9px;padding:1px 6px}
+.gc-quotes{display:grid;gap:7px;margin-top:12px}
+.gc-quote{border:1px solid rgba(51,255,102,.16);border-left:2px solid var(--gr2);background:var(--panel);padding:9px 11px}
+.gc-quote .meta{display:flex;align-items:baseline;gap:8px;color:var(--faint);font-size:9.5px;letter-spacing:.05em}
+.gc-quote .meta b{color:var(--gr);font-size:10.5px}
+.gc-quote blockquote{color:var(--ink);font-size:11.5px;line-height:1.75;margin-top:4px;overflow-wrap:anywhere}
+@media(max-width:700px){.chronicle-tabs{overflow-x:auto;scrollbar-width:none}.chronicle-tabs::-webkit-scrollbar{display:none}.chronicle-tabs button{white-space:nowrap;flex:1}.gc-event{grid-template-columns:1fr;gap:6px;padding-bottom:24px}.gc-when{text-align:left;padding-left:27px}.gc-live{margin-left:0}.gc-card{margin-left:4px}}
 .sig-bar{border:1px solid var(--dim);border-left:3px solid var(--gr);padding:10px 14px;margin-bottom:18px;font-size:12.5px;color:var(--mut);background:var(--panel)}
 .sig-bar b{color:var(--gr)}
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
@@ -435,7 +456,8 @@ html[data-theme^="loserfox-"] .side-tabs button.on,
 html[data-theme^="loserfox-"] .filters button.on,
 html[data-theme^="loserfox-"] .delta-subtabs button.on,
 html[data-theme^="loserfox-"] .toolbar button.on,
-html[data-theme^="loserfox-"] .board-tabs button.on{color:var(--lf-on-accent);background:var(--gr);border-color:var(--gr)}
+html[data-theme^="loserfox-"] .board-tabs button.on,
+html[data-theme^="loserfox-"] .chronicle-tabs button.on{color:var(--lf-on-accent);background:var(--gr);border-color:var(--gr)}
 html[data-theme^="loserfox-"] .iss .mi:hover{background:var(--panel)}
 html[data-theme^="loserfox-"] .repo-item{border-color:var(--dim);background:var(--panel)}
 html[data-theme^="loserfox-"] .repo-item:hover{border-color:var(--gr2);background:var(--panel2)}
@@ -810,10 +832,20 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
 
   <section class="panel" id="panel-chronicle" hidden>
     <div class="wrap">
-      <div class="p-head"><div class="k">01 // CHRONICLE</div><h2>事件纪事</h2>
-      <p class="desc">跨全部已归档自然日汇总完成态事件；不随顶部日期切换，条目可回到来源指纹复核。</p></div>
-      <div class="sig-bar"><b>&gt;</b> 全量纪事 <b id="chronicleNum">0</b> 条 · 时间范围 <b id="chronicleRange">--</b></div>
-      <div class="chr" id="chronicle"></div>
+      <div class="p-head"><div class="k">01 // CHRONICLE</div><h2>纪事</h2>
+      <p class="desc">官方完成态更新与群聊主题时间线分开展示；两类纪事跨全部已发布日期，今日提前更新时会明确标为“实时 · 未完结”。</p></div>
+      <div class="chronicle-tabs" id="chronicleTabs" role="tablist" aria-label="纪事类型切换">
+        <button type="button" class="on" role="tab" id="chronicleTabOfficial" aria-controls="chronicleOfficial" aria-selected="true" data-chronicle-view="official">官方纪事</button>
+        <button type="button" role="tab" id="chronicleTabGroup" aria-controls="chronicleGroup" aria-selected="false" data-chronicle-view="group">群聊纪事</button>
+      </div>
+      <section id="chronicleOfficial" role="tabpanel" aria-labelledby="chronicleTabOfficial">
+        <div class="sig-bar"><b>&gt;</b> 官方纪事 <b id="chronicleNum">0</b> 条 · 时间范围 <b id="chronicleRange">--</b></div>
+        <div class="chr" id="chronicle"></div>
+      </section>
+      <section id="chronicleGroup" role="tabpanel" aria-labelledby="chronicleTabGroup" hidden>
+        <div class="sig-bar"><b>&gt;</b> 群聊主要议题 <b id="groupChronicleNum">0</b> 个 · 时间范围 <b id="groupChronicleRange">--</b><b id="groupChronicleFreshness"></b></div>
+        <div class="group-chronicle" id="groupChronicle"></div>
+      </section>
     </div>
   </section>
 
@@ -944,11 +976,14 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
   </div>
 </footer>
 
-<script type="module">"use strict";
+<script type="module">import { buildGroupChronicle } from "./group-chronicle.mjs";
+
+"use strict";
 
 // 先启动页面外壳；即使 file:// 预览无法读取受保护数据，导航仍可用于主题与布局验收。
 const $ = (id) => document.getElementById(id);
 initTabs();
+initChronicleTabs();
 
 let liveContent = false;
 const ALLOW_STATIC_CONTENT = location.protocol === "file:" || ["localhost", "127.0.0.1"].includes(location.hostname);
@@ -995,6 +1030,8 @@ const manifestRevision = (manifest) => JSON.stringify([
   manifest.liveGroup?.latestDate ?? null,
   manifest.liveGroup?.syncedAt ?? null,
 ]);
+const activeGroupDayRevision = (manifest, date) =>
+  manifest.entries?.find((entry) => entry.date === date)?.activatedAt ?? null;
 let activeContentRevision = manifestRevision(SITE_MANIFEST);
 const requestedDate = new URL(location.href).searchParams.get("date");
 const SELECTED_DATE = SITE_MANIFEST.dates.includes(requestedDate) ? requestedDate : SITE_MANIFEST.latest;
@@ -1715,6 +1752,43 @@ function initAgentNotes() {
   };
 }
 
+function setChronicleView(view, { updateUrl = true, focus = false } = {}) {
+  const nextView = view === "group" ? "group" : "official";
+  const tabs = [...document.querySelectorAll("#chronicleTabs [data-chronicle-view]")];
+  for (const button of tabs) {
+    const selected = button.dataset.chronicleView === nextView;
+    button.classList.toggle("on", selected);
+    button.setAttribute("aria-selected", String(selected));
+    button.tabIndex = selected ? 0 : -1;
+    if (selected && focus) button.focus();
+  }
+  $("chronicleOfficial").hidden = nextView !== "official";
+  $("chronicleGroup").hidden = nextView !== "group";
+  if (!updateUrl) return;
+  const next = new URL(location.href);
+  if (nextView === "group") next.searchParams.set("chronicle", "group");
+  else next.searchParams.delete("chronicle");
+  history.replaceState({}, "", next);
+}
+
+function initChronicleTabs() {
+  const tabs = $("chronicleTabs");
+  if (!tabs) return;
+  const requested = new URL(location.href).searchParams.get("chronicle");
+  setChronicleView(requested === "group" ? "group" : "official", { updateUrl: false });
+  tabs.querySelectorAll("[data-chronicle-view]").forEach((button) => {
+    button.addEventListener("click", () => setChronicleView(button.dataset.chronicleView));
+  });
+  tabs.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const current = new URL(location.href).searchParams.get("chronicle") === "group" ? 1 : 0;
+    const next = event.key === "Home" ? 0 : event.key === "End" ? 1
+      : event.key === "ArrowRight" ? (current + 1) % 2 : (current + 1) % 2;
+    setChronicleView(next === 1 ? "group" : "official", { focus: true });
+  });
+}
+
 function switchTab(key) {
   document.body.dataset.panel = key;
   document.querySelectorAll("#tabs button").forEach((item) => item.classList.toggle("on", item.dataset.tab === key));
@@ -1754,13 +1828,15 @@ function renderHome() {
   const history = state.history ?? {};
   const fmt = (n) => Number(n || 0).toLocaleString("zh-CN");
   const topTopic = cmp?.topicDeltas?.[0];
+  const groupChronicleCount = buildGroupChronicle(history.signals ?? []).length;
   const cards = [
     { key: "overview", k: "01 // OVERVIEW", title: "数据总览", desc: "今日增量、逐日快照跟踪与星域数据（活跃时段、Issue 主题、高频词）。",
       stats: cmp ? `今日新增消息 ${fmt(cmp.newMessageCount)} · 信号 ${cmp.newSignalMessageIds?.length ?? 0}${topTopic ? ` · ${topTopic.label} +${topTopic.delta}` : ""}` : "加载中…" },
     { key: "guide", k: "02 // GUIDE", title: "🔥 新人导引", desc: "《DSH 内测安装指南》等固定入门内容，不随日期切换。", stats: "固定内容 · 随时可读", hot: true },
     { key: "cards", k: "03 // CARDS", title: "成员星卡", desc: "跨全部自然日累计的成员发言与精选表现，不推断真实身份。", stats: `${fmt(history.members?.length)} 位成员` },
     { key: "signals", k: "04 // SIGNALS", title: "信号收录", desc: "可行动的问题、建议、实测与明确完成态事件，按类别筛选。", stats: `${fmt(history.signals?.length)} 条精选信号` },
-    { key: "chronicle", k: "05 // CHRONICLE", title: "事件纪事", desc: "产品方完成态更新与来源明确的公告。", stats: `${fmt(history.chronicles?.length)} 条纪事` },
+    { key: "chronicle", k: "05 // CHRONICLE", title: "事件纪事", desc: "官方完成态更新，以及按时间段整理的群聊主题与代表发言。",
+      stats: `${fmt(history.chronicles?.length)} 条官方纪事 · ${fmt(groupChronicleCount)} 个群聊议题` },
     { key: "agentnotes", k: "06 // AGENT NOTES", title: "Agent Notes", desc: "dsh 仓库决策记录全量清单，含摘要详情、TODO 与变更追踪。",
       stats: SITE_MANIFEST?.agentNotes ? `${fmt(SITE_MANIFEST.agentNotes.total)} 篇 · ${fmt(SITE_MANIFEST.agentNotes.proposed)} 计划中` : "" },
   ];
@@ -1783,7 +1859,7 @@ function initWarp() {
   $("warpSkip")?.addEventListener("click", close);
 }
 
-function renderChronicle() {
+function renderOfficialChronicle() {
   const items = [...(state.history?.chronicles ?? [])].sort((left, right) =>
     String(right.timestamp || right.time || "").localeCompare(String(left.timestamp || left.time || "")),
   );
@@ -1807,6 +1883,46 @@ function renderChronicle() {
       `<div class="d"><b>${escapeHtml(event.sender)}</b>：<span class="q">「${escapeHtml(event.quote)}」</span></div>`;
     box.appendChild(element);
   }
+}
+
+function renderGroupChronicle() {
+  const items = buildGroupChronicle(state.history?.signals ?? []);
+  const box = $("groupChronicle");
+  box.innerHTML = "";
+  $("groupChronicleNum").textContent = items.length.toLocaleString("zh-CN");
+  const earliest = String(items.at(-1)?.timestamp || "").slice(0, 10);
+  const latest = String(items[0]?.timestamp || "").slice(0, 10);
+  const today = beijingDate(new Date());
+  const hasPartialToday = latest === today;
+  $("groupChronicleRange").textContent = earliest && latest ? `${earliest} → ${latest}` : "--";
+  $("groupChronicleFreshness").textContent = hasPartialToday ? " · 今日实时，未完结" : "";
+  if (!items.length) {
+    box.innerHTML = emptyBlock("全部已归档日期中还没有可用于生成群聊主题时间线的精选发言。");
+    return;
+  }
+  for (const event of items) {
+    const element = document.createElement("article");
+    element.className = "gc-event";
+    const tags = event.topics.map((topic) => `<span>${escapeHtml(topic)}</span>`).join("");
+    const quotes = event.quotes.map((quote) => `
+      <div class="gc-quote">
+        <div class="meta"><b>${escapeHtml(quote.sender)}</b><span>${escapeHtml(quote.time)}</span></div>
+        <blockquote>「${escapeHtml(quote.quote)}」</blockquote>
+      </div>`).join("");
+    const eventDate = String(event.timestamp || "").slice(0, 10);
+    const liveLabel = eventDate === today ? `<span class="gc-live">今日实时 · 未完结</span>` : "";
+    element.innerHTML = `<div class="gc-when">${escapeHtml(event.timeRange)}${liveLabel}</div>` +
+      `<div class="gc-card"><div class="gc-title">${escapeHtml(event.title)}<span class="count">${event.signalCount} 条精选发言</span></div>` +
+      `<p class="gc-explanation">${escapeHtml(event.explanation)}</p>` +
+      `<div class="gc-tags" aria-label="相关主题">${tags}</div>` +
+      `<div class="gc-quotes" aria-label="关键代表性发言">${quotes}</div></div>`;
+    box.appendChild(element);
+  }
+}
+
+function renderChronicle() {
+  renderOfficialChronicle();
+  renderGroupChronicle();
 }
 
 function compactTime(value) {
@@ -2472,8 +2588,11 @@ function renderData() {
   renderWords("groupCloud", state.group?.group_topic_words ?? []);
   if ($("dataNote")) {
     const stats = state.group?.stats;
+    const selectedDayLabel = EMBEDDED_SNAPSHOT?.publication?.status === "partial"
+      ? "所选今日实时记录（未完结）"
+      : "所选完整自然日";
     $("dataNote").textContent = state.group?.status === "ready"
-      ? `所选自然日本地源记录 ${stats.source_messages} 条；确认发言 ${stats.accepted_messages} 条；排除系统通知或无效记录 ${stats.excluded_messages} 条。GitHub Issue/Repo 使用独立实时版本，不跟随群聊日期。`
+      ? `${selectedDayLabel}本地源记录 ${stats.source_messages} 条；确认发言 ${stats.accepted_messages} 条；排除系统通知或无效记录 ${stats.excluded_messages} 条。GitHub Issue/Repo 使用独立实时版本，不跟随群聊日期。`
       : "旧群聊数据已撤下；没有本机证据时页面保持空白。";
   }
 }
@@ -2547,7 +2666,8 @@ async function refreshAll({ initial = false } = {}) {
 
 let checkingContentRevision = false;
 async function checkForContentUpdate() {
-  if (!liveContent || document.hidden || state.busy || qaState.busy || checkingContentRevision) return;
+  // QA 状态每 5 秒轮询；内容刷新不能被它阻塞，否则整 5 分钟的回调可能持续相撞并跳过。
+  if (!liveContent || document.hidden || state.busy || checkingContentRevision) return;
   checkingContentRevision = true;
   try {
     const response = await fetchLiveContent(`/api/content/manifest?t=${Date.now()}`, 2);
@@ -2559,7 +2679,10 @@ async function checkForContentUpdate() {
     if (nextRevision === activeContentRevision) return;
     const datesChanged = nextManifest.latest !== SITE_MANIFEST.latest
       || nextManifest.dates.join("|") !== SITE_MANIFEST.dates.join("|");
-    if (datesChanged) {
+    // 同一自然日会从 partial 原子替换为 complete。此时日期不变，但页面内嵌的所选日数据已过期，必须重载。
+    const selectedDayChanged = activeGroupDayRevision(nextManifest, SELECTED_DATE)
+      !== activeGroupDayRevision(SITE_MANIFEST, SELECTED_DATE);
+    if (datesChanged || selectedDayChanged) {
       location.reload();
       return;
     }
@@ -2589,7 +2712,7 @@ if (document.body.dataset.panel === "agentnotes") window.loadAgentNotes?.();
 if (document.body.dataset.panel === "overview") window.loadSnapshotDiffs?.();
 initWarp();
 refreshAll({ initial: true });
-setInterval(checkForContentUpdate, 5 * 60 * 1000);
+setInterval(checkForContentUpdate, 60 * 1000);
 window.addEventListener("focus", checkForContentUpdate);
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) checkForContentUpdate();

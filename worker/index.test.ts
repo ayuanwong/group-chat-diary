@@ -118,7 +118,7 @@ function makeQaDb(requestCount = 1): D1Database {
     source_date: "2026-08-07",
     occurred_at: "2026-08-07T09:00:00+08:00",
     sender: "Baymax",
-    content: "Changelog 2026-08-07\n✨ 新增\n新增当日实时纪事",
+    content: "✨ 新增\n新增当日实时纪事\n🐛 修复\n修复一个回归问题",
   };
   const sameDayChronicle = {
     document_key: "test-sync:g:message-same-day",
@@ -492,7 +492,11 @@ describe("archive gate", () => {
       },
       signals: [{ message_id: "signal-2" }, { message_id: "signal-1" }],
       chronicles: [
-        { message_id: "message-live" },
+        {
+          message_id: "message-live",
+          quote: "Changelog 2026-08-07",
+          basis: "官方账号结构化更新原话 + 消息自然日",
+        },
         { message_id: "message-same-day" },
         { message_id: "event-2" },
         { message_id: "event-1" },

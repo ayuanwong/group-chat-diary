@@ -48,6 +48,7 @@ type JsonRecord = Record<string, unknown>;
 
 const OFFICIAL_PRODUCT_SENDERS = new Set(["Baymax", "崔小天"]);
 const OFFICIAL_DSH_SUBJECT = /deepseek\s+harness|dsh(?:2026|-external)|snapshot-\d{8}|changelog\s+\d{4}-\d{2}-\d{2}|内测版代码|github\s+repo.{0,40}(?:新版本|推送)|issues\s+repo/iu;
+const STRUCTURED_CHANGELOG = /✨\s*新增[\s\S]*?🐛\s*修复/iu;
 
 function parsePayload(value: string | undefined): unknown | null {
   if (!value) return null;
@@ -100,7 +101,9 @@ function officialChronicles(value: unknown): JsonRecord[] {
 function liveChronicle(row: LiveChronicleRow): JsonRecord | null {
   if (!OFFICIAL_PRODUCT_SENDERS.has(String(row.sender ?? "").trim())) return null;
   const text = String(row.content ?? "").split("↳ 回复", 1)[0].trim();
-  const releaseDate = text.match(/changelog\s+(\d{4}-\d{2}-\d{2})/iu)?.[1];
+  const explicitDate = text.match(/changelog\s+(\d{4}-\d{2}-\d{2})/iu)?.[1] ?? null;
+  const derivedDate = validArchiveDate(row.source_date) && STRUCTURED_CHANGELOG.test(text) ? row.source_date : null;
+  const releaseDate = explicitDate ?? derivedDate;
   if (!releaseDate) return null;
   const groups: Record<string, string[]> = { "新增": [], "修复": [], "调整": [], "优化": [] };
   let section = "";
@@ -124,7 +127,7 @@ function liveChronicle(row: LiveChronicleRow): JsonRecord | null {
     quote: `Changelog ${releaseDate}`,
     detail: parts.length ? `Changelog ${releaseDate}｜${parts.join("；")}。` : `Changelog ${releaseDate}｜官方已发布该版本更新。`,
     confidence: "candidate",
-    basis: "官方账号完成态 Changelog 原话",
+    basis: explicitDate ? "官方账号完成态 Changelog 原话" : "官方账号结构化更新原话 + 消息自然日",
   };
 }
 

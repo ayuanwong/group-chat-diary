@@ -158,7 +158,7 @@ function comparison(date, current, previous) {
   };
 }
 
-function stageGroupDay(date, rows, text, digest, previousDigest) {
+function stageGroupDay(date, rows, text, digest, previousDigest, publicationStatus = "complete") {
   const generatedAt = new Date().toISOString();
   const ingestId = createHash("sha256").update("group-day-v2").update(text).digest("hex").slice(0, 24);
   const start = `${date}T00:00:00+08:00`;
@@ -170,6 +170,11 @@ function stageGroupDay(date, rows, text, digest, previousDigest) {
     period: { timeZone: "Asia/Shanghai", start, end: `${endDate.toISOString().slice(0, 10)}T00:00:00+08:00` },
     group: digest,
     comparison: comparison(date, digest, previousDigest),
+    publication: {
+      status: publicationStatus,
+      asOf: generatedAt,
+      timeZone: "Asia/Shanghai",
+    },
     generatedAt,
   };
   const payloadText = JSON.stringify(payload);
@@ -234,7 +239,7 @@ function stageGroupDay(date, rows, text, digest, previousDigest) {
     SELECT ingest_id FROM content_active_group_days WHERE date = ${sqlString(date)};
   `)[0]?.ingest_id;
   if (active !== ingestId) throw new Error(`${date} CONTENT_DB 激活校验失败。`);
-  return { date, ingestId, ...values, generatedAt };
+  return { date, ingestId, ...values, publicationStatus, generatedAt };
 }
 
 function syncQaGroup(files) {
@@ -333,12 +338,19 @@ function syncQaGroup(files) {
 
 const requestedDate = argValue("--date");
 const backfill = process.argv.includes("--backfill");
+const partialCurrentDay = process.argv.includes("--partial-current-day");
 if (!backfill && !datePattern.test(requestedDate ?? "")) throw new Error("需要 --date YYYY-MM-DD 或 --backfill。");
 const files = availableFiles();
 if (!files.size) throw new Error("没有可同步的群聊语料。");
 const today = beijingDate();
-if (!backfill && requestedDate >= today) {
+if (!backfill && requestedDate > today) {
+  throw new Error("不能发布未来的北京时间自然日。");
+}
+if (!backfill && requestedDate === today && !partialCurrentDay) {
   throw new Error("只能发布已经结束的北京时间自然日；当前日语料可进入实时 QA，但不能成为页面日档案。");
+}
+if (partialCurrentDay && (backfill || requestedDate !== today)) {
+  throw new Error("--partial-current-day 只能显式用于北京时间当天。");
 }
 const targetDates = backfill ? [...files.keys()].filter((date) => date < today) : [requestedDate];
 if (!targetDates.length) throw new Error("没有已经结束的完整自然日可同步到页面。实时 QA 语料未被覆盖。");
@@ -365,7 +377,7 @@ for (const date of targetDates) {
     digestCache.set(priorDate, priorDigest);
   }
   digest.chronicles = withoutRepeatedChronicles(digest.chronicles, priorDigest?.chronicles);
-  results.push(stageGroupDay(date, rows, text, digest, priorDigest));
+  results.push(stageGroupDay(date, rows, text, digest, priorDigest, date === today ? "partial" : "complete"));
 }
 const qa = syncQaGroup(files);
 console.log(JSON.stringify({ source: "group-day", dates: results, qa, target: d1Target().slice(2) }));

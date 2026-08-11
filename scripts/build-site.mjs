@@ -142,17 +142,21 @@ const snapshotDiffs = datesAsc.map((name, index) => {
 assertPublishable(JSON.stringify(snapshotDiffs), "snapshot-diffs 数据");
 
 const sitePath = path.join(siteDir, "index.html");
+const groupChroniclePath = path.join(siteDir, "group-chronicle.mjs");
 const faviconPath = path.join(siteDir, "favicon.png");
 const guidePath = path.join(contentDir, "newcomer-guide.json");
 const agentNotesPath = path.join(contentDir, "agent-notes.json");
 await assertReadable(sitePath, "缺少唯一站点外壳 site/index.html");
+await assertReadable(groupChroniclePath, "缺少群聊纪事聚合模块 site/group-chronicle.mjs");
 await assertReadable(faviconPath, "缺少站点图标 site/favicon.png");
 await assertReadable(guidePath, "缺少新人导引数据 content/newcomer-guide.json");
 await assertReadable(agentNotesPath, "缺少 Agent Notes 数据 content/agent-notes.json");
 const siteHtml = await readFile(sitePath, "utf8");
+const groupChronicleModule = await readFile(groupChroniclePath, "utf8");
 const guideText = await readFile(guidePath, "utf8");
 const agentNotesText = await readFile(agentNotesPath, "utf8");
 assertPublishable(siteHtml, "site/index.html");
+assertPublishable(groupChronicleModule, "site/group-chronicle.mjs");
 assertPublishable(guideText, "content/newcomer-guide.json");
 assertPublishable(agentNotesText, "content/agent-notes.json");
 if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide"') || !siteHtml.includes("/data/manifest.json")) {
@@ -161,6 +165,11 @@ if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide
 if (!siteHtml.includes('/api/content/manifest') || !siteHtml.includes('/api/content/group-history') || !siteHtml.includes('id="boardRepos"')
   || !siteHtml.includes('id="repoList"') || !siteHtml.includes('Issue / Repo')) {
   throw new Error("站点外壳缺少实时内容 API 或 Issue/Repo Board");
+}
+if (!siteHtml.includes('import { buildGroupChronicle } from "./group-chronicle.mjs"')
+  || !siteHtml.includes('id="chronicleTabs"') || !siteHtml.includes('id="chronicleOfficial"')
+  || !siteHtml.includes('id="chronicleGroup"') || !siteHtml.includes('id="groupChronicle"')) {
+  throw new Error("纪事页必须包含官方纪事与群聊纪事双 Tab，并加载群聊时间线聚合模块");
 }
 if (!siteHtml.includes("ALLOW_STATIC_CONTENT") || !siteHtml.includes("未启用静态快照")
   || !siteHtml.includes("checkForContentUpdate") || !siteHtml.includes("manifest.liveGroup?.syncedAt")) {
@@ -231,6 +240,7 @@ if (process.argv.includes("--check")) {
 await rm(output, { recursive: true, force: true });
 await mkdir(dataOutput, { recursive: true });
 await copyFile(sitePath, path.join(output, "index.html"));
+await copyFile(groupChroniclePath, path.join(output, "group-chronicle.mjs"));
 await copyFile(faviconPath, path.join(output, "favicon.png"));
 for (const name of snapshotNames) {
   await writeFile(path.join(dataOutput, name), `${JSON.stringify(publishableSnapshots.get(name))}\n`, "utf8");

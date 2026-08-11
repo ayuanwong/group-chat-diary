@@ -276,6 +276,39 @@ function makeContentDb(): D1Database {
     comparison: { version: 2, status: "ready" },
     generatedAt: "2026-08-06T00:00:00.000Z",
   };
+  const liveGroupPayload = {
+    version: 2,
+    snapshotDate: "2026-08-07",
+    publication: {
+      status: "live",
+      asOf: "2026-08-07T01:10:00.000Z",
+      dataThrough: "2026-08-07T09:08:00+08:00",
+    },
+    group: {
+      version: 3,
+      source: { group: "【官方】DSH内测群" },
+      stats: {
+        source_messages: 2,
+        accepted_messages: 2,
+        excluded_messages: 0,
+        date_start: "2026-08-07T08:01:00+08:00",
+        date_end: "2026-08-07T09:08:00+08:00",
+        type_breakdown: { 文本: 2 },
+      },
+      signals: [{ message_id: "signal-3", sender: "成员甲", timestamp: "2026-08-07T08:30:00+08:00", text: "实时采集的新信号" }],
+      chronicles: [{
+        message_id: "message-live", sender: "Baymax", timestamp: "2026-08-07T09:00:00+08:00",
+        title: "内测版本更新", quote: "Changelog 2026-08-07", detail: "DeepSeek Harness 完成实时版本更新。",
+        basis: "官方账号结构化更新原话 + 消息自然日",
+      }],
+      members: [{
+        name: "成员甲", count: 1, signals: 1, role: "协作推动者", traits: ["Issue 与协作"], self: false,
+        representative: { headline: "实时表现", time: "2026-08-07 08:30" },
+      }],
+    },
+    comparison: { version: 2, status: "ready" },
+    generatedAt: "2026-08-07T01:10:00.000Z",
+  };
   const issuePayload = { version: 2, issues: [{ n: 357 }], issue_groups: [] };
   const repoPayload = {
     version: 2,
@@ -293,6 +326,20 @@ function makeContentDb(): D1Database {
           return statement;
         }),
         first: vi.fn(async () => {
+          if (sql.includes("content_active_live_group")) {
+            return {
+              date: "2026-08-07",
+              ingest_id: "live-group-sync",
+              generated_at: liveGroupPayload.generatedAt,
+              source_message_count: 2,
+              accepted_message_count: 2,
+              signal_count: 1,
+              participant_count: 1,
+              chronicle_count: 1,
+              activated_at: "2026-08-07T01:11:00.000Z",
+              payload: sql.includes("v.payload") ? JSON.stringify(liveGroupPayload) : undefined,
+            };
+          }
           if (sql.includes("content_active_group_days") && sql.includes("v.payload")) {
             return { payload: JSON.stringify(groupPayload) };
           }
@@ -464,6 +511,8 @@ describe("archive gate", () => {
     await expect(manifest.json()).resolves.toMatchObject({
       version: 2,
       latest: "2026-08-06",
+      dates: ["2026-08-06"],
+      liveChronicle: { date: "2026-08-07", messages: 2, signals: 1 },
       github: { repos: 1 },
       liveGroup: { latestDate: "2026-08-09", syncedAt: "2026-08-06T08:00:00.000Z" },
     });
@@ -478,19 +527,24 @@ describe("archive gate", () => {
     expect(history.status).toBe(200);
     await expect(history.json()).resolves.toMatchObject({
       version: 1,
-      scope: "all-active-group-days",
+      scope: "completed-days-plus-live",
       dates: ["2026-08-05", "2026-08-06", "2026-08-07"],
+      live: {
+        date: "2026-08-07",
+        dataThrough: "2026-08-07T09:08:00+08:00",
+        status: "live",
+      },
       stats: {
-        days: 2,
-        live_chronicle_dates: 1,
-        supplemented_chronicle_dates: 2,
-        source_messages: 9,
-        accepted_messages: 7,
-        signal_count: 2,
+        days: 3,
+        live_chronicle_dates: 0,
+        supplemented_chronicle_dates: 1,
+        source_messages: 11,
+        accepted_messages: 9,
+        signal_count: 3,
         participant_count: 2,
         chronicle_count: 4,
       },
-      signals: [{ message_id: "signal-2" }, { message_id: "signal-1" }],
+      signals: [{ message_id: "signal-3" }, { message_id: "signal-2" }, { message_id: "signal-1" }],
       chronicles: [
         {
           message_id: "message-live",
@@ -502,7 +556,7 @@ describe("archive gate", () => {
         { message_id: "event-1" },
       ],
       members: [
-        { name: "成员甲", count: 5, signals: 1, activeDays: 2 },
+        { name: "成员甲", count: 6, signals: 2, activeDays: 3 },
         { name: "成员乙", count: 1, signals: 1, activeDays: 1 },
       ],
     });

@@ -27,15 +27,19 @@ PYTHONPATH="$WECHAT_RUNTIME" "$WECHAT_RUNTIME/.venv/bin/python" \
   --output "$RAW_MESSAGES" >/dev/null
 
 cd "$SITE_REPO"
-node scripts/export_group_day.mjs --input "$RAW_MESSAGES" --date "$TARGET_DATE"
-SYNC_ARGS=(--date "$TARGET_DATE")
+SYNC_ARGS=()
 if [[ "$TARGET_DATE" == "$TODAY" ]]; then
-  SYNC_ARGS+=(--partial-current-day)
+  node scripts/export_group_day.mjs --input "$RAW_MESSAGES" --date "$TODAY" --allow-empty
+  SYNC_ARGS+=(--live-date "$TODAY")
+else
+  node scripts/export_group_day.mjs --input "$RAW_MESSAGES" --date "$TARGET_DATE"
+  node scripts/export_group_day.mjs --input "$RAW_MESSAGES" --date "$TODAY" --allow-empty
+  SYNC_ARGS+=(--date "$TARGET_DATE" --live-date "$TODAY")
 fi
 node scripts/sync_group_data.mjs "${SYNC_ARGS[@]}"
 
 if [[ "$TARGET_DATE" == "$TODAY" ]]; then
-  echo "群聊今日实时版已验证并激活：${TARGET_DATE}（未完结）"
+  echo "群聊纪事实时流已验证并激活：${TARGET_DATE}（截至本次采集，未完结）"
 else
-  echo "群聊自然日已验证并激活：$TARGET_DATE"
+  echo "群聊自然日已验证并激活：${TARGET_DATE}；纪事实时流已推进至本次采集点。"
 fi

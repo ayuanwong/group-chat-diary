@@ -29,6 +29,7 @@ interface GroupPayloadRow {
   date: string;
   generated_at: string;
   payload: string;
+  activated_at?: string;
 }
 
 interface LiveChronicleRow {
@@ -167,6 +168,19 @@ async function activeSource(db: D1Database, source: "issues" | "repos", includeP
   `).bind(source).first<SourceVersionRow>();
 }
 
+async function activeLiveGroup(db: D1Database, includePayload: boolean): Promise<GroupVersionRow | null> {
+  const payloadColumn = includePayload ? ", v.payload" : "";
+  return db.prepare(`
+    SELECT v.date, v.ingest_id, v.generated_at, v.source_message_count,
+      v.accepted_message_count, v.signal_count, v.participant_count,
+      v.chronicle_count, a.activated_at${payloadColumn}
+    FROM content_active_live_group AS a
+    JOIN content_group_versions AS v ON v.date = a.date AND v.ingest_id = a.ingest_id
+    WHERE a.scope = 'chronicle'
+    LIMIT 1
+  `).first<GroupVersionRow>();
+}
+
 async function liveGroupRevision(db: D1Database): Promise<{ latestDate: string | null; syncedAt: string | null }> {
   try {
     const rows = await db.prepare(`
@@ -185,7 +199,7 @@ async function liveGroupRevision(db: D1Database): Promise<{ latestDate: string |
 }
 
 export async function contentManifest(env: ContentRuntimeEnv): Promise<Record<string, unknown> | null> {
-  const [groups, issue, repo, liveGroup] = await Promise.all([
+  const [groups, liveVersion, issue, repo, liveGroup] = await Promise.all([
     env.CONTENT_DB.prepare(`
       SELECT v.date, v.ingest_id, v.generated_at, v.source_message_count,
         v.accepted_message_count, v.signal_count, v.participant_count,
@@ -194,6 +208,7 @@ export async function contentManifest(env: ContentRuntimeEnv): Promise<Record<st
       JOIN content_group_versions AS v ON v.date = a.date AND v.ingest_id = a.ingest_id
       ORDER BY v.date DESC
     `).all<GroupVersionRow>(),
+    activeLiveGroup(env.CONTENT_DB, false),
     activeSource(env.CONTENT_DB, "issues", false),
     activeSource(env.CONTENT_DB, "repos", false),
     liveGroupRevision(env.QA_DB),
@@ -215,6 +230,16 @@ export async function contentManifest(env: ContentRuntimeEnv): Promise<Record<st
       participants: Number(entry.participant_count),
       chronicles: Number(entry.chronicle_count),
     })),
+    liveChronicle: liveVersion ? {
+      date: liveVersion.date,
+      generatedAt: liveVersion.generated_at,
+      activatedAt: liveVersion.activated_at,
+      sourceMessages: Number(liveVersion.source_message_count),
+      messages: Number(liveVersion.accepted_message_count),
+      signals: Number(liveVersion.signal_count),
+      participants: Number(liveVersion.participant_count),
+      chronicles: Number(liveVersion.chronicle_count),
+    } : null,
     github: {
       syncId: issue?.sync_id && issue.sync_id === repo?.sync_id ? issue.sync_id : null,
       issues: Number(issue?.item_count ?? 0),
@@ -243,14 +268,44 @@ export async function contentGroupDay(env: ContentRuntimeEnv, date: string): Pro
 }
 
 export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Record<string, unknown> | null> {
-  const rows = await env.CONTENT_DB.prepare(`
-    SELECT v.date, v.generated_at, v.payload
-    FROM content_active_group_days AS a
-    JOIN content_group_versions AS v ON v.date = a.date AND v.ingest_id = a.ingest_id
-    ORDER BY v.date ASC
-  `).all<GroupPayloadRow>();
-  const active = rows.results ?? [];
+  const [rows, liveVersion] = await Promise.all([
+    env.CONTENT_DB.prepare(`
+      SELECT v.date, v.generated_at, v.payload, a.activated_at
+      FROM content_active_group_days AS a
+      JOIN content_group_versions AS v ON v.date = a.date AND v.ingest_id = a.ingest_id
+      ORDER BY v.date ASC
+    `).all<GroupPayloadRow>(),
+    activeLiveGroup(env.CONTENT_DB, true),
+  ]);
+  const archived = rows.results ?? [];
+  const latestArchivedDate = archived.at(-1)?.date ?? "";
+  const visibleLive = liveVersion?.payload && liveVersion.date > latestArchivedDate ? liveVersion : null;
+  const active: GroupPayloadRow[] = visibleLive ? [...archived, {
+    date: visibleLive.date,
+    generated_at: visibleLive.generated_at,
+    payload: visibleLive.payload ?? "",
+    activated_at: visibleLive.activated_at,
+  }] : archived;
   if (!active.length) return null;
+
+  let live: Record<string, unknown> | null = null;
+  if (visibleLive) {
+    const snapshot = record(parsePayload(visibleLive.payload));
+    const publication = record(snapshot?.publication);
+    const group = record(snapshot?.group);
+    const stats = record(group?.stats);
+    live = {
+      date: visibleLive.date,
+      asOf: publication?.asOf ?? visibleLive.generated_at,
+      dataThrough: publication?.dataThrough ?? stats?.date_end ?? null,
+      activatedAt: visibleLive.activated_at,
+      sourceMessages: Number(visibleLive.source_message_count),
+      messages: Number(visibleLive.accepted_message_count),
+      signals: Number(visibleLive.signal_count),
+      chronicles: Number(visibleLive.chronicle_count),
+      status: "live",
+    };
+  }
 
   const signals = new Map<string, JsonRecord>();
   const chronicles = new Map<string, JsonRecord>();
@@ -350,8 +405,8 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
     });
   }
 
-  const earliestCompletedDate = active[0]?.date ?? "";
-  const latestCompletedDate = active.at(-1)?.date ?? "";
+  const earliestCompletedDate = archived[0]?.date ?? active[0]?.date ?? "";
+  const latestVisibleDate = active.at(-1)?.date ?? "";
   const liveRows = await env.QA_DB.prepare(`
     SELECT document_key, source_date, occurred_at, sender, content
     FROM qa_group_documents
@@ -370,7 +425,7 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
     if (chronicles.has(key)) continue;
     chronicles.set(key, item);
     supplementedChronicleDates.add(row.source_date);
-    if (row.source_date > latestCompletedDate) liveDates.add(row.source_date);
+    if (row.source_date > latestVisibleDate) liveDates.add(row.source_date);
     if (row.occurred_at > dateEnd) dateEnd = row.occurred_at;
   }
 
@@ -396,11 +451,12 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
 
   return {
     version: 1,
-    scope: "all-active-group-days",
+    scope: "completed-days-plus-live",
     group: "【官方】DSH内测群",
     timeZone: "Asia/Shanghai",
     dates: [...active.map((row) => row.date), ...liveDates].filter((date, index, dates) => dates.indexOf(date) === index),
     generatedAt,
+    live,
     stats: {
       days: active.length,
       live_chronicle_dates: liveDates.size,

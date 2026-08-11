@@ -158,21 +158,28 @@ function comparison(date, current, previous) {
   };
 }
 
-function stageGroupDay(date, rows, text, digest, previousDigest, publicationStatus = "complete") {
+function stageGroupDay(date, rows, text, digest, previousDigest, activationTarget = "archive") {
   const generatedAt = new Date().toISOString();
   const ingestId = createHash("sha256").update("group-day-v2").update(text).digest("hex").slice(0, 24);
+  const publicationStatus = activationTarget === "live" ? "live" : "complete";
   const start = `${date}T00:00:00+08:00`;
   const endDate = new Date(`${date}T00:00:00Z`);
   endDate.setUTCDate(endDate.getUTCDate() + 1);
+  const dataThrough = String(rows.at(-1)?.timestamp ?? "");
   const payload = {
     version: 2,
     snapshotDate: date,
-    period: { timeZone: "Asia/Shanghai", start, end: `${endDate.toISOString().slice(0, 10)}T00:00:00+08:00` },
+    period: {
+      timeZone: "Asia/Shanghai",
+      start,
+      end: activationTarget === "live" ? dataThrough : `${endDate.toISOString().slice(0, 10)}T00:00:00+08:00`,
+    },
     group: digest,
     comparison: comparison(date, digest, previousDigest),
     publication: {
       status: publicationStatus,
       asOf: generatedAt,
+      dataThrough,
       timeZone: "Asia/Shanghai",
     },
     generatedAt,
@@ -228,18 +235,28 @@ function stageGroupDay(date, rows, text, digest, previousDigest, publicationStat
     || Number(staged.accepted_message_count) !== values.accepted) {
     throw new Error(`${date} CONTENT_DB 暂存校验失败，旧版本保持激活。`);
   }
-  executeSqlFile(CONTENT_DB, `
+  const activatePointer = activationTarget === "live" ? `
+    INSERT INTO content_active_live_group (scope, date, ingest_id, activated_at)
+    VALUES ('chronicle', ${sqlString(date)}, ${sqlString(ingestId)}, ${sqlString(generatedAt)})
+    ON CONFLICT(scope) DO UPDATE SET date = excluded.date, ingest_id = excluded.ingest_id,
+      activated_at = excluded.activated_at;
+  ` : `
     INSERT INTO content_active_group_days (date, ingest_id, activated_at)
     VALUES (${sqlString(date)}, ${sqlString(ingestId)}, ${sqlString(generatedAt)})
     ON CONFLICT(date) DO UPDATE SET ingest_id = excluded.ingest_id, activated_at = excluded.activated_at;
+  `;
+  executeSqlFile(CONTENT_DB, `
+    ${activatePointer}
     UPDATE content_sync_runs SET status = 'active', finished_at = ${sqlString(generatedAt)}
     WHERE sync_id = ${sqlString(ingestId)};
   `, "dsh-content-group-activate-");
-  const active = queryD1(CONTENT_DB, `
+  const active = queryD1(CONTENT_DB, activationTarget === "live" ? `
+    SELECT ingest_id FROM content_active_live_group WHERE scope = 'chronicle' AND date = ${sqlString(date)};
+  ` : `
     SELECT ingest_id FROM content_active_group_days WHERE date = ${sqlString(date)};
   `)[0]?.ingest_id;
-  if (active !== ingestId) throw new Error(`${date} CONTENT_DB 激活校验失败。`);
-  return { date, ingestId, ...values, publicationStatus, generatedAt };
+  if (active !== ingestId) throw new Error(`${date} CONTENT_DB ${activationTarget === "live" ? "实时纪事" : "自然日"}激活校验失败。`);
+  return { date, ingestId, ...values, publicationStatus, activationTarget, dataThrough, generatedAt };
 }
 
 function syncQaGroup(files) {
@@ -339,45 +356,55 @@ function syncQaGroup(files) {
 const requestedDate = argValue("--date");
 const backfill = process.argv.includes("--backfill");
 const partialCurrentDay = process.argv.includes("--partial-current-day");
-if (!backfill && !datePattern.test(requestedDate ?? "")) throw new Error("需要 --date YYYY-MM-DD 或 --backfill。");
+const liveDate = argValue("--live-date") ?? (partialCurrentDay ? requestedDate : null);
+const archiveDate = partialCurrentDay ? null : requestedDate;
+if (!backfill && !archiveDate && !liveDate) {
+  throw new Error("需要 --date YYYY-MM-DD、--live-date YYYY-MM-DD 或 --backfill。");
+}
+if (archiveDate && !datePattern.test(archiveDate)) throw new Error("--date 必须是 YYYY-MM-DD。");
+if (liveDate && !datePattern.test(liveDate)) throw new Error("--live-date 必须是 YYYY-MM-DD。");
 const files = availableFiles();
 if (!files.size) throw new Error("没有可同步的群聊语料。");
 const today = beijingDate();
-if (!backfill && requestedDate > today) {
-  throw new Error("不能发布未来的北京时间自然日。");
+if (!backfill && archiveDate && archiveDate >= today) {
+  throw new Error("数据总览只能激活已经结束的北京时间自然日；当前日只能进入实时纪事流。");
 }
-if (!backfill && requestedDate === today && !partialCurrentDay) {
-  throw new Error("只能发布已经结束的北京时间自然日；当前日语料可进入实时 QA，但不能成为页面日档案。");
+if (liveDate && (backfill || liveDate !== today)) {
+  throw new Error("--live-date 只能用于北京时间当天。");
 }
-if (partialCurrentDay && (backfill || requestedDate !== today)) {
+if (partialCurrentDay && requestedDate !== today) {
   throw new Error("--partial-current-day 只能显式用于北京时间当天。");
 }
-const targetDates = backfill ? [...files.keys()].filter((date) => date < today) : [requestedDate];
-if (!targetDates.length) throw new Error("没有已经结束的完整自然日可同步到页面。实时 QA 语料未被覆盖。");
-if (backfill) {
-  // Natural-day pages are final only after the Beijing calendar day has ended.
-  // Keep any staged version for recovery, but never expose a partial current/future day.
-  executeSqlFile(CONTENT_DB, `
-    DELETE FROM content_active_group_days WHERE date >= ${sqlString(today)};
-  `, "dsh-content-finalized-days-");
-}
+const targetDates = backfill ? [...files.keys()].filter((date) => date < today) : archiveDate ? [archiveDate] : [];
+if (!targetDates.length && !liveDate) throw new Error("没有可同步的自然日归档或实时纪事数据。");
+// The overview is a completed-day archive. Any legacy partial pointer is removed while its staged version remains recoverable.
+executeSqlFile(CONTENT_DB, `
+  DELETE FROM content_active_group_days WHERE date >= ${sqlString(today)};
+`, "dsh-content-finalized-days-");
 const results = [];
 const digestCache = new Map();
-for (const date of targetDates) {
+function digestFor(date) {
   const file = files.get(date);
-  if (!file) throw new Error(`${date} 的群聊语料不存在。`);
-  const { rows, text } = readRecords(file, date);
-  const digest = digestCache.get(date) ?? buildDigest(date, rows);
+  if (!file) return null;
+  const source = readRecords(file, date);
+  const digest = digestCache.get(date) ?? buildDigest(date, source.rows);
   digestCache.set(date, digest);
+  return { ...source, digest };
+}
+for (const date of targetDates) {
+  const current = digestFor(date);
+  if (!current) throw new Error(`${date} 的群聊语料不存在。`);
   const priorDate = previousDate(date);
-  let priorDigest = null;
-  if (files.has(priorDate)) {
-    const prior = readRecords(files.get(priorDate), priorDate);
-    priorDigest = digestCache.get(priorDate) ?? buildDigest(priorDate, prior.rows);
-    digestCache.set(priorDate, priorDigest);
-  }
-  digest.chronicles = withoutRepeatedChronicles(digest.chronicles, priorDigest?.chronicles);
-  results.push(stageGroupDay(date, rows, text, digest, priorDigest, date === today ? "partial" : "complete"));
+  const priorDigest = digestFor(priorDate)?.digest ?? null;
+  current.digest.chronicles = withoutRepeatedChronicles(current.digest.chronicles, priorDigest?.chronicles);
+  results.push(stageGroupDay(date, current.rows, current.text, current.digest, priorDigest, "archive"));
+}
+let live = null;
+if (liveDate && files.has(liveDate)) {
+  const current = digestFor(liveDate);
+  const priorDigest = digestFor(previousDate(liveDate))?.digest ?? null;
+  current.digest.chronicles = withoutRepeatedChronicles(current.digest.chronicles, priorDigest?.chronicles);
+  live = stageGroupDay(liveDate, current.rows, current.text, current.digest, priorDigest, "live");
 }
 const qa = syncQaGroup(files);
-console.log(JSON.stringify({ source: "group-day", dates: results, qa, target: d1Target().slice(2) }));
+console.log(JSON.stringify({ source: "group-day", dates: results, live, qa, target: d1Target().slice(2) }));

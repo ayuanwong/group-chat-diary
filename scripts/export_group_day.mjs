@@ -1,4 +1,4 @@
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { assertPrivateContent, projectRoot, sanitizeText } from "./lib/data-sync.mjs";
 
@@ -9,6 +9,7 @@ function argValue(name) {
 
 const input = argValue("--input");
 const date = argValue("--date");
+const allowEmpty = process.argv.includes("--allow-empty");
 if (!input) throw new Error("缺少 --input。");
 if (!/^\d{4}-\d{2}-\d{2}$/u.test(date ?? "")) throw new Error("--date 必须是 YYYY-MM-DD。");
 
@@ -44,15 +45,25 @@ for (const raw of source.messages) {
   });
 }
 
-if (!records.length) throw new Error(`${date} 没有群聊消息，拒绝上传空语料。`);
+const outputDirectory = path.join(projectRoot, ".local", "corpus", "group-chat");
+const output = path.join(outputDirectory, `${date}.jsonl`);
+if (!records.length) {
+  if (!allowEmpty) throw new Error(`${date} 没有群聊消息，拒绝上传空语料。`);
+  try {
+    await access(output);
+    throw new Error(`${date} 已有本地语料但本次权威输入为空，拒绝保留或覆盖不一致数据。`);
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  console.log(JSON.stringify({ date, messages: 0, redactedMessages: 0, output: null }));
+  process.exit(0);
+}
 records.sort((left, right) => left.timestamp.localeCompare(right.timestamp) || left.id.localeCompare(right.id));
 records.forEach((record, index) => { record.sequence = index + 1; });
 const content = `${records.map((record) => JSON.stringify(record)).join("\n")}\n`;
 assertPrivateContent(content, `${date} 群聊语料`);
 
-const outputDirectory = path.join(projectRoot, ".local", "corpus", "group-chat");
 await mkdir(outputDirectory, { recursive: true });
-const output = path.join(outputDirectory, `${date}.jsonl`);
 const temporary = path.join(outputDirectory, `.${date}.${process.pid}.tmp`);
 await writeFile(temporary, content, { encoding: "utf8", mode: 0o600 });
 await rename(temporary, output);

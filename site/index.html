@@ -679,9 +679,9 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
   </div>
   <nav class="side-tabs" id="tabs" aria-label="主导航"></nav>
   <div class="side-foot">
-    <label class="date-switch" for="datePicker"><span class="label">群聊日期</span><select id="datePicker" aria-label="切换群聊自然日"></select></label>
+    <label class="date-switch" for="datePicker"><span class="label">数据总览日期</span><select id="datePicker" aria-label="切换数据总览的已结束自然日"></select></label>
     <label class="theme-control" for="themeSelect"><span>主题</span><select id="themeSelect" aria-label="选择页面主题"><option value="terminal">终端绿</option><option value="loserfox-light">LoserFox 浅色</option><option value="loserfox-dark">LoserFox 深色</option></select></label>
-    <div class="meta" id="snapshotMeta">读取快照…</div>
+    <div class="meta" id="snapshotMeta">读取完整日归档…</div>
     <div class="account-menu" aria-label="当前登录账户">
       <span class="account-login" id="accountLogin">GitHub 账户</span>
       <form method="post" action="/auth/logout"><button class="account-logout" type="submit">退出</button></form>
@@ -694,7 +694,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
   <section class="panel" id="panel-home">
     <div class="wrap">
       <div class="p-head"><div class="k">00 // HOME</div><h2>DSH 档案馆</h2>
-      <p class="desc">选择一个你感兴趣的区域进入。数据来自内测群与 dsh-external 私有仓库，仅限授权成员查看。</p></div>
+      <p class="desc">选择一个你感兴趣的区域进入。侧栏日期只影响数据总览；其余区域显示截至最近一次采集或同步的数据。</p></div>
 
       <section class="qa-console" id="qaConsole" aria-labelledby="qaTitle">
         <div class="qa-inner">
@@ -760,14 +760,14 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
         <button type="button" class="delta-stat" data-delta-view="signals"><span class="go">查看对话 ↓</span><div class="n" id="deltaSignalNum">0</div><div class="l">新增精选对话</div></button>
       </div>
 
-      <div class="delta-subtabs" id="deltaSubtabs" aria-label="今日新增内容切换">
+      <div class="delta-subtabs" id="deltaSubtabs" aria-label="所选日新增内容切换">
         <button type="button" class="on" data-delta-view="issues">新增 Issue</button>
         <button type="button" data-delta-view="topics">对话主题</button>
         <button type="button" data-delta-view="signals">精选对话</button>
       </div>
 
       <section class="delta-view delta-block" id="deltaViewIssues" data-delta-section="issues">
-        <div class="delta-title"><h3>01 · 今天新增了什么 Issue？</h3><span class="sub" id="deltaIssueSummary"></span></div>
+        <div class="delta-title"><h3>01 · 所选日新增了什么 Issue？</h3><span class="sub" id="deltaIssueSummary"></span></div>
         <div class="delta-insights">
           <article class="delta-insight"><h4>数据对比与大盘</h4><p id="deltaIssueOverview"></p></article>
           <article class="delta-insight"><h4>类别与占比分析</h4><p id="deltaIssueCategories"></p></article>
@@ -833,13 +833,13 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
   <section class="panel" id="panel-chronicle" hidden>
     <div class="wrap">
       <div class="p-head"><div class="k">01 // CHRONICLE</div><h2>纪事</h2>
-      <p class="desc">官方完成态更新与群聊主题时间线分开展示；两类纪事跨全部已发布日期，今日提前更新时会明确标为“实时 · 未完结”。</p></div>
+      <p class="desc">数据总览按已结束自然日归档；官方纪事与群聊纪事随每次固定采集推进到最新采集时刻，今日内容明确标为“实时 · 未完结”。</p></div>
       <div class="chronicle-tabs" id="chronicleTabs" role="tablist" aria-label="纪事类型切换">
         <button type="button" class="on" role="tab" id="chronicleTabOfficial" aria-controls="chronicleOfficial" aria-selected="true" data-chronicle-view="official">官方纪事</button>
         <button type="button" role="tab" id="chronicleTabGroup" aria-controls="chronicleGroup" aria-selected="false" data-chronicle-view="group">群聊纪事</button>
       </div>
       <section id="chronicleOfficial" role="tabpanel" aria-labelledby="chronicleTabOfficial">
-        <div class="sig-bar"><b>&gt;</b> 官方纪事 <b id="chronicleNum">0</b> 条 · 时间范围 <b id="chronicleRange">--</b></div>
+        <div class="sig-bar"><b>&gt;</b> 官方纪事 <b id="chronicleNum">0</b> 条 · 时间范围 <b id="chronicleRange">--</b><b id="chronicleFreshness"></b></div>
         <div class="chr" id="chronicle"></div>
       </section>
       <section id="chronicleGroup" role="tabpanel" aria-labelledby="chronicleTabGroup" hidden>
@@ -1025,6 +1025,8 @@ if (!Array.isArray(SITE_MANIFEST.dates) || !SITE_MANIFEST.dates.length || !SITE_
 const manifestRevision = (manifest) => JSON.stringify([
   manifest.latest,
   manifest.entries?.[0]?.activatedAt ?? null,
+  manifest.liveChronicle?.date ?? null,
+  manifest.liveChronicle?.activatedAt ?? null,
   manifest.github?.syncId ?? null,
   manifest.github?.generatedAt ?? null,
   manifest.liveGroup?.latestDate ?? null,
@@ -1050,7 +1052,7 @@ if (!liveContent) {
 }
 const guideResponse = await fetch("/data/newcomer-guide.json", { cache: "no-store" });
 const NEWCOMER_GUIDE = guideResponse.ok ? await guideResponse.json() : { version: 2, status: "empty", sections: [] };
-document.title = `DSH 档案馆 · ${SELECTED_DATE}`;
+document.title = "DSH 档案馆";
 
 const DATA_URLS = {
   group: `/api/content/group?date=${encodeURIComponent(SELECTED_DATE)}`,
@@ -1420,7 +1422,7 @@ function validGroup(data) {
 }
 
 function validGroupHistory(data) {
-  return data && data.version === 1 && ["all-active-group-days", "static-latest-snapshot"].includes(data.scope) &&
+  return data && data.version === 1 && ["completed-days-plus-live", "all-active-group-days", "static-latest-snapshot"].includes(data.scope) &&
     data.group === "【官方】DSH内测群" && Array.isArray(data.dates) && data.dates.length > 0 &&
     Number.isInteger(data.stats?.accepted_messages) && Number.isInteger(data.stats?.days) &&
     Array.isArray(data.signals) && Array.isArray(data.chronicles) && Array.isArray(data.members);
@@ -1460,7 +1462,7 @@ function initDatePicker() {
     location.href = next.toString();
   });
   const entry = SITE_MANIFEST.entries?.find((item) => item.date === SELECTED_DATE);
-  $("snapshotMeta").textContent = `${entry?.messages ?? 0} 条消息 · EOF`;
+  $("snapshotMeta").textContent = `总览 ${entry?.messages ?? 0} 条 · 完整日`;
 }
 
 async function initAccount() {
@@ -1830,8 +1832,8 @@ function renderHome() {
   const topTopic = cmp?.topicDeltas?.[0];
   const groupChronicleCount = buildGroupChronicle(history.signals ?? []).length;
   const cards = [
-    { key: "overview", k: "01 // OVERVIEW", title: "数据总览", desc: "今日增量、逐日快照跟踪与星域数据（活跃时段、Issue 主题、高频词）。",
-      stats: cmp ? `今日新增消息 ${fmt(cmp.newMessageCount)} · 信号 ${cmp.newSignalMessageIds?.length ?? 0}${topTopic ? ` · ${topTopic.label} +${topTopic.delta}` : ""}` : "加载中…" },
+    { key: "overview", k: "01 // OVERVIEW", title: "数据总览", desc: "所选完整日的增量、逐日快照跟踪与星域数据（活跃时段、Issue 主题、高频词）。",
+      stats: cmp ? `所选日消息 ${fmt(cmp.newMessageCount)} · 信号 ${cmp.newSignalMessageIds?.length ?? 0}${topTopic ? ` · ${topTopic.label} +${topTopic.delta}` : ""}` : "加载中…" },
     { key: "guide", k: "02 // GUIDE", title: "🔥 新人导引", desc: "《DSH 内测安装指南》等固定入门内容，不随日期切换。", stats: "固定内容 · 随时可读", hot: true },
     { key: "cards", k: "03 // CARDS", title: "成员星卡", desc: "跨全部自然日累计的成员发言与精选表现，不推断真实身份。", stats: `${fmt(history.members?.length)} 位成员` },
     { key: "signals", k: "04 // SIGNALS", title: "信号收录", desc: "可行动的问题、建议、实测与明确完成态事件，按类别筛选。", stats: `${fmt(history.signals?.length)} 条精选信号` },
@@ -1870,6 +1872,8 @@ function renderOfficialChronicle() {
   const historyStart = String(historyStats.date_start || state.history?.dates?.[0] || "").slice(0, 10);
   const historyEnd = String(historyStats.date_end || state.history?.dates?.at(-1) || "").slice(0, 10);
   $("chronicleRange").textContent = historyStart && historyEnd ? `${historyStart} → ${historyEnd}` : "--";
+  const liveThrough = state.history?.live?.dataThrough ? compactTime(state.history.live.dataThrough) : "";
+  $("chronicleFreshness").textContent = liveThrough ? ` · 最新采集至 ${liveThrough}（实时，未完结）` : "";
   if (!items.length) {
     box.innerHTML = emptyBlock("全部已归档日期中没有满足“完成态原话 + 事件词”的纪事候选。");
     return;
@@ -1893,9 +1897,12 @@ function renderGroupChronicle() {
   const earliest = String(items.at(-1)?.timestamp || "").slice(0, 10);
   const latest = String(items[0]?.timestamp || "").slice(0, 10);
   const today = beijingDate(new Date());
-  const hasPartialToday = latest === today;
+  const hasPartialToday = state.history?.live?.date === today;
   $("groupChronicleRange").textContent = earliest && latest ? `${earliest} → ${latest}` : "--";
-  $("groupChronicleFreshness").textContent = hasPartialToday ? " · 今日实时，未完结" : "";
+  const liveThrough = state.history?.live?.dataThrough ? compactTime(state.history.live.dataThrough) : "";
+  $("groupChronicleFreshness").textContent = hasPartialToday
+    ? ` · 最新采集至 ${liveThrough || today}（实时，未完结）`
+    : "";
   if (!items.length) {
     box.innerHTML = emptyBlock("全部已归档日期中还没有可用于生成群聊主题时间线的精选发言。");
     return;
@@ -2179,10 +2186,11 @@ function renderSignals() {
   const dayCount = state.history?.stats?.days ?? state.history?.dates?.length ?? 0;
   const rangeStart = String(state.history?.stats?.date_start || state.history?.dates?.[0] || "").slice(0, 10);
   const rangeEnd = String(state.history?.stats?.date_end || state.history?.dates?.at(-1) || "").slice(0, 10);
+  const liveThrough = state.history?.live?.dataThrough ? compactTime(state.history.live.dataThrough) : "";
   $("sigNum").textContent = items.length;
   $("sigTotal").textContent = acceptedCount;
   if ($("signalDesc")) $("signalDesc").innerHTML = items.length
-    ? `汇总 <b>${dayCount}</b> 个自然日（${escapeHtml(rangeStart)} → ${escapeHtml(rangeEnd)}）：从 <b>${sourceCount}</b> 条本机原始记录中确认 <b>${acceptedCount}</b> 条有效发言，收录 <b>${items.length}</b> 条高质量信号。顶部日期不会改变本页。`
+    ? `汇总 <b>${dayCount}</b> 个日期（${escapeHtml(rangeStart)} → ${escapeHtml(rangeEnd)}）：从 <b>${sourceCount}</b> 条本机原始记录中确认 <b>${acceptedCount}</b> 条有效发言，收录 <b>${items.length}</b> 条高质量信号。${liveThrough ? `最新采集至 <b>${escapeHtml(liveThrough)}</b>；` : ""}侧栏总览日期不会改变本页。`
     : "全部已归档日期中没有通过来源、归属、相关性与信息量门槛的信号。";
 
   const filters = $("sigFilters");
@@ -2244,8 +2252,9 @@ function renderCards() {
   const dayCount = state.history?.stats?.days ?? state.history?.dates?.length ?? 0;
   const rangeStart = String(state.history?.stats?.date_start || state.history?.dates?.[0] || "").slice(0, 10);
   const rangeEnd = String(state.history?.stats?.date_end || state.history?.dates?.at(-1) || "").slice(0, 10);
+  const liveThrough = state.history?.live?.dataThrough ? compactTime(state.history.live.dataThrough) : "";
   if ($("personaDesc")) $("personaDesc").innerHTML = original.length
-    ? `汇总 <b>${dayCount}</b> 个自然日（${escapeHtml(rangeStart)} → ${escapeHtml(rangeEnd)}），基于微信发送者 ID 与联系人表确认 <b>${original.length}</b> 位实际发言成员。顶部日期不会改变本页。`
+    ? `汇总 <b>${dayCount}</b> 个日期（${escapeHtml(rangeStart)} → ${escapeHtml(rangeEnd)}），基于微信发送者 ID 与联系人表确认 <b>${original.length}</b> 位实际发言成员。${liveThrough ? `最新采集至 <b>${escapeHtml(liveThrough)}</b>；` : ""}侧栏总览日期不会改变本页。`
     : "旧成员画像已全部撤下；没有新证据的成员不会生成星卡。";
   if (!original.length) {
     $("cardCount").textContent = "收录 0 张";
@@ -2588,9 +2597,7 @@ function renderData() {
   renderWords("groupCloud", state.group?.group_topic_words ?? []);
   if ($("dataNote")) {
     const stats = state.group?.stats;
-    const selectedDayLabel = EMBEDDED_SNAPSHOT?.publication?.status === "partial"
-      ? "所选今日实时记录（未完结）"
-      : "所选完整自然日";
+    const selectedDayLabel = "所选完整自然日";
     $("dataNote").textContent = state.group?.status === "ready"
       ? `${selectedDayLabel}本地源记录 ${stats.source_messages} 条；确认发言 ${stats.accepted_messages} 条；排除系统通知或无效记录 ${stats.excluded_messages} 条。GitHub Issue/Repo 使用独立实时版本，不跟随群聊日期。`
       : "旧群聊数据已撤下；没有本机证据时页面保持空白。";
@@ -2598,7 +2605,7 @@ function renderData() {
 }
 
 function renderFooter() {
-  const messageCount = state.group?.stats?.accepted_messages ?? 0;
+  const messageCount = state.history?.stats?.accepted_messages ?? 0;
   const issueCount = state.issues?.issues?.length ?? 0;
   const repoCount = state.repos?.repositories?.length ?? 0;
   if ($("footerClosing")) $("footerClosing").innerHTML = messageCount

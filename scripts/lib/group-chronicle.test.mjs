@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 import { buildGroupChronicle } from "../../site/group-chronicle.mjs";
 
 const siteHtml = readFileSync(new URL("../../site/index.html", import.meta.url), "utf8");
+const syncScript = readFileSync(new URL("../sync_group_data.mjs", import.meta.url), "utf8");
+const refreshScript = readFileSync(new URL("../refresh_group_day.sh", import.meta.url), "utf8");
+const liveMigration = readFileSync(new URL("../../content-migrations/0003_live_group.sql", import.meta.url), "utf8");
 
 describe("group chronicle timeline", () => {
   it("splits different topics inside one Beijing day period and sorts newest first", () => {
@@ -144,12 +147,28 @@ describe("group chronicle timeline", () => {
 });
 
 describe("group chronicle live refresh", () => {
+  it("keeps completed overview days separate from the latest Chronicle collection", () => {
+    expect(liveMigration).toContain("content_active_live_group");
+    expect(syncScript).toContain('const liveDate = argValue("--live-date")');
+    expect(syncScript).toContain("INSERT INTO content_active_live_group");
+    expect(syncScript).toContain("DELETE FROM content_active_group_days WHERE date >=");
+    expect(refreshScript).toContain('--date "$TARGET_DATE" --live-date "$TODAY"');
+    expect(refreshScript).toContain('：${TARGET_DATE}；纪事实时流');
+    expect(siteHtml).toContain('"completed-days-plus-live"');
+    expect(siteHtml).toContain('id="chronicleFreshness"');
+    expect(siteHtml).toContain("最新采集至");
+    expect(siteHtml).toContain("数据总览日期");
+    expect(siteHtml).toContain("侧栏日期只影响数据总览");
+    expect(siteHtml).toContain("const messageCount = state.history?.stats?.accepted_messages ?? 0;");
+  });
+
   it("reloads a selected day when its active revision changes without coupling content polls to QA polls", () => {
     expect(siteHtml).toContain("const activeGroupDayRevision = (manifest, date) =>");
     expect(siteHtml).toContain("const selectedDayChanged = activeGroupDayRevision(nextManifest, SELECTED_DATE)");
     expect(siteHtml).toContain("if (datesChanged || selectedDayChanged)");
     expect(siteHtml).toContain("if (!liveContent || document.hidden || state.busy || checkingContentRevision) return;");
     expect(siteHtml).not.toContain("state.busy || qaState.busy || checkingContentRevision");
+    expect(siteHtml).toContain("manifest.liveChronicle?.activatedAt ?? null");
     expect(siteHtml).toContain("setInterval(checkForContentUpdate, 60 * 1000);");
   });
 });

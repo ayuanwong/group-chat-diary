@@ -15,6 +15,7 @@
     "dev:qa": "npm run build:pages && node scripts/qa-local-server.mjs",
     "sync:members": "node scripts/sync_members_allowlist.mjs",
     "sync:qa-corpus": "node scripts/sync_qa_corpus.mjs",
+    "audit:production-gate": "node scripts/audit_production_gate.mjs",
     "migrate:access": "wrangler d1 migrations apply ACCESS_DB --remote",
     "migrate:qa": "wrangler d1 migrations apply QA_DB --remote",
     "migrate:content": "wrangler d1 migrations apply CONTENT_DB --remote",

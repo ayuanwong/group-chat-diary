@@ -230,6 +230,10 @@ function makeContentDb(): D1Database {
         type_breakdown: { 文本: 4 },
       },
       signals: [{ message_id: "signal-2", sender: "成员甲", timestamp: "2026-08-06T12:00:00+08:00", text: "第二条信号" }],
+      timeline: [{
+        id: "timeline-2", timestamp: "2026-08-06T12:30:00+08:00", endTimestamp: "2026-08-06T13:00:00+08:00",
+        title: "第二天事件", summary: "第二天发生的事件。", relatedMessageCount: 4, speakerCount: 2,
+      }],
       chronicles: [
         {
           message_id: "event-2", sender: "崔小天", timestamp: "2026-08-06T13:00:00+08:00",
@@ -263,6 +267,10 @@ function makeContentDb(): D1Database {
         type_breakdown: { 文本: 2, 图片: 1 },
       },
       signals: [{ message_id: "signal-1", sender: "成员乙", timestamp: "2026-08-05T11:00:00+08:00", text: "第一条信号" }],
+      timeline: [{
+        id: "timeline-1", timestamp: "2026-08-05T10:30:00+08:00", endTimestamp: "2026-08-05T11:00:00+08:00",
+        title: "第一天事件", summary: "第一天发生的事件。", relatedMessageCount: 3, speakerCount: 2,
+      }],
       chronicles: [{
         message_id: "event-1", sender: "Baymax", timestamp: "2026-08-05T09:00:00+08:00",
         title: "内测版本更新", quote: "GitHub repo 已推送新版本。", detail: "snapshot-20260805T090000Z-test",
@@ -296,6 +304,10 @@ function makeContentDb(): D1Database {
         type_breakdown: { 文本: 2 },
       },
       signals: [{ message_id: "signal-3", sender: "成员甲", timestamp: "2026-08-07T08:30:00+08:00", text: "实时采集的新信号" }],
+      timeline: [{
+        id: "timeline-3", timestamp: "2026-08-07T08:40:00+08:00", endTimestamp: "2026-08-07T09:00:00+08:00",
+        title: "实时事件", summary: "实时发生的事件。", relatedMessageCount: 2, speakerCount: 2,
+      }],
       chronicles: [{
         message_id: "message-live", sender: "Baymax", timestamp: "2026-08-07T09:00:00+08:00",
         title: "内测版本更新", quote: "Changelog 2026-08-07", detail: "DeepSeek Harness 完成实时版本更新。",
@@ -543,6 +555,7 @@ describe("archive gate", () => {
         signal_count: 3,
         participant_count: 2,
         chronicle_count: 4,
+        timeline_event_count: 3,
       },
       signals: [{ message_id: "signal-3" }, { message_id: "signal-2" }, { message_id: "signal-1" }],
       chronicles: [
@@ -554,6 +567,11 @@ describe("archive gate", () => {
         { message_id: "message-same-day" },
         { message_id: "event-2" },
         { message_id: "event-1" },
+      ],
+      timeline: [
+        { id: "timeline-3", title: "实时事件" },
+        { id: "timeline-2", title: "第二天事件" },
+        { id: "timeline-1", title: "第一天事件" },
       ],
       members: [
         { name: "成员甲", count: 6, signals: 2, activeDays: 3 },

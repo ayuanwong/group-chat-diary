@@ -85,10 +85,6 @@ function newestFirst(left: JsonRecord, right: JsonRecord): number {
   return String(right.timestamp || right.time || "").localeCompare(String(left.timestamp || left.time || ""));
 }
 
-function oldestFirst(left: JsonRecord, right: JsonRecord): number {
-  return String(left.timestamp || left.time || "").localeCompare(String(right.timestamp || right.time || ""));
-}
-
 export function isOfficialChronicle(value: unknown): value is JsonRecord {
   return isOfficialChronicleItem(value);
 }
@@ -406,7 +402,7 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
 
   const signalList = [...signals.values()].sort(newestFirst);
   const chronicleList = [...chronicles.values()].sort(newestFirst);
-  const timelineList = [...timeline.values()].sort(oldestFirst);
+  const timelineList = [...timeline.values()].sort(newestFirst);
   const memberList = [...members.values()].map((member) => {
     const traits = [...member.traits.entries()]
       .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0], "zh"))

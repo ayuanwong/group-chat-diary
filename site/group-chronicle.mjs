@@ -64,6 +64,6 @@ export function buildGroupChronicle(events) {
     if (event && !deduped.has(event.id)) deduped.set(event.id, event);
   });
   return [...deduped.values()].sort((left, right) =>
-    left.timestamp.localeCompare(right.timestamp) || left.title.localeCompare(right.title, "zh"),
+    right.timestamp.localeCompare(left.timestamp) || left.title.localeCompare(right.title, "zh"),
   );
 }

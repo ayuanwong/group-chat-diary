@@ -64,13 +64,13 @@ function qaDb() {
 }
 
 describe("content group event timeline", () => {
-  it("returns stored complete-message events in occurrence order", async () => {
+  it("returns stored complete-message events newest first", async () => {
     const history = await contentGroupHistory({ CONTENT_DB: contentDb(), QA_DB: qaDb() });
     expect(history).toMatchObject({
       stats: { timeline_event_count: 2 },
       timeline: [
-        { id: "event-earlier", title: "先发生的发布" },
         { id: "event-later", title: "后续决定" },
+        { id: "event-earlier", title: "先发生的发布" },
       ],
     });
   });

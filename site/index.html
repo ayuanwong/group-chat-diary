@@ -1902,8 +1902,8 @@ function renderGroupChronicle() {
   const box = $("groupChronicle");
   box.innerHTML = "";
   $("groupChronicleNum").textContent = items.length.toLocaleString("zh-CN");
-  const earliest = String(items[0]?.timestamp || "").slice(0, 10);
-  const latest = String(items.at(-1)?.timestamp || "").slice(0, 10);
+  const earliest = String(items.at(-1)?.timestamp || "").slice(0, 10);
+  const latest = String(items[0]?.timestamp || "").slice(0, 10);
   const today = beijingDate(new Date());
   const hasPartialToday = state.history?.live?.date === today;
   $("groupChronicleRange").textContent = earliest && latest ? `${earliest} → ${latest}` : "--";

@@ -100,12 +100,12 @@ describe("group event timeline", () => {
     expect(result[0].summary).not.toContain("一组发言在核对");
   });
 
-  it("presents events in occurrence order", () => {
+  it("presents events newest first", () => {
     const result = buildGroupChronicle([
       { id: "later", timestamp: "2026-08-12T23:47:00+08:00", title: "后续决定", summary: "形成后续决定。" },
       { id: "earlier", timestamp: "2026-08-12T23:23:00+08:00", title: "先发生的发布", summary: "发布先发生。" },
     ]);
-    expect(result.map((item) => item.id)).toEqual(["earlier", "later"]);
+    expect(result.map((item) => item.id)).toEqual(["later", "earlier"]);
   });
 });
 

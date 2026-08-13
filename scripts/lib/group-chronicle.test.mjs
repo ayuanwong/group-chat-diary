@@ -45,16 +45,16 @@ describe("group event timeline", () => {
     const result = buildGroupEventTimeline(rows, { date: "2026-08-12", officialChronicles });
 
     expect(result.map((item) => item.title)).toEqual([
-      "DeepSeek V4 Pro 发布并引发群内讨论",
-      "DSH 最后一个内测版本与公测排期确定",
+      expect.stringMatching(/V4.*实测|实测.*V4/u),
+      "DSH最后一个内测版本与公测排期确定",
     ]);
     expect(result[0]).toMatchObject({
       relatedMessageCount: 4,
       speakerCount: 4,
-      topics: ["DeepSeek V4 Pro", "API 调用", "能力与评测", "实际体验"],
     });
-    expect(result[0].summary).toContain("出现已发布或可调用的明确信息");
-    expect(result[0].summary).toContain("随后讨论集中到");
+    expect(result[0].topics).toContain("DeepSeek V4 Pro");
+    expect(result[0].summary).toContain("DeepSeek V4 Pro");
+    expect(result[0].summary).toContain("连续交流");
     expect(result[1].summary).toContain("最后一个内测版本");
     expect(result[1].summary).toContain("2026-08-13");
     expect(result[1].milestones).toEqual([
@@ -97,7 +97,41 @@ describe("group event timeline", () => {
     });
 
     expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({ title: "DSH 版本发布", eventType: "release" });
+    expect(result[0]).toMatchObject({ title: "DSH版本更新完成", eventType: "release" });
+  });
+
+  it("discovers unrelated daily topics without a fixed entity list", () => {
+    const rows = [
+      row("plugin-1", "2026-08-09T10:00:00+08:00", "成员甲", "插件签名校验在 Windows 上失败，先核对证书链。"),
+      row("plugin-2", "2026-08-09T10:03:00+08:00", "成员乙", "插件签名的证书链我也复现了，Windows 安装会报错。"),
+      row("plugin-3", "2026-08-09T10:06:00+08:00", "成员丙", "插件签名失败和证书链缓存有关，清理后恢复。"),
+      row("plugin-4", "2026-08-09T10:08:00+08:00", "成员丁", "Windows 插件签名问题已记录，继续补测试。"),
+      row("news-1", "2026-08-09T15:00:00+08:00", "成员戊", "芯片出口新规刚宣布，新闻里提到新的算力限制。"),
+      row("news-2", "2026-08-09T15:03:00+08:00", "成员己", "芯片出口新规会影响算力采购，这条政策值得看。"),
+      row("news-3", "2026-08-09T15:06:00+08:00", "成员庚", "新闻报道的芯片出口新规细则还要等正式文件。"),
+      row("news-4", "2026-08-09T15:08:00+08:00", "成员辛", "芯片出口新规不只影响训练卡，推理卡也在讨论。"),
+    ];
+
+    const result = buildGroupEventTimeline(rows, { date: "2026-08-09", maximum: 6 });
+
+    expect(result).toHaveLength(2);
+    expect(result.map((item) => item.title).join("\n")).toMatch(/插件签名|证书链|签名与证书|签名与插件兼容/u);
+    expect(result.map((item) => item.title).join("\n")).toMatch(/芯片出口新规|算力限制/u);
+    expect(result.every((item) => item.relatedMessageCount >= 4 && item.speakerCount >= 4)).toBe(true);
+    expect(result.some((item) => item.eventType === "release")).toBe(false);
+  });
+
+  it("does not turn release questions or hearsay into a release event", () => {
+    const rows = [
+      row("rumor-1", "2026-08-09T20:00:00+08:00", "成员甲", "Nova 模型是不是发布了？"),
+      row("rumor-2", "2026-08-09T20:02:00+08:00", "成员乙", "听说 Nova 模型可能出了，我还没看到公告。"),
+      row("rumor-3", "2026-08-09T20:04:00+08:00", "成员丙", "Nova 模型真的发了吗？"),
+      row("rumor-4", "2026-08-09T20:06:00+08:00", "成员丁", "Nova 模型貌似只是传闻。"),
+    ];
+    const result = buildGroupEventTimeline(rows, { date: "2026-08-09" });
+    expect(result).toHaveLength(1);
+    expect(result[0].eventType).not.toBe("release");
+    expect(result[0].title).not.toContain("发布后");
   });
 
   it("keeps the stored event narrative instead of rebuilding abstract topics from selected signals", () => {
@@ -142,6 +176,7 @@ describe("group chronicle live refresh", () => {
     expect(syncScript).toContain("INSERT INTO content_active_live_group");
     expect(syncScript).toContain("DELETE FROM content_active_group_days WHERE date >=");
     expect(syncScript).toContain("buildGroupEventTimeline(rows");
+    expect(syncScript).toContain("group-day-v6-open-topic-timeline");
     expect(refreshScript).toContain('--date "$TARGET_DATE" --live-date "$TODAY"');
     expect(refreshScript).toContain('：${TARGET_DATE}；纪事实时流');
     expect(siteHtml).toContain('"completed-days-plus-live"');

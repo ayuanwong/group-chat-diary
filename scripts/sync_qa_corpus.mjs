@@ -5,12 +5,13 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { tokenize } from "../qa/retrieval.mjs";
+import { isOfficialInformationRecord } from "../shared/official-chronicle.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const corpusRoot = path.join(root, "corpus");
 const target = process.env.QA_D1_TARGET === "local" ? "--local" : "--remote";
 const database = "QA_DB";
-const corpusFormatVersion = "2";
+const corpusFormatVersion = "3-official-information";
 const blockedContent = [
   /file:\/\/\//iu,
   /\/Users\/[^/]+\//u,
@@ -132,8 +133,7 @@ groupRows.forEach((row, position) => {
   const documentKey = `${syncId}:g:${row.id}`;
   const sourceDate = String(row.timestamp ?? "").slice(0, 10);
   const content = String(row.text ?? "");
-  const authoredText = content.split("↳ 回复", 1)[0];
-  const isChangelog = /deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}|✨\s*新增|🐛\s*修复|🎨\s*优化/iu.test(authoredText) ? 1 : 0;
+  const isChangelog = isOfficialInformationRecord(row) ? 1 : 0;
   const tokens = tokenize([row.sender, row.messageType, content, row.timestamp].filter(Boolean).join(" ")).slice(0, 2_000).join(" ");
   documents.push(`(${[
     sqlString(documentKey), sqlString(syncId), sqlString("group"), sqlString(sourceDate), String(position),

@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { buildGroupEventTimeline, sanitizeEvidence } from "../../shared/group-event-timeline.mjs";
 import { buildGroupChronicle } from "../../site/group-chronicle.mjs";
 
 const siteHtml = readFileSync(new URL("../../site/index.html", import.meta.url), "utf8");
@@ -7,142 +8,97 @@ const syncScript = readFileSync(new URL("../sync_group_data.mjs", import.meta.ur
 const refreshScript = readFileSync(new URL("../refresh_group_day.sh", import.meta.url), "utf8");
 const liveMigration = readFileSync(new URL("../../content-migrations/0003_live_group.sql", import.meta.url), "utf8");
 
-describe("group chronicle timeline", () => {
-  it("splits different topics inside one Beijing day period and sorts newest first", () => {
-    const result = buildGroupChronicle([
-      {
-        message_id: "morning-1",
-        timestamp: "2026-08-10T09:15:00+08:00",
-        sender: "成员甲",
-        text: "上午讨论插件安装。",
-        topics: ["插件与生态"],
-        score: 8,
-      },
-      {
-        message_id: "evening-1",
-        timestamp: "2026-08-10T18:12:00+08:00",
-        sender: "成员乙",
-        text: "晚间先核对 Issue 状态。↳ 回复 某成员：不应进入代表性原话。",
-        topics: ["Issue 与协作", "产品体验"],
-        score: 9,
-      },
-      {
-        message_id: "evening-2",
-        timestamp: "2026-08-10T22:10:00+08:00",
-        sender: "成员丙",
-        text: "补充 Web UI 的复现步骤。",
-        topics: ["Web UI", "Issue 与协作"],
-        score: 10,
-      },
-      {
-        message_id: "prior-day",
-        timestamp: "2026-08-09T23:55:00+08:00",
-        sender: "成员丁",
-        text: "前一天的模型调用讨论。",
-        topics: ["模型与调用"],
-        score: 7,
-      },
-    ]);
+function row(id, timestamp, sender, text) {
+  return { id, timestamp, sender, side: sender === "少女阿原" ? "right" : "left", text, messageType: "文本" };
+}
 
-    expect(result).toHaveLength(4);
-    expect(result.map((item) => item.timeRange)).toEqual([
-      "2026-08-10 · 晚间 22:10",
-      "2026-08-10 · 晚间 18:12",
-      "2026-08-10 · 上午 09:15",
-      "2026-08-09 · 晚间 23:55",
+describe("group event timeline", () => {
+  it("reconstructs release, discussion and official next steps in chronological order", () => {
+    const rows = [
+      row("v4-1", "2026-08-12T23:42:00+08:00", "成员甲", "DeepSeek V4 Pro 已开放 API，可以开始调用。"),
+      row("v4-2", "2026-08-12T23:43:00+08:00", "成员乙", "开始试用 V4 Pro，重点看代码能力和速度。"),
+      row("v4-3", "2026-08-12T23:44:00+08:00", "成员丙", "DeepSeek V4 Pro 实测效果很好，继续跑评测。"),
+      row("v4-4", "2026-08-12T23:45:00+08:00", "成员丁", "V4 Pro 的 API 延迟和 token 消耗也需要继续观察。"),
+      row("official", "2026-08-12T23:47:42+08:00", "Baymax", "今夜晚些时候会推送dsh的最后一个内测版本，0813计划发布dsh公测版，届时插件可以公开。"),
+      row("response-1", "2026-08-12T23:47:50+08:00", "成员戊", "收到，开始改 DSH 插件兼容。"),
+      row("response-2", "2026-08-12T23:48:10+08:00", "成员己", "DSH 仓库会补 #dsh topic。"),
+    ];
+    const officialChronicles = [{
+      message_id: "official",
+      event_key: "official:2026-08-12:plan:test",
+      event_type: "plan",
+      status: "planned",
+      title: "官方计划与安排",
+      timestamp: "2026-08-12T23:47:42+08:00",
+      sender: "Baymax",
+      quote: "今夜晚些时候会推送dsh的最后一个内测版本，0813计划发布dsh公测版，届时插件可以公开。",
+      detail: "官方明确计划｜今夜晚些时候会推送dsh的最后一个内测版本，0813计划发布dsh公测版。",
+    }];
+
+    const result = buildGroupEventTimeline(rows, { date: "2026-08-12", officialChronicles });
+
+    expect(result.map((item) => item.title)).toEqual([
+      "DeepSeek V4 Pro 发布并引发群内讨论",
+      "DSH 最后一个内测版本与公测排期确定",
     ]);
     expect(result[0]).toMatchObject({
-      title: "Web UI复现步骤与定位证据被补全",
-      signalCount: 1,
-      speakerCount: 1,
-      topics: ["Web UI · 复现与定位"],
+      relatedMessageCount: 4,
+      speakerCount: 4,
+      topics: ["DeepSeek V4 Pro", "API 调用", "能力与评测", "实际体验"],
     });
-    expect(result[0].explanation).not.toBe(result[0].title);
-    expect(result[1].topics).toEqual(["Issue / PR · 协作与流转"]);
-    expect(result[1].quotes[0]?.quote).toBe("晚间先核对 Issue 状态。");
+    expect(result[0].summary).toContain("出现已发布或可调用的明确信息");
+    expect(result[0].summary).toContain("随后讨论集中到");
+    expect(result[1].summary).toContain("最后一个内测版本");
+    expect(result[1].summary).toContain("2026-08-13");
+    expect(result[1].milestones).toEqual([
+      expect.objectContaining({ label: "最后一个内测版本确定" }),
+      expect.objectContaining({ time: "2026-08-13", label: "公测发布节点明确" }),
+    ]);
   });
 
-  it("uses distinct speakers first and skips unusable records", () => {
-    const result = buildGroupChronicle([
-      { message_id: "a1", time: "2026-08-10 13:00", sender: "成员甲", text: "高分发言", cat: "产品体验", score: 10 },
-      { message_id: "a2", time: "2026-08-10 13:20", sender: "成员甲", text: "同成员第二条", cat: "产品体验", score: 9 },
-      { message_id: "b1", time: "2026-08-10 14:00", sender: "成员乙", text: "另一位成员", cat: "产品体验", score: 8 },
-      { message_id: "invalid-time", time: "not-a-time", sender: "成员丙", text: "无效时间", cat: "产品体验", score: 20 },
-      { message_id: "empty", time: "2026-08-10 14:30", sender: "成员丁", text: "", cat: "产品体验", score: 20 },
-    ], { maxQuotes: 2 });
+  it("does not manufacture an event from a single mention and redacts sensitive evidence", () => {
+    const result = buildGroupEventTimeline([
+      row("single", "2026-08-10T12:00:00+08:00", "成员甲", "听说过 DeepSeek V4 Pro。"),
+    ], { date: "2026-08-10" });
+    expect(result).toEqual([]);
+    expect(sanitizeEvidence("密钥是 abcdefghijk，路径 /Users/test/private/data，Bearer secret-token-value"))
+      .toBe("密钥是 [凭据已脱敏]，路径 [本机路径]，Bearer [凭据已脱敏]");
+    expect(sanitizeEvidence('<?xml version="1.0"?><msg antispamticket="secret" />'))
+      .toBe("[微信消息元数据已脱敏]");
+  });
 
+  it("keeps the stored event narrative instead of rebuilding abstract topics from selected signals", () => {
+    const events = [{
+      id: "event-1",
+      timestamp: "2026-08-12T23:42:00+08:00",
+      endTimestamp: "2026-08-12T23:48:00+08:00",
+      title: "DeepSeek V4 Pro 发布并引发群内讨论",
+      summary: "先发布，随后围绕能力和 API 展开讨论。",
+      relatedMessageCount: 20,
+      speakerCount: 12,
+      topics: ["DeepSeek V4 Pro", "API 调用"],
+      milestones: [{ time: "23:42", label: "发布信息出现", detail: "API 已可调用" }],
+      quotes: [{ sender: "成员甲", time: "23:42", quote: "V4 Pro 已可调用。" }],
+    }];
+    const result = buildGroupChronicle(events);
     expect(result).toHaveLength(1);
-    expect(result[0].quotes.map((quote) => quote.sender)).toEqual(["成员甲", "成员乙"]);
     expect(result[0]).toMatchObject({
-      title: "产品体验需求与使用反馈被提出",
-      signalCount: 3,
-      speakerCount: 2,
-      topics: ["产品体验 · 需求与反馈"],
+      title: events[0].title,
+      summary: events[0].summary,
+      relatedMessageCount: 20,
+      speakerCount: 12,
     });
+    expect(result[0]).not.toHaveProperty("explanation");
+    expect(result[0].summary).not.toContain("证据结构");
+    expect(result[0].summary).not.toContain("一组发言在核对");
   });
 
-  it("uses fine-grained categories while keeping title and explanation semantically distinct", () => {
+  it("presents events in occurrence order", () => {
     const result = buildGroupChronicle([
-      {
-        message_id: "tui-failure",
-        timestamp: "2026-08-10T00:10:00+08:00",
-        sender: "成员甲",
-        text: "TUI 越用越卡，内存最后会爆掉。",
-        topics: ["CLI/TUI", "性能稳定性"],
-        score: 10,
-      },
-      {
-        message_id: "tui-evidence",
-        timestamp: "2026-08-10T00:22:00+08:00",
-        sender: "成员乙",
-        text: "实测 TUI 进程内存占用正常，没有出现写放大。",
-        topics: ["CLI/TUI", "性能稳定性"],
-        score: 9,
-      },
-      {
-        message_id: "plugin-release",
-        timestamp: "2026-08-10T01:40:00+08:00",
-        sender: "成员丙",
-        text: "插件 dsh-demo 已经发布，欢迎安装试用。",
-        topics: ["插件与生态"],
-        score: 8,
-      },
+      { id: "later", timestamp: "2026-08-12T23:47:00+08:00", title: "后续决定", summary: "形成后续决定。" },
+      { id: "earlier", timestamp: "2026-08-12T23:23:00+08:00", title: "先发生的发布", summary: "发布先发生。" },
     ]);
-
-    expect(result).toHaveLength(2);
-    expect(new Set(result.map((item) => item.title)).size).toBe(2);
-    expect(result.every((item) => item.topics.every((topic) => topic.includes(" · ")))).toBe(true);
-    expect(result.every((item) => item.explanation !== item.title)).toBe(true);
-    expect(result.every((item) => !item.explanation.startsWith("讨论主要围绕"))).toBe(true);
-    expect(result.find((item) => item.title.includes("相反实测"))?.signalCount).toBe(2);
-  });
-
-  it("explains parallel concerns with evidence instead of repeating category labels", () => {
-    const result = buildGroupChronicle([
-      {
-        message_id: "plugin-compatibility",
-        timestamp: "2026-08-10T18:10:00+08:00",
-        sender: "成员甲",
-        text: "插件在不同环境和版本下需要适配。",
-        topics: ["插件与生态"],
-        score: 10,
-      },
-      {
-        message_id: "plugin-access",
-        timestamp: "2026-08-10T18:30:00+08:00",
-        sender: "成员乙",
-        text: "建议明确插件访问资格和权限边界。",
-        topics: ["插件与生态"],
-        score: 9,
-      },
-    ]);
-
-    expect(result).toHaveLength(1);
-    expect(result[0].title).toBe("插件适配边界被核对，接入权限被说明");
-    expect(result[0].title).not.toContain("出现两条主线");
-    expect(result[0].title).not.toContain("同时聚焦");
-    expect(result[0].explanation).toContain("一组发言在核对");
-    expect(result[0].explanation).toContain("证据结构：2 条精选发言");
+    expect(result.map((item) => item.id)).toEqual(["earlier", "later"]);
   });
 });
 
@@ -152,6 +108,7 @@ describe("group chronicle live refresh", () => {
     expect(syncScript).toContain('const liveDate = argValue("--live-date")');
     expect(syncScript).toContain("INSERT INTO content_active_live_group");
     expect(syncScript).toContain("DELETE FROM content_active_group_days WHERE date >=");
+    expect(syncScript).toContain("buildGroupEventTimeline(rows");
     expect(refreshScript).toContain('--date "$TARGET_DATE" --live-date "$TODAY"');
     expect(refreshScript).toContain('：${TARGET_DATE}；纪事实时流');
     expect(siteHtml).toContain('"completed-days-plus-live"');

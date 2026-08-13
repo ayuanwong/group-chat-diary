@@ -3,6 +3,8 @@ import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "n
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { tokenize } from "../qa/retrieval.mjs";
+import { buildGroupEventTimeline } from "../shared/group-event-timeline.mjs";
+import { isOfficialInformationRecord } from "../shared/official-chronicle.mjs";
 import { mergeOfficialChronicles, withoutRepeatedChronicles } from "./lib/chronicle-policy.mjs";
 import {
   assertPrivateContent,
@@ -92,6 +94,11 @@ function buildDigest(date, rows) {
       throw new Error(`${date} 群聊摘要与完整语料计数不一致。`);
     }
     digest.chronicles = mergeOfficialChronicles(digest.chronicles, rows);
+    digest.timeline = buildGroupEventTimeline(rows, {
+      date,
+      officialChronicles: digest.chronicles,
+    });
+    if (!Array.isArray(digest.timeline)) throw new Error(`${date} 群聊事件时间线生成失败。`);
     digest.source = {
       group: GROUP,
       identity_rules: digest.source.identity_rules,
@@ -160,7 +167,7 @@ function comparison(date, current, previous) {
 
 function stageGroupDay(date, rows, text, digest, previousDigest, activationTarget = "archive") {
   const generatedAt = new Date().toISOString();
-  const ingestId = createHash("sha256").update("group-day-v2").update(text).digest("hex").slice(0, 24);
+  const ingestId = createHash("sha256").update("group-day-v4-event-timeline").update(text).digest("hex").slice(0, 24);
   const publicationStatus = activationTarget === "live" ? "live" : "complete";
   const start = `${date}T00:00:00+08:00`;
   const endDate = new Date(`${date}T00:00:00Z`);
@@ -261,7 +268,7 @@ function stageGroupDay(date, rows, text, digest, previousDigest, activationTarge
 
 function syncQaGroup(files) {
   const allRows = [];
-  const hash = createHash("sha256").update("qa-group-v2");
+  const hash = createHash("sha256").update("qa-group-v3-official-information");
   const globalIds = new Set();
   for (const [date, file] of files) {
     const { rows, text } = readRecords(file, date);
@@ -287,8 +294,7 @@ function syncQaGroup(files) {
     const documentKey = `${syncId}:g:${row.id}`;
     const content = String(row.text ?? "");
     assertPrivateContent(content, `群消息 ${row.id}`);
-    const authored = content.split("↳ 回复", 1)[0];
-    const isChangelog = /deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}|✨\s*新增|🐛\s*修复|🎨\s*优化/iu.test(authored) ? 1 : 0;
+    const isChangelog = isOfficialInformationRecord(row) ? 1 : 0;
     const tokens = tokenize([row.sender, row.messageType, content, row.timestamp].filter(Boolean).join(" ")).slice(0, 2_000).join(" ");
     documents.push(`(${[
       sqlString(documentKey), sqlString(syncId), sqlString("group"), sqlString(row.timestamp.slice(0, 10)),

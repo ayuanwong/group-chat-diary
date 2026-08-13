@@ -284,7 +284,7 @@ export function defaultQaPlan(question: string): QaPlan {
   // Treat a number as an Issue id only when the user explicitly prefixes it.
   const issueNumber = text.match(/(?:\bissue\s*#?\s*|#)(\d{1,6})\b/iu)?.[1] ?? null;
   const speakerQuestion = /(?:谁|哪位|哪个人|成员|群友).*(?:说话|发言|活跃|有趣|有意思|贡献|观点|风格|专业|厉害|懂)|(?:最活跃|发言最多|输出最多|谁最)/u.test(text);
-  const releaseQuestion = /版本|更新|发版|changelog|release/u.test(text);
+  const releaseQuestion = /官方(?:纪事|信息|公告)|纪事|公告|通知|发布|上线|版本|更新|发版|changelog|release/u.test(text);
   const overviewQuestion = /大家.*(?:关心|讨论|聊)|群里.*(?:关心|讨论|聊|热点)|最关心|关心.*(?:问题|什么)|主要.*(?:问题|主题)|最近.*(?:话题|趋势)|总结|综述|整体|全局|这几天/u.test(text);
   const issueQuestion = Boolean(issueNumber) || /\bissue\b|bug|缺陷|工单|需求单|开放中|关闭了|优先级/u.test(text);
   const repositoryQuestion = /\brepos?(?:itory|itories)?\b|代码仓库|仓库列表|有哪些仓库|新建仓库|新增仓库|最近推送|归档仓库/iu.test(text);
@@ -310,7 +310,7 @@ export function defaultQaPlan(question: string): QaPlan {
 
   const compact = compactQuestion(question);
   const queries = intent === "release"
-    ? ["DeepSeek Harness Changelog", "版本 新增 修复 优化"]
+    ? ["DeepSeek Harness 官方 发布 公告", "版本 更新 仓库 工具 计划 安排"]
     : intent === "repository"
       ? [compact, "代码仓库 创建 推送 归档"]
     : intent === "overview"
@@ -371,8 +371,8 @@ function authoredMessageText(value: unknown): string {
 function focusedText(value: unknown, questionText: string, limit = 420): string {
   const text = String(value ?? "").replace(/\s+/gu, " ").trim();
   let index = -1;
-  if (/版本|更新|发版|changelog/u.test(questionText)) {
-    index = text.search(/deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}/iu);
+  if (/官方(?:纪事|信息|公告)|纪事|公告|通知|发布|上线|版本|更新|发版|changelog/u.test(questionText)) {
+    index = text.search(/deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}|官方(?:公告|通知)|正式(?:发布|上线)|github\.com\/dsh-external/iu);
   }
   if (index < 0) {
     const candidates = tokenizeForQa(questionText).filter((token) => token.length >= 2).sort((a, b) => b.length - a.length);
@@ -589,12 +589,12 @@ function scoreRow(row: QaDocumentRow, question: string, queryTokens: string[], s
   } else {
     if (plan.intent === "release") {
       const authoredText = normalized(authoredMessageText(row.content));
-      const explicitChangelog = /deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}|✨\s*新增|🐛\s*修复|🎨\s*优化/iu;
-      const isDirectChangelog = row.is_changelog === 1 || explicitChangelog.test(authoredText);
-      if (isDirectChangelog) score += 72;
-      else if (explicitChangelog.test(text)) score += 20;
-      if (!isDirectChangelog && /好像|记得|听说|据说|可能|似乎/u.test(text)) score -= 10;
-      if (!isDirectChangelog && /[?？]|更新了么|更新了吗/u.test(text)) score -= 7;
+      const explicitOfficialInformation = /deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}|✨\s*新增|🐛\s*修复|🎨\s*优化|官方(?:公告|通知)|正式(?:发布|上线)/iu;
+      const isDirectOfficialInformation = row.is_changelog === 1 || explicitOfficialInformation.test(authoredText);
+      if (isDirectOfficialInformation) score += 72;
+      else if (explicitOfficialInformation.test(text)) score += 20;
+      if (!isDirectOfficialInformation && /好像|记得|听说|据说|可能|似乎/u.test(text)) score -= 10;
+      if (!isDirectOfficialInformation && /[?？]|更新了么|更新了吗/u.test(text)) score -= 7;
       if (/最近|最新|今日|今天/u.test(questionText) && row.source_date) score += 6;
     }
     score += (row.position / Math.max(sourceCount - 1, 1)) * 0.45;
@@ -1015,7 +1015,7 @@ function plannerPrompt(): string {
 - lookup：可由少量具体消息或 Issue 回答的事实问题；
 - issue：Issue 编号、状态、Bug、需求或优先级；
 - repository：仓库列表、仓库用途、创建、推送或归档状态；
-- release：明确完成的版本更新或 Changelog；
+- release：官方正式发布的信息，包括完成态更新、明确计划、仓库或工具发布、规则与服务公告；
 - overview：需要跨多天、多成员或多条记录归纳整体主题；
 - speaker：比较成员活跃度、观点、表达风格或“谁更有意思”等问题。
 
@@ -1145,7 +1145,7 @@ function intentGuidance(plan: QaPlan): string {
     return "这是全局归纳题。资料已覆盖指定范围内的全部记录，不是代表性抽样；合并重复主题，按重要性给出 3 至 5 点，并保留有分歧的成员观点，不得把单条消息当作整体共识。";
   }
   if (plan.intent === "release") {
-    return "这是版本更新题。只把产品方直接发布的完成态 Changelog 当成已完成更新；成员回复、猜测和转述不能算版本事实。";
+    return "这是官方信息题。只采用产品方正式发布、来源可归属的信息；必须区分已完成、明确计划和公告，成员提问、猜测与转述不能算官方事实。";
   }
   if (plan.intent === "issue") return "这是 Issue 题。优先核对编号、状态、类别和优先级，群聊讨论不能替代 Issue 当前记录。";
   if (plan.intent === "repository") return "这是 Repo 题。先用仓库说明解释它做什么，再用默认分支最新提交说明最近发生了什么；阅读建议必须来自资料中的类别与活跃度，不得凭名称补写能力。first seen 不能冒充新建时间。";

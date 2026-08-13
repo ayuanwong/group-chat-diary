@@ -24,7 +24,7 @@ describe("private QA corpus retrieval", () => {
     expect(result.context).toContain("[I1]");
   });
 
-  it("ranks explicit changelogs above member questions for version-update queries", async () => {
+  it("ranks formal official information above member questions", async () => {
     const corpus = await loadCorpus(root);
     const question = "最近有什么内测版本更新";
     const plan = defaultQaPlan(question);
@@ -36,6 +36,11 @@ describe("private QA corpus retrieval", () => {
     expect(result.sources[0]?.excerpt).toMatch(/Changelog|新增|修复|优化/u);
     expect(result.sources.every((source) => source.kind === "group")).toBe(true);
     expect(result.context.match(/^\d{4}-\d{2}-\d{2}T/gmu)).toHaveLength(result.sources.length);
+  });
+
+  it("routes official chronicle questions through the official-information path", () => {
+    expect(defaultQaPlan("最近官方纪事发布了什么？")).toMatchObject({ intent: "release", source: "group" });
+    expect(defaultQaPlan("最近有哪些官方计划和公告？")).toMatchObject({ intent: "release", source: "group" });
   });
 
   it("routes speaker comparisons to balanced member profiles instead of literal phrase hits", async () => {

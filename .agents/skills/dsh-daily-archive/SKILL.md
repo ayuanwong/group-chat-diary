@@ -44,7 +44,7 @@ description: Use when running the DSH 私有数据档案 daily pipeline for dsh-
 - 任何校验失败即停止并保留现场，不清除历史版本、不把 `.local/` 加入 Git。
 - 群聊归属规则（写入数据契约，采集侧强制）：右侧必须是"少女阿原"，左侧必须有其他成员署名；方向不可证实则不归属。
 - 页面不得包含完整聊天记录、微信数据库、解密密钥、GitHub 凭据、本机绝对路径（`npm run check` 的 blockedContent 会拦截）。
-- 纪事只收录产品方完成态更新或来源明确的公告；成员疑问、转述与猜测不算版本更新（`scripts/lib/chronicle-policy.mjs` 是权威实现）。
+- 纪事收录产品方正式发布且来源可归属的信息，包括完成态更新、明确计划、仓库与工具发布、规则与服务公告；必须保留事件状态差异，成员疑问、转述与猜测不算官方事实（`shared/official-chronicle.mjs` 是权威判定，`scripts/lib/chronicle-policy.mjs` 负责展示合并）。
 
 ## 契约速查
 

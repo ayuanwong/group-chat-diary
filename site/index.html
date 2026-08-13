@@ -83,6 +83,12 @@ main{position:relative;z-index:2;min-height:80vh;margin-left:220px}
 .gc-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;color:var(--ink);font-size:15px;font-weight:700;line-height:1.5}
 .gc-title .count{color:var(--faint);font-size:9.5px;font-weight:400;letter-spacing:.08em}
 .gc-explanation{color:var(--mut);font-size:12px;line-height:1.8;margin-top:7px;max-width:780px}
+.gc-milestones{display:grid;gap:7px;margin:12px 0 0;padding:0;list-style:none;max-width:780px}
+.gc-milestones li{display:grid;grid-template-columns:74px minmax(0,1fr);gap:10px;align-items:start}
+.gc-milestones time{color:var(--gr);font-size:10px;font-variant-numeric:tabular-nums;letter-spacing:.05em;padding-top:2px}
+.gc-milestones div{border-left:1px solid var(--dim);padding-left:10px;line-height:1.55}
+.gc-milestones b{display:block;color:var(--ink);font-size:11px}
+.gc-milestones span{display:block;color:var(--faint);font-size:10.5px;margin-top:2px}
 .gc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
 .gc-tags span{border:1px solid var(--dim);color:var(--faint);font-size:9px;padding:1px 6px}
 .gc-quotes{display:grid;gap:7px;margin-top:12px}
@@ -90,7 +96,7 @@ main{position:relative;z-index:2;min-height:80vh;margin-left:220px}
 .gc-quote .meta{display:flex;align-items:baseline;gap:8px;color:var(--faint);font-size:9.5px;letter-spacing:.05em}
 .gc-quote .meta b{color:var(--gr);font-size:10.5px}
 .gc-quote blockquote{color:var(--ink);font-size:11.5px;line-height:1.75;margin-top:4px;overflow-wrap:anywhere}
-@media(max-width:700px){.chronicle-tabs{overflow-x:auto;scrollbar-width:none}.chronicle-tabs::-webkit-scrollbar{display:none}.chronicle-tabs button{white-space:nowrap;flex:1}.gc-event{grid-template-columns:1fr;gap:6px;padding-bottom:24px}.gc-when{text-align:left;padding-left:27px}.gc-live{margin-left:0}.gc-card{margin-left:4px}}
+@media(max-width:700px){.chronicle-tabs{overflow-x:auto;scrollbar-width:none}.chronicle-tabs::-webkit-scrollbar{display:none}.chronicle-tabs button{white-space:nowrap;flex:1}.gc-event{grid-template-columns:1fr;gap:6px;padding-bottom:24px}.gc-when{text-align:left;padding-left:27px}.gc-live{margin-left:0}.gc-card{margin-left:4px}.gc-milestones li{grid-template-columns:62px minmax(0,1fr)}}
 .sig-bar{border:1px solid var(--dim);border-left:3px solid var(--gr);padding:10px 14px;margin-bottom:18px;font-size:12.5px;color:var(--mut);background:var(--panel)}
 .sig-bar b{color:var(--gr)}
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
@@ -833,7 +839,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
   <section class="panel" id="panel-chronicle" hidden>
     <div class="wrap">
       <div class="p-head"><div class="k">01 // CHRONICLE</div><h2>纪事</h2>
-      <p class="desc">数据总览按已结束自然日归档；官方纪事与群聊纪事随每次固定采集推进到最新采集时刻，今日内容明确标为“实时 · 未完结”。</p></div>
+      <p class="desc">数据总览按已结束自然日归档；官方纪事收录正式发布的信息并区分已发布、计划与公告，群聊纪事从完整群聊还原事件、讨论与后续节点；两者随固定采集推进，今日内容明确标为“实时 · 未完结”。</p></div>
       <div class="chronicle-tabs" id="chronicleTabs" role="tablist" aria-label="纪事类型切换">
         <button type="button" class="on" role="tab" id="chronicleTabOfficial" aria-controls="chronicleOfficial" aria-selected="true" data-chronicle-view="official">官方纪事</button>
         <button type="button" role="tab" id="chronicleTabGroup" aria-controls="chronicleGroup" aria-selected="false" data-chronicle-view="group">群聊纪事</button>
@@ -843,7 +849,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
         <div class="chr" id="chronicle"></div>
       </section>
       <section id="chronicleGroup" role="tabpanel" aria-labelledby="chronicleTabGroup" hidden>
-        <div class="sig-bar"><b>&gt;</b> 群聊主要议题 <b id="groupChronicleNum">0</b> 个 · 时间范围 <b id="groupChronicleRange">--</b><b id="groupChronicleFreshness"></b></div>
+        <div class="sig-bar"><b>&gt;</b> 群聊事件时间线 <b id="groupChronicleNum">0</b> 件 · 时间范围 <b id="groupChronicleRange">--</b><b id="groupChronicleFreshness"></b></div>
         <div class="group-chronicle" id="groupChronicle"></div>
       </section>
     </div>
@@ -1399,6 +1405,7 @@ async function fetchJson(url) {
       },
       signals: EMBEDDED_GROUP_HISTORY.signals ?? [],
       chronicles: EMBEDDED_GROUP_HISTORY.chronicles ?? [],
+      timeline: EMBEDDED_GROUP_HISTORY.timeline ?? [],
       members: EMBEDDED_GROUP_HISTORY.members ?? [],
     };
   }
@@ -1830,15 +1837,15 @@ function renderHome() {
   const history = state.history ?? {};
   const fmt = (n) => Number(n || 0).toLocaleString("zh-CN");
   const topTopic = cmp?.topicDeltas?.[0];
-  const groupChronicleCount = buildGroupChronicle(history.signals ?? []).length;
+  const groupChronicleCount = buildGroupChronicle(history.timeline ?? []).length;
   const cards = [
     { key: "overview", k: "01 // OVERVIEW", title: "数据总览", desc: "所选完整日的增量、逐日快照跟踪与星域数据（活跃时段、Issue 主题、高频词）。",
       stats: cmp ? `所选日消息 ${fmt(cmp.newMessageCount)} · 信号 ${cmp.newSignalMessageIds?.length ?? 0}${topTopic ? ` · ${topTopic.label} +${topTopic.delta}` : ""}` : "加载中…" },
     { key: "guide", k: "02 // GUIDE", title: "🔥 新人导引", desc: "《DSH 内测安装指南》等固定入门内容，不随日期切换。", stats: "固定内容 · 随时可读", hot: true },
     { key: "cards", k: "03 // CARDS", title: "成员星卡", desc: "跨全部自然日累计的成员发言与精选表现，不推断真实身份。", stats: `${fmt(history.members?.length)} 位成员` },
     { key: "signals", k: "04 // SIGNALS", title: "信号收录", desc: "可行动的问题、建议、实测与明确完成态事件，按类别筛选。", stats: `${fmt(history.signals?.length)} 条精选信号` },
-    { key: "chronicle", k: "05 // CHRONICLE", title: "事件纪事", desc: "官方完成态更新，以及按时间段整理的群聊主题与代表发言。",
-      stats: `${fmt(history.chronicles?.length)} 条官方纪事 · ${fmt(groupChronicleCount)} 个群聊议题` },
+    { key: "chronicle", k: "05 // CHRONICLE", title: "事件纪事", desc: "官方正式发布的信息（区分完成、计划与公告），以及从完整群聊还原的事件时间线。",
+      stats: `${fmt(history.chronicles?.length)} 条官方纪事 · ${fmt(groupChronicleCount)} 件群聊事件` },
     { key: "agentnotes", k: "06 // AGENT NOTES", title: "Agent Notes", desc: "dsh 仓库决策记录全量清单，含摘要详情、TODO 与变更追踪。",
       stats: SITE_MANIFEST?.agentNotes ? `${fmt(SITE_MANIFEST.agentNotes.total)} 篇 · ${fmt(SITE_MANIFEST.agentNotes.proposed)} 计划中` : "" },
   ];
@@ -1875,14 +1882,15 @@ function renderOfficialChronicle() {
   const liveThrough = state.history?.live?.dataThrough ? compactTime(state.history.live.dataThrough) : "";
   $("chronicleFreshness").textContent = liveThrough ? ` · 最新采集至 ${liveThrough}（实时，未完结）` : "";
   if (!items.length) {
-    box.innerHTML = emptyBlock("全部已归档日期中没有满足“完成态原话 + 事件词”的纪事候选。");
+    box.innerHTML = emptyBlock("全部已归档日期中没有来源可归属的正式官方信息。");
     return;
   }
   for (const event of items) {
     const element = document.createElement("div");
     element.className = "ev";
+    const statusLabel = event.status === "planned" ? "计划" : event.status === "announced" ? "公告" : "已发布";
     element.innerHTML = `<div class="w">${escapeHtml(event.time || "--")}</div>` +
-      `<div class="t">${escapeHtml(event.title)}</div>` +
+      `<div class="t">${escapeHtml(event.title)} · ${statusLabel}</div>` +
       `<div class="detail">${escapeHtml(event.detail || event.quote)}</div>` +
       `<div class="d"><b>${escapeHtml(event.sender)}</b>：<span class="q">「${escapeHtml(event.quote)}」</span></div>`;
     box.appendChild(element);
@@ -1890,12 +1898,12 @@ function renderOfficialChronicle() {
 }
 
 function renderGroupChronicle() {
-  const items = buildGroupChronicle(state.history?.signals ?? []);
+  const items = buildGroupChronicle(state.history?.timeline ?? []);
   const box = $("groupChronicle");
   box.innerHTML = "";
   $("groupChronicleNum").textContent = items.length.toLocaleString("zh-CN");
-  const earliest = String(items.at(-1)?.timestamp || "").slice(0, 10);
-  const latest = String(items[0]?.timestamp || "").slice(0, 10);
+  const earliest = String(items[0]?.timestamp || "").slice(0, 10);
+  const latest = String(items.at(-1)?.timestamp || "").slice(0, 10);
   const today = beijingDate(new Date());
   const hasPartialToday = state.history?.live?.date === today;
   $("groupChronicleRange").textContent = earliest && latest ? `${earliest} → ${latest}` : "--";
@@ -1904,13 +1912,15 @@ function renderGroupChronicle() {
     ? ` · 最新采集至 ${liveThrough || today}（实时，未完结）`
     : "";
   if (!items.length) {
-    box.innerHTML = emptyBlock("全部已归档日期中还没有可用于生成群聊主题时间线的精选发言。");
+    box.innerHTML = emptyBlock("当前 active 数据还没有从完整群聊生成事件时间线；下一次群聊同步会补齐。");
     return;
   }
   for (const event of items) {
     const element = document.createElement("article");
     element.className = "gc-event";
     const tags = event.topics.map((topic) => `<span>${escapeHtml(topic)}</span>`).join("");
+    const milestones = event.milestones.map((milestone) => `
+      <li><time>${escapeHtml(milestone.time)}</time><div><b>${escapeHtml(milestone.label)}</b>${milestone.detail ? `<span>${escapeHtml(milestone.detail)}</span>` : ""}</div></li>`).join("");
     const quotes = event.quotes.map((quote) => `
       <div class="gc-quote">
         <div class="meta"><b>${escapeHtml(quote.sender)}</b><span>${escapeHtml(quote.time)}</span></div>
@@ -1919,8 +1929,9 @@ function renderGroupChronicle() {
     const eventDate = String(event.timestamp || "").slice(0, 10);
     const liveLabel = eventDate === today ? `<span class="gc-live">今日实时 · 未完结</span>` : "";
     element.innerHTML = `<div class="gc-when">${escapeHtml(event.timeRange)}${liveLabel}</div>` +
-      `<div class="gc-card"><div class="gc-title">${escapeHtml(event.title)}<span class="count">${event.signalCount} 条精选发言</span></div>` +
-      `<p class="gc-explanation">${escapeHtml(event.explanation)}</p>` +
+      `<div class="gc-card"><div class="gc-title">${escapeHtml(event.title)}<span class="count">${event.relatedMessageCount} 条相关消息 · ${event.speakerCount} 位成员</span></div>` +
+      `<p class="gc-explanation">${escapeHtml(event.summary)}</p>` +
+      `${milestones ? `<ol class="gc-milestones" aria-label="事件节点">${milestones}</ol>` : ""}` +
       `<div class="gc-tags" aria-label="相关主题">${tags}</div>` +
       `<div class="gc-quotes" aria-label="关键代表性发言">${quotes}</div></div>`;
     box.appendChild(element);

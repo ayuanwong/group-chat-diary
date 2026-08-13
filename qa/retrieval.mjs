@@ -1,5 +1,6 @@
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { isOfficialInformationRecord } from "../shared/official-chronicle.mjs";
 
 let cache = null;
 
@@ -40,7 +41,7 @@ export function defaultQaPlan(question) {
   // Treat a number as an Issue id only when the user explicitly prefixes it.
   const issueNumber = text.match(/(?:\bissue\s*#?\s*|#)(\d{1,6})\b/iu)?.[1] ?? null;
   const speakerQuestion = /(?:谁|哪位|哪个人|成员|群友).*(?:说话|发言|活跃|有趣|有意思|贡献|观点|风格|专业|厉害|懂)|(?:最活跃|发言最多|输出最多|谁最)/u.test(text);
-  const releaseQuestion = /版本|更新|发版|changelog|release/u.test(text);
+  const releaseQuestion = /官方(?:纪事|信息|公告)|纪事|公告|通知|发布|上线|版本|更新|发版|changelog|release/u.test(text);
   const overviewQuestion = /大家.*(?:关心|讨论|聊)|群里.*(?:关心|讨论|聊|热点)|最关心|关心.*(?:问题|什么)|主要.*(?:问题|主题)|最近.*(?:话题|趋势)|总结|综述|整体|全局|这几天/u.test(text);
   const issueQuestion = Boolean(issueNumber) || /\bissue\b|bug|缺陷|工单|需求单|开放中|关闭了|优先级/u.test(text);
 
@@ -63,7 +64,7 @@ export function defaultQaPlan(question) {
 
   const compact = compactQuestion(question);
   const queries = intent === "release"
-    ? ["DeepSeek Harness Changelog", "版本 新增 修复 优化"]
+    ? ["DeepSeek Harness 官方 发布 公告", "版本 更新 仓库 工具 计划 安排"]
     : intent === "overview"
       ? [compact, "问题 建议 实测 发现 协作 更新"]
       : [compact || question];
@@ -135,8 +136,8 @@ function authoredMessageText(value) {
 function focusedText(value, questionText, limit = 420) {
   const text = String(value ?? "").replace(/\s+/gu, " ").trim();
   let index = -1;
-  if (/版本|更新|发版|changelog/u.test(questionText)) {
-    index = text.search(/deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}/iu);
+  if (/官方(?:纪事|信息|公告)|纪事|公告|通知|发布|上线|版本|更新|发版|changelog/u.test(questionText)) {
+    index = text.search(/deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}|官方(?:公告|通知)|正式(?:发布|上线)|github\.com\/dsh-external/iu);
   }
   if (index < 0) {
     const candidates = tokenize(questionText).filter((token) => token.length >= 2).sort((a, b) => b.length - a.length);
@@ -257,12 +258,12 @@ function scoreDocument(document, originalQuestion, queryText, queryTokens, corpu
   } else {
     if (plan.intent === "release") {
       const authoredText = normalized(authoredMessageText(document.row.text));
-      const explicitChangelog = /deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}|✨\s*新增|🐛\s*修复|🎨\s*优化/iu;
-      const isDirectChangelog = explicitChangelog.test(authoredText);
-      if (isDirectChangelog) score += 76;
-      else if (explicitChangelog.test(document.normalizedText)) score += 18;
-      if (!isDirectChangelog && /好像|记得|听说|据说|可能|似乎/u.test(document.normalizedText)) score -= 12;
-      if (!isDirectChangelog && /[?？]|更新了么|更新了吗/u.test(document.normalizedText)) score -= 8;
+      const explicitOfficialInformation = /deepseek harness changelog|changelog\s+\d{4}-\d{2}-\d{2}|✨\s*新增|🐛\s*修复|🎨\s*优化|官方(?:公告|通知)|正式(?:发布|上线)/iu;
+      const isDirectOfficialInformation = isOfficialInformationRecord(document.row) || explicitOfficialInformation.test(authoredText);
+      if (isDirectOfficialInformation) score += 76;
+      else if (explicitOfficialInformation.test(document.normalizedText)) score += 18;
+      if (!isDirectOfficialInformation && /好像|记得|听说|据说|可能|似乎/u.test(document.normalizedText)) score -= 12;
+      if (!isDirectOfficialInformation && /[?？]|更新了么|更新了吗/u.test(document.normalizedText)) score -= 8;
       if (/最近|最新|今日|今天/u.test(originalQuestion)) {
         score += (document.sourceIndex / Math.max(corpus.groupDocuments.length - 1, 1)) * 6;
         if (document.row.timestamp.startsWith(`${corpus.stats.latestGroupDate}T`)) score += 12;
@@ -522,9 +523,8 @@ function retrieveOverviewCorpus(corpus, question, plan) {
 
 function retrieveLookupCorpus(corpus, question, plan, groupLimit, issueLimit) {
   const questionText = normalized(question);
-  const explicitChangelog = /deepseek harness changelog|^changelog\s+\d{4}-\d{2}-\d{2}|✨\s*新增|🐛\s*修复|🎨\s*优化/iu;
   const groupDocuments = plan.intent === "release"
-    ? corpus.groupDocuments.filter((document) => explicitChangelog.test(normalized(authoredMessageText(document.row.text))))
+    ? corpus.groupDocuments.filter((document) => isOfficialInformationRecord(document.row))
     : corpus.groupDocuments;
   const groupCandidates = plan.source === "issue" ? [] : fusedRank(groupDocuments, question, corpus, plan, groupLimit);
   const issueDocuments = /bug|缺陷|故障/iu.test(question)

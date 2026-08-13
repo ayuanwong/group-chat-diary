@@ -1,3 +1,10 @@
+import {
+  isOfficialChronicleItem,
+  officialChronicleFromRecord,
+  officialChronicleItems,
+  officialChronicleKey,
+} from "../shared/official-chronicle.mjs";
+
 export interface ContentRuntimeEnv {
   CONTENT_DB: D1Database;
   QA_DB: D1Database;
@@ -47,10 +54,6 @@ interface QaMetaRow {
 
 type JsonRecord = Record<string, unknown>;
 
-const OFFICIAL_PRODUCT_SENDERS = new Set(["Baymax", "崔小天"]);
-const OFFICIAL_DSH_SUBJECT = /deepseek\s+harness|dsh(?:2026|-external)|snapshot-\d{8}|changelog\s+\d{4}-\d{2}-\d{2}|内测版代码|github\s+repo.{0,40}(?:新版本|推送)|issues\s+repo/iu;
-const STRUCTURED_CHANGELOG = /✨\s*新增[\s\S]*?🐛\s*修复/iu;
-
 function parsePayload(value: string | undefined): unknown | null {
   if (!value) return null;
   try {
@@ -75,61 +78,27 @@ function itemIdentity(item: JsonRecord, date: string, index: number): string {
 }
 
 function chronicleIdentity(item: JsonRecord, date: string, index: number): string {
-  const evidence = [item.title, item.quote, item.detail].map((part) => String(part ?? "")).join("\n");
-  const releaseDate = evidence.match(/changelog\s+(\d{4}-\d{2}-\d{2})/iu)?.[1];
-  if (releaseDate) return `changelog:${releaseDate}`;
-  const snapshot = evidence.match(/snapshot-\d{8}T\d{6}Z-[a-z0-9]+/iu)?.[0]?.toLowerCase();
-  return snapshot ? `snapshot:${snapshot}` : itemIdentity(item, date, index);
+  return officialChronicleKey(item) ?? itemIdentity(item, date, index);
 }
 
 function newestFirst(left: JsonRecord, right: JsonRecord): number {
   return String(right.timestamp || right.time || "").localeCompare(String(left.timestamp || left.time || ""));
 }
 
+function oldestFirst(left: JsonRecord, right: JsonRecord): number {
+  return String(left.timestamp || left.time || "").localeCompare(String(right.timestamp || right.time || ""));
+}
+
 export function isOfficialChronicle(value: unknown): value is JsonRecord {
-  const item = record(value);
-  if (!item || !OFFICIAL_PRODUCT_SENDERS.has(String(item.sender ?? "").trim())) return false;
-  const evidence = [item.title, item.quote, item.detail]
-    .map((part) => String(part ?? ""))
-    .join("\n");
-  return OFFICIAL_DSH_SUBJECT.test(evidence);
+  return isOfficialChronicleItem(value);
 }
 
 function officialChronicles(value: unknown): JsonRecord[] {
-  return Array.isArray(value) ? value.filter(isOfficialChronicle) : [];
+  return officialChronicleItems(value);
 }
 
 function liveChronicle(row: LiveChronicleRow): JsonRecord | null {
-  if (!OFFICIAL_PRODUCT_SENDERS.has(String(row.sender ?? "").trim())) return null;
-  const text = String(row.content ?? "").split("↳ 回复", 1)[0].trim();
-  const explicitDate = text.match(/changelog\s+(\d{4}-\d{2}-\d{2})/iu)?.[1] ?? null;
-  const derivedDate = validArchiveDate(row.source_date) && STRUCTURED_CHANGELOG.test(text) ? row.source_date : null;
-  const releaseDate = explicitDate ?? derivedDate;
-  if (!releaseDate) return null;
-  const groups: Record<string, string[]> = { "新增": [], "修复": [], "调整": [], "优化": [] };
-  let section = "";
-  for (const rawLine of text.split("\n")) {
-    const line = rawLine.replace(/^[-*•\s]+/u, "").trim();
-    if (!line || /^changelog\s+/iu.test(line)) continue;
-    const heading = line.match(/^(?:✨|🐛|⚠️?|🎨)?\s*(新增|修复|调整|优化)\s*[:：]?$/u)?.[1];
-    if (heading) section = heading;
-    else if (section) groups[section].push(line);
-  }
-  const limits: Record<string, number> = { "新增": 2, "修复": 2, "调整": 1, "优化": 1 };
-  const parts = Object.entries(groups).flatMap(([label, lines]) => lines.length
-    ? [`${label}：${lines.slice(0, limits[label]).join("；")}`]
-    : []);
-  return {
-    message_id: String(row.document_key).split(":g:").at(-1) ?? row.document_key,
-    title: "内测版本更新",
-    time: String(row.occurred_at).slice(0, 16).replace("T", " "),
-    timestamp: row.occurred_at,
-    sender: row.sender,
-    quote: `Changelog ${releaseDate}`,
-    detail: parts.length ? `Changelog ${releaseDate}｜${parts.join("；")}。` : `Changelog ${releaseDate}｜官方已发布该版本更新。`,
-    confidence: "candidate",
-    basis: explicitDate ? "官方账号完成态 Changelog 原话" : "官方账号结构化更新原话 + 消息自然日",
-  };
+  return officialChronicleFromRecord(row);
 }
 
 function sanitizedGroupSnapshot(value: unknown): unknown | null {
@@ -309,6 +278,7 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
 
   const signals = new Map<string, JsonRecord>();
   const chronicles = new Map<string, JsonRecord>();
+  const timeline = new Map<string, JsonRecord>();
   const members = new Map<string, {
     name: string;
     count: number;
@@ -336,6 +306,7 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
     const stats = record(group?.stats);
     const daySignals = Array.isArray(group?.signals) ? group.signals : null;
     const rawDayChronicles = Array.isArray(group?.chronicles) ? group.chronicles : null;
+    const dayTimeline = Array.isArray(group?.timeline) ? group.timeline : [];
     const dayMembers = Array.isArray(group?.members) ? group.members : null;
     if (group?.version !== 3 || source?.group !== "【官方】DSH内测群" || !stats
       || !daySignals || !rawDayChronicles || !dayMembers) {
@@ -363,6 +334,11 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
       const item = record(value);
       const key = item ? chronicleIdentity(item, row.date, index) : "";
       if (item && !chronicles.has(key)) chronicles.set(key, item);
+    });
+    dayTimeline.forEach((value, index) => {
+      const item = record(value);
+      const key = String(item?.id ?? `${row.date}:timeline:${index}`);
+      if (item && !timeline.has(key)) timeline.set(key, item);
     });
     dayMembers.forEach((value) => {
       const member = record(value);
@@ -412,7 +388,6 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
     FROM qa_group_documents
     WHERE sync_id = (SELECT value FROM qa_corpus_meta WHERE key = 'active_group_sync_id' LIMIT 1)
       AND source_date >= ?1
-      AND sender IN ('Baymax', '崔小天')
       AND is_changelog = 1
     ORDER BY occurred_at ASC
   `).bind(earliestCompletedDate).all<LiveChronicleRow>();
@@ -431,6 +406,7 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
 
   const signalList = [...signals.values()].sort(newestFirst);
   const chronicleList = [...chronicles.values()].sort(newestFirst);
+  const timelineList = [...timeline.values()].sort(oldestFirst);
   const memberList = [...members.values()].map((member) => {
     const traits = [...member.traits.entries()]
       .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0], "zh"))
@@ -467,12 +443,14 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
       signal_count: signalList.length,
       participant_count: memberList.length,
       chronicle_count: chronicleList.length,
+      timeline_event_count: timelineList.length,
       date_start: dateStart,
       date_end: dateEnd,
       type_breakdown: Object.fromEntries(typeBreakdown),
     },
     signals: signalList,
     chronicles: chronicleList,
+    timeline: timelineList,
     members: memberList,
   };
 }

@@ -33,6 +33,13 @@ describe("group event timeline", () => {
       sender: "Baymax",
       quote: "今夜晚些时候会推送dsh的最后一个内测版本，0813计划发布dsh公测版，届时插件可以公开。",
       detail: "官方明确计划｜今夜晚些时候会推送dsh的最后一个内测版本，0813计划发布dsh公测版。",
+    }, {
+      message_id: "official",
+      title: "官方计划与安排",
+      timestamp: "2026-08-12T23:47:42+08:00",
+      sender: "Baymax",
+      quote: "今夜晚些时候会推送dsh的最后一个内测版本，0813计划发布dsh公测版。",
+      detail: "旧摘要候选，与同一条正式事件重复。",
     }];
 
     const result = buildGroupEventTimeline(rows, { date: "2026-08-12", officialChronicles });

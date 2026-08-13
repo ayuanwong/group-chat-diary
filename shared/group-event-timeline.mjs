@@ -324,8 +324,18 @@ export function buildGroupEventTimeline(rows, { officialChronicles = [], date = 
     }
   }
 
-  const official = events.filter((event) => event.score >= 100);
-  const community = events.filter((event) => event.score < 100)
+  const deduped = new Map();
+  for (const event of events) {
+    const key = `${event.timestamp}:${event.title}`;
+    const previous = deduped.get(key);
+    if (!previous || event.score > previous.score
+      || (event.score === previous.score && event.milestones.length > previous.milestones.length)) {
+      deduped.set(key, event);
+    }
+  }
+  const uniqueEvents = [...deduped.values()];
+  const official = uniqueEvents.filter((event) => event.score >= 100);
+  const community = uniqueEvents.filter((event) => event.score < 100)
     .sort((left, right) => right.score - left.score || eventSort(left, right))
     .slice(0, Math.max(0, maximum - official.length));
   return [...official, ...community].sort(eventSort).map(({ score, ...event }) => event);

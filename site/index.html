@@ -1521,6 +1521,9 @@ async function initAccount() {
     $("accountLoginLink").hidden = false;
     $("accountLogout").hidden = true;
     renderGuestQa();
+    if (new URL(location.href).searchParams.get("chronicle") === "group") {
+      location.href = memberLoginUrl("/?tab=chronicle&chronicle=group");
+    }
   }
 }
 

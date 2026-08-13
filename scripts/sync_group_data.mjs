@@ -167,7 +167,7 @@ function comparison(date, current, previous) {
 
 function stageGroupDay(date, rows, text, digest, previousDigest, activationTarget = "archive") {
   const generatedAt = new Date().toISOString();
-  const ingestId = createHash("sha256").update("group-day-v6-open-topic-timeline").update(text).digest("hex").slice(0, 24);
+  const ingestId = createHash("sha256").update("group-day-v7-readable-event-timeline").update(text).digest("hex").slice(0, 24);
   const publicationStatus = activationTarget === "live" ? "live" : "complete";
   const start = `${date}T00:00:00+08:00`;
   const endDate = new Date(`${date}T00:00:00Z`);

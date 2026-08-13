@@ -29,13 +29,15 @@ const LOW_QUALITY_ANCHORS = new Set(`
   流泪 可爱 得意 羡慕 笑死 黑鱼 蓝鲸 老师 同学 兄弟 姐姐 少女 咱们 一手 意识 翻天
   明明是 分钟 忠心耿耿 话说 踢了 本次 定位 大权 解放 奉献 高楼 写过 盲目 计算 想法
   多次 经过 最有 价值 第三 帮忙 教教 把握 毕竟 仍有 一名 无名 小卒
+  external internal org id mc rip day0
 `.trim().split(/\s+/u));
 
 const BROAD_ANCHORS = new Set(`
-  dsh deepseek deepseek-harness harness agent agents ai 模型 model models llm 代码 code 项目 project
+  dsh deepseek deepseek-harness deepseek harness harness agent agents ai 模型 model models llm 代码 code 项目 project
   问题 用户 user users 支持 发布 release 更新 update 版本 version 效果 时间 工作 开发 github 官方
   pro ds 信息 定义 公司 社区 功能 方案 数据
 `.trim().split(/\s+/u));
+BROAD_ANCHORS.add("deepseek harness");
 
 const ACTION_WORDS = new Set(`
   发布 上线 推出 开放 推送 更新 升级 新增 修复 优化 调整 合并 同步 启用 停用 恢复 迁移
@@ -51,6 +53,17 @@ const DISPLAY_ALIASES = new Map([
   ["llm", "模型"], ["issues", "Issue"], ["issue", "Issue"], ["skills", "Skill"], ["skill", "Skill"],
   ["pro", "DeepSeek V4 Pro"], ["v4 pro", "DeepSeek V4 Pro"], ["v4pro", "DeepSeek V4 Pro"],
   ["deepseek v4 pro", "DeepSeek V4 Pro"],
+  ["flash", "DeepSeek V4 Flash"], ["v4f", "DeepSeek V4 Flash"], ["dgx", "DGX"],
+  ["cc", "Claude Code"], ["pi", "Pi"], ["rust", "Rust"], ["rag", "RAG"], ["wsl", "WSL"],
+  ["conda", "Conda"], ["windows", "Windows"], ["web", "Web"], ["webui", "WebUI"],
+  ["tdd", "TDD"], ["bm25", "BM25"], ["agi", "AGI"], ["grok4.6", "Grok 4.6"],
+  ["deepseek v4 flash", "DeepSeek V4 Flash"], ["claude code", "Claude Code"],
+  ["dsv4flash", "DeepSeek V4 Flash"], ["web_search", "Web Search"], ["web search", "Web Search"],
+  ["full access", "Full Access 模式"], ["full access 模式", "Full Access 模式"],
+  ["grok 4.6", "Grok 4.6"], ["production ready", "Production Ready 标准"],
+  ["production ready 标准", "Production Ready 标准"], ["win7", "Windows 7"],
+  ["agentloop", "AgentLoop"], ["multica runtime", "Multica Runtime"],
+  ["pro ga", "DeepSeek V4 Pro GA"], ["dsh github", "DSH GitHub 仓库"],
 ]);
 
 const RELEASE = /发布|发版|上线|推出|开放|推送|更新版本|新版本|release(?:d)?|正式版|production|现已|可(?:调用|使用)|接口.{0,12}(?:开放|可用)|api.{0,12}(?:开放|可用)/iu;
@@ -62,7 +75,7 @@ const DEVELOPMENT = /开发|代码|实现|插件|plugin|仓库|repo|fork|git|npm
 const NEWS = /新闻|报道|媒体|热搜|政策|时事|消息称|宣布|裁员|收购|融资|监管/iu;
 const SHARING = /分享|推荐|教程|资料|论文|开源|仓库|链接|项目|工具/iu;
 const DEBATE = /争议|反对|同意|不同观点|怎么看|是否|应该|不该|值不值|为什么|能不能|可以吗|[?？]/iu;
-const CLOSURE = /内测|最后|结束|收官|解散|告别|感谢|荣幸|参与|回顾|纪念|合影|保密期/iu;
+const CLOSURE = /(?:最后|最终|收官).{0,18}(?:内测|版本|一天|一晚)|(?:内测|版本).{0,18}(?:最后|最终|收官|结束)|解散|告别|最后一天|保密期.{0,8}结束/iu;
 const RELAY = /#接龙|接龙/iu;
 const QUESTION_OR_UNCERTAIN = /[?？]|为什么|怎么|如何|能否|是否|是不是|有没有|听说|据说|貌似|猜测|可能|也许|好像|感觉/iu;
 const RELEASE_HEARSAY = /听说|据说|貌似|猜测|可能|也许|好像|感觉|传闻|真(?:的)?(?:来了|发了|出了)|是不是|了吗|没有|别更新/iu;
@@ -71,17 +84,39 @@ const PUBLIC_RELEASE = /公测|公开|对外|正式.{0,16}(?:发布|上线|开�
 const DSH_SUBJECT = /deepseek\s+harness|(?:^|[^a-z0-9])dsh(?:2026|-external)?(?:$|[^a-z0-9])/iu;
 
 const FOCUS_RULES = [
-  ["速度与延迟", /速度|延迟|token\/s|tokens?\s*per|快|慢/iu],
-  ["额度与价格", /额度|价格|涨价|计费|费用|成本|token\s*(?:额度|消耗)/iu],
-  ["API 与调用", /api|responses?\s*api|接口|调用|curl|endpoint/iu],
-  ["版本与指纹", /版本|fingerprint|tag|snapshot|build|081\d/iu],
-  ["安装与环境", /安装|环境|依赖|conda|venv|python|npm|pnpm|uv/iu],
+  ["速度延迟", /速度|延迟|token\/s|tokens?\s*per|快|慢/iu],
+  ["额度价格", /额度|价格|涨价|计费|费用|成本|token\s*(?:额度|消耗)/iu],
+  ["API 调用", /api|responses?\s*api|接口|调用|curl|endpoint/iu],
+  ["版本指纹", /版本|fingerprint|tag|snapshot|build|081\d/iu],
+  ["安装环境", /安装|环境|依赖|conda|venv|python|npm|pnpm|uv/iu],
   ["Windows 兼容", /windows|win\d*|wsl|powershell|pwsh/iu],
   ["插件兼容", /插件|plugin|skill|mcp|适配|兼容/iu],
-  ["仓库与公开", /仓库|repo|github|fork|开源|公开/iu],
-  ["能力与评测", /能力|评测|benchmark|测试|实测|效果|coding|推理/iu],
-  ["保密与访问", /保密|泄密|泄露|访问|邀请|权限|水印/iu],
+  ["仓库公开", /仓库|repo|github|fork|开源|公开/iu],
+  ["能力评测", /能力|评测|benchmark|测试|实测|效果|coding|推理/iu],
+  ["保密访问", /保密|泄密|泄露|访问|邀请|权限|水印/iu],
 ];
+
+const NOUN_FOCUS_RULES = [
+  ["上下文记忆", /上下文|context|memory|记忆|session/iu],
+  ["沙箱权限", /沙箱|sandbox|landlock|权限|permission/iu],
+  ["前端交互", /前端|web\s*ui|webui|界面|交互|侧边栏|sidebar|tui/iu],
+  ["搜索检索", /搜索|检索|search|rag|bm25|grep/iu],
+  ["Agent 编排", /agent|subagent|workflow|编排|goal/iu],
+  ["模型能力", /模型|推理|coding|benchmark|评测|能力/iu],
+  ["开源生态", /开源|生态|社区|插件|plugin|skill|mcp/iu],
+  ["算力硬件", /显卡|gpu|h200|h100|h20|a800|dgx|显存|集群/iu],
+  ["内容呈现", /标题|段落|内容|展示|摘要|框架|表达/iu],
+];
+
+const LOW_INFORMATION_TITLE = /成为当时段主议题|引发不同观点|引发集中讨论$|成为一轮集中议题$/u;
+const SEMANTIC_SUBJECT = /部署|仓库|插件|内测|公测|泄密|泄露|保密|算力|显卡|模型|评测|搜索|检索|记忆|游戏|交互|前端|后端|浏览器|编译|环境|权限|沙箱|生态|开源|协议|接龙|组织|合影|价格|涨价|额度|速度|延迟|论文|人脉|招聘|高考|教育|政策|新闻|硬件|服务器|上下文|接口|版本|安装|配置|签名|证书|芯片|出口|新规|政府|工作|公司|内容|标题|展示|体验|事故|工具|数据|社区|屏幕|酒馆|红包/iu;
+const CONCRETE_EVENT_TITLE = /合影与纪念|联系与人脉留存|泄露引发|Windows 7 兼容|游戏化界面|标题与内容呈现|仓库迁移与组织安排|证书链与 Windows 安装/u;
+const EVENT_CONTEXT = /发布|上线|开放|实测|测试|评测|报错|失败|兼容|计划|安排|迁移|安装|部署|开发|实现|调用|接口|插件|仓库|新闻|政策|分享|价格|额度|速度|延迟|权限|泄露|接龙|合影/iu;
+const GENERIC_SUBJECTS = new Set(`
+  api token 速度 延迟 价格 额度 权限 保密 安装 配置 工具 展示 前端 后端 编译 仓库 搜索 记忆
+  issue skill plugin web ui tui windows
+`.trim().split(/\s+/u));
+const STRONG_SUBJECTS = /deepseek|claude|gpt|grok|gemini|kimi|qwen|glm|doubao|v\d|flash|harness|dsh|dgx|h\d{2,3}|rag|bm25|e2b|codex|openhands|openai|anthropic/iu;
 
 function oneLine(value) {
   return String(value ?? "").replace(/\s+/gu, " ").trim();
@@ -144,15 +179,39 @@ function normalizeToken(value) {
 function displayToken(token, surface = "") {
   const alias = DISPLAY_ALIASES.get(token)?.trim();
   if (alias) return alias;
+  if (/\p{Script=Han}/u.test(token) && canonicalLabelKey(token) !== canonicalLabelKey(surface)) return token;
   const compact = oneLine(surface);
   if (compact && /^[\p{L}\p{N}][\p{L}\p{N}._ +#/-]{0,35}$/u.test(compact)) return compact;
   if (/^[a-z][a-z0-9._+-]{1,30}$/u.test(token)) return token;
   return token;
 }
 
+function cleanCompoundSubject(value) {
+  let label = oneLine(value);
+  label = label.replace(/^dsh\s+(?:plugin|repo|github|acp)$/iu, (match) => ({
+    "dsh plugin": "DSH 插件",
+    "dsh repo": "DSH 仓库",
+    "dsh github": "DSH GitHub 仓库",
+    "dsh acp": "DSH ACP",
+  })[match.toLowerCase()] ?? match);
+  label = label.replace(/^ds\s+harness$/iu, "DeepSeek Harness")
+    .replace(/^pro\s+ga$/iu, "DeepSeek V4 Pro GA")
+    .replace(/^qwen\s*(\d)/iu, "Qwen $1")
+    .replace(/^codex$/iu, "Codex")
+    .replace(/^dshclient$/iu, "DSH Client");
+  return label;
+}
+
+function titleSubject(value) {
+  return cleanCompoundSubject(value)
+    .replace(/^dsh\s+github\s+仓库$/iu, "DSH GitHub 仓库")
+    .replace(/^dsh\s+github$/iu, "DSH GitHub 仓库");
+}
+
 function canonicalEntityTokens(text) {
   const entities = new Map();
-  if (/(?:deepseek[-_\s]*)?v\s*4[-_\s]*pro|\bv4pro\b/iu.test(text)) entities.set("pro", "DeepSeek V4 Pro");
+  if (/(?:deepseek[-_\s]*)?v\s*4[-_\s]*pro|\bv4pro\b/iu.test(text)) entities.set("deepseek v4 pro", "DeepSeek V4 Pro");
+  if (/\bdsv4flash\b|\bv4f\b|deepseek[-_\s]*v\s*4[-_\s]*flash/iu.test(text)) entities.set("deepseek v4 flash", "DeepSeek V4 Flash");
   if (/deepseek\s+harness|\bdsh(?:2026|-external)?\b/iu.test(text)) entities.set("deepseek harness", "DeepSeek Harness");
   return entities;
 }
@@ -272,11 +331,25 @@ function termStatistics(records) {
 function preferredSurface(term) {
   const surface = [...term.surfaces].sort((left, right) => right[1] - left[1]
     || right[0].length - left[0].length || left[0].localeCompare(right[0], "zh"))[0]?.[0] ?? term.token;
-  return displayToken(term.token, surface);
+  return cleanCompoundSubject(displayToken(term.token, surface));
 }
 
 function canonicalLabelKey(value) {
   return oneLine(value).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+}
+
+function participantKeys(records) {
+  const result = new Set();
+  for (const record of records) {
+    const whole = canonicalLabelKey(record.sender);
+    if (whole) result.add(whole);
+    for (const segment of SEGMENTER.segment(record.sender)) {
+      if (!segment.isWordLike) continue;
+      const key = canonicalLabelKey(segment.segment);
+      if (Array.from(key).length >= 2) result.add(key);
+    }
+  }
+  return result;
 }
 
 function uniqueTopicLabels(labels) {
@@ -292,13 +365,37 @@ function uniqueTopicLabels(labels) {
   return result;
 }
 
-function candidateAnchor(term, recordCount) {
+function candidateAnchor(term, recordCount, participants) {
   if (!term || BROAD_ANCHORS.has(term.token) || ACTION_WORDS.has(term.token) || LOW_QUALITY_ANCHORS.has(term.token)) return false;
+  const subjectKey = canonicalLabelKey(preferredSurface(term));
+  if (participants.has(subjectKey) || participants.has(canonicalLabelKey(term.token))) return false;
+  const latin = /^[a-z][a-z0-9._ +#/-]{1,35}$/iu.test(term.token);
+  const chineseLength = /^[\p{Script=Han}]+$/u.test(term.token) ? Array.from(term.token).length : 0;
+  const contextual = term.records.filter((record) => record.ownTokens.has(term.token) && EVENT_CONTEXT.test(record.authored));
+  const contextualSpeakers = new Set(contextual.map((record) => record.sender)).size;
+  const aliased = DISPLAY_ALIASES.has(term.token) || [...DISPLAY_ALIASES.values()]
+    .some((value) => canonicalLabelKey(value) === canonicalLabelKey(term.token));
+  const relaySubject = term.records.some((record) => record.ownTokens.has(term.token) && RELAY.test(record.authored));
+  const shapedProduct = latin && (/\s|[\d._+#/-]/u.test(term.token) || aliased);
+  const meaningful = SEMANTIC_SUBJECT.test(term.token)
+    || (latin && (shapedProduct || relaySubject || contextualSpeakers >= 2))
+    || (chineseLength >= 4 && contextualSpeakers >= 2);
+  if (!meaningful) return false;
   const minimum = recordCount < 40 ? 2 : Math.max(3, Math.ceil(Math.sqrt(recordCount) / 30));
   if (term.speakers.size < 3 || term.records.length < minimum) return false;
   if (recordCount >= 40 && term.records.length > recordCount * 0.18) return false;
   if (/^(?:接龙|and|with|from|only|like|about|then|it's|that's|really|maybe|please)$/iu.test(term.token)) return false;
   return true;
+}
+
+function subjectSpecificity(token) {
+  const label = displayToken(token, token);
+  if (STRONG_SUBJECTS.test(token) || STRONG_SUBJECTS.test(label)) return 12;
+  if (DISPLAY_ALIASES.has(token) && !GENERIC_SUBJECTS.has(token)) return 10;
+  if (/\d|[._+#/-]|\s/u.test(token)) return 8;
+  if (SEMANTIC_SUBJECT.test(token) && !GENERIC_SUBJECTS.has(token)) return 6;
+  if (GENERIC_SUBJECTS.has(token)) return 2;
+  return 4;
 }
 
 function splitTermEpisodes(records, recordCount) {
@@ -435,36 +532,165 @@ function focusLabels(records, maximum = 2) {
     .slice(0, maximum).map((item) => item.label);
 }
 
+function nounFocusLabels(records, maximum = 2) {
+  return NOUN_FOCUS_RULES.map(([label, pattern], index) => ({
+    label,
+    index,
+    count: records.filter((record) => pattern.test(record.authored)).length,
+    people: new Set(records.filter((record) => pattern.test(record.authored)).map((record) => record.sender)).size,
+  })).filter((item) => item.count >= 2 && item.people >= 2)
+    .sort((left, right) => right.count - left.count || right.people - left.people || left.index - right.index)
+    .slice(0, maximum).map((item) => item.label);
+}
+
+function distinctFocusLabels(subject, records, maximum = 2) {
+  const subjectKey = canonicalLabelKey(subject);
+  return uniqueTopicLabels([...focusLabels(records), ...nounFocusLabels(records)])
+    .filter((label) => {
+      const key = canonicalLabelKey(label);
+      return key !== subjectKey && !(subjectKey.length >= 2 && (key.includes(subjectKey) || subjectKey.includes(key)));
+    })
+    .slice(0, maximum);
+}
+
+function specificEventTitle(records) {
+  const joined = records.map((record) => record.authored).join(" ");
+  const speakers = (pattern) => new Set(records.filter((record) => pattern.test(record.authored))
+    .map((record) => record.sender)).size;
+  if (speakers(/合影|纪念/iu) >= 3) return "内测收官前，成员发起群聊合影与纪念";
+  if (speakers(/人脉|保持联系|加好友|留个联系方式/iu) >= 3) return "成员讨论内测群结束后的联系与人脉留存";
+  const leakSpeakers = speakers(/泄密|泄露|流出/iu);
+  const repositoryAccess = speakers(/dsh|deepseek\s*harness/iu) >= 2 && speakers(/github|仓库|repo/iu) >= 2
+    && speakers(/访问|打不开|权限|邀请|404/iu) >= 2;
+  if (repositoryAccess) return "DSH GitHub 仓库访问问题被集中反馈";
+  if (leakSpeakers >= 2 && speakers(/保密|公开|仓库|npm|权限|代码|密钥|token/iu) >= 2) {
+    if (speakers(/npm|包管理|package/iu) >= 2) return "npm 包疑似泄露引发保密与公开边界讨论";
+    if (speakers(/仓库|repo|github/iu) >= 2) return "仓库内容疑似泄露引发保密与公开边界讨论";
+    if (speakers(/dsh|deepseek\s*harness|内测/iu) >= 2) return "DSH 内测信息疑似泄露引发保密边界讨论";
+    return "疑似泄露引发保密与公开边界讨论";
+  }
+  if (speakers(/政府|政务|内网/iu) >= 1 && speakers(/win(?:dows)?\s*7|win7/iu) >= 2) {
+    return "政府内网的 Windows 7 兼容需求被讨论";
+  }
+  if (speakers(/游戏.{0,24}(?:界面|面板|状态|token|agent)|(?:界面|面板|状态).{0,24}游戏/iu) >= 2) {
+    return "成员设想用游戏化界面呈现 Agent 状态";
+  }
+  if (speakers(/标题|段落|内容框架|展示形式|内容呈现/iu) >= 3) return "群内讨论标题与内容呈现如何改进";
+  if (speakers(/(?:仓库|repo|github).{0,20}(?:迁移|组织|org)|(?:组织|org).{0,20}(?:仓库|repo|github)/iu) >= 3) {
+    return "内测收官后的仓库迁移与组织安排被讨论";
+  }
+  if (speakers(/(?:插件|签名|证书链).{0,24}(?:windows|安装|失败)|(?:windows|安装).{0,24}(?:签名|证书链)/iu) >= 3) {
+    return "插件证书链与 Windows 安装问题被集中复现";
+  }
+  if (/#[^\s]{2,36}\s*接龙|#接龙/iu.test(joined)) {
+    const subject = joined.match(/#接龙\s+([\p{L}\p{N}_.-]{2,36})/iu)?.[1];
+    if (subject) return `${displayToken(normalizeToken(subject), subject)}接龙集中进行`;
+  }
+  return null;
+}
+
+function narrativeSummary(records, subject, profile, start, end, relatedMessageCount, speakerCount, title) {
+  const focus = distinctFocusLabels(subject, records, 3);
+  const action = /合影与纪念/u.test(title) ? "成员在内测收官前集中发起合影，并留下纪念信息"
+    : /联系与人脉留存/u.test(title) ? "成员讨论群聊结束后如何继续保持联系和协作"
+      : /泄露引发/u.test(title) ? "讨论围绕疑似泄露、保密责任和公开边界展开"
+        : /Windows 7 兼容/u.test(title) ? "成员结合政府内网场景讨论旧系统兼容需求"
+          : /游戏化界面/u.test(title) ? "成员设想用游戏化界面展示 Agent 状态与执行进度"
+            : /标题与内容呈现/u.test(title) ? "成员讨论纪事标题、内容结构和展示方式如何改进"
+              : /仓库迁移与组织安排/u.test(title) ? "讨论集中在内测收官后的仓库归属、迁移和组织方式"
+                : /证书链与 Windows 安装/u.test(title) ? "成员集中复现插件签名、证书链和 Windows 安装问题"
+                  : profile.release ? "发布信息出现后，成员继续核对可用版本和实际影响"
+                    : profile.incident ? "成员集中交换问题现象、复现条件与处理线索"
+                      : profile.testing ? "成员围绕实际体验、能力表现和使用差异交换结果"
+                        : profile.plan ? "讨论逐步落到下一步安排和执行边界"
+                          : profile.development ? "成员比较实现方式、兼容范围和落地条件"
+                            : profile.news ? "相关消息出现后，成员讨论其影响和可信边界"
+                              : profile.sharing ? "成员集中分享相关资料、工具和实践经验"
+                                : profile.closure ? "讨论集中在内测收官、迁移安排和公开边界"
+                                  : profile.relay ? "成员按接龙完成登记，并同步后续迁移安排"
+                                    : "成员从不同经验出发比较判断和适用边界";
+  const focusSentence = focus.length ? `重点涉及${joinLabels(focus)}。` : "";
+  const range = start.time.clock === end.time.clock ? start.time.clock : `${start.time.clock}–${end.time.clock}`;
+  return `${range}，围绕${subject}的讨论集中展开：${action}。${focusSentence}`
+    + `共 ${relatedMessageCount} 条直接相关发言，${speakerCount} 位成员参与。`;
+}
+
 function narrativeTitle(labels, profile, records, subjectToken) {
-  const subject = labels[0] ?? "相关议题";
-  const focus = focusLabels(records);
+  const subject = titleSubject(labels[0] ?? "相关议题");
+  const specific = specificEventTitle(records);
+  if (specific) return specific;
+  const focus = distinctFocusLabels(subject, records);
   const focusText = joinLabels(focus);
   const extracted = extractiveHeadline(records, subjectToken, profile);
   if (extracted && Array.from(extracted).length <= 30) return extracted;
   if (profile.relay) return `${subject}接龙集中进行`;
-  const contextualClosure = CLOSURE.test(records.map((record) => record.authored).join(" "));
-  if (/组织|解散/iu.test(records.map((record) => record.authored).join(" ")) && /组织|解散/u.test(subject)) {
+  const joined = records.map((record) => record.authored).join(" ");
+  const contextualClosure = CLOSURE.test(joined);
+  const closureForSubject = records.filter((record) => record.ownTokens.has(subjectToken) && CLOSURE.test(record.authored));
+  const subjectClosureReady = closureForSubject.length >= 2
+    && new Set(closureForSubject.map((record) => record.sender)).size >= 2;
+  if (/组织|解散/iu.test(joined) && /组织|解散/u.test(subject)) {
     return "内测群收官、组织安排与公开边界成为焦点";
   }
-  const closureSubject = contextualClosure && (subjectToken === "pro" || subjectToken === "deepseek harness"
+  const closureSubject = contextualClosure && subjectClosureReady && (subjectToken === "deepseek v4 pro" || subjectToken === "deepseek harness"
     || /dsh|harness|内测|公测|组织|解散|群/u.test(subject));
   if (closureSubject) return `${subject}内测收官与后续安排成为焦点`;
   if (profile.closure) return `内测收官、${subject}与后续安排成为焦点`;
-  if (profile.release) return `${subject}发布后，群内集中讨论${focus.length ? focusText : "实际影响"}`;
-  if (profile.incident) return `${subject}${focus.length ? `与${focusText}` : ""}的问题被集中复现`;
-  if (profile.testing) return `成员集中实测${subject}${focus.length ? `，重点比较${focusText}` : ""}`;
+  if (profile.release) {
+    if (focus.includes("版本指纹") || focus.includes("速度延迟") || focus.includes("能力评测")) {
+      return `${subject}发布，群内随即实测版本、能力与速度`;
+    }
+    return `${subject}发布后，群内集中讨论${focus.length ? focusText : "实际影响"}`;
+  }
+  if (profile.incident) {
+    if (focus.includes("保密访问") || focus.includes("仓库公开")) return `${subject}的仓库访问与权限问题被集中复现`;
+    if (focus.includes("插件兼容") || focus.includes("安装环境")) return `${subject}的安装与兼容问题被集中复现`;
+    if (focus.includes("速度延迟") || focus.includes("模型能力")) return `${subject}的速度与能力异常被集中复现`;
+    return `${subject}问题被集中复现`;
+  }
+  if (profile.testing) {
+    if (focus.includes("额度价格") || focus.includes("API 调用")) return `${subject}的 API 调用、价格与额度被实测`;
+    if (focus.includes("速度延迟") || focus.includes("能力评测") || focus.includes("模型能力")) {
+      return `群内实测${subject}，比较能力与速度`;
+    }
+    if (focus.includes("插件兼容") || focus.includes("Agent 编排")) return `${subject}的插件兼容与 Agent 编排被实测`;
+    return `${subject}的实际表现被集中测试`;
+  }
   if (profile.plan) return `${subject}${focus.length ? `与${focusText}` : ""}的后续安排展开讨论`;
-  if (profile.development) return `${subject}${focus.length ? `与${focusText}` : ""}的实现方案进入集中交流`;
+  if (profile.development) {
+    if (focus.includes("安装环境") || focus.includes("Windows 兼容")) return `${subject}的安装构建与环境兼容方案被讨论`;
+    if (focus.includes("插件兼容") || focus.includes("开源生态")) return `${subject}的插件接入与生态兼容被讨论`;
+    if (focus.includes("前端交互")) return `${subject}的界面交互与使用体验被讨论`;
+    if (focus.includes("仓库公开")) return `${subject}的仓库协作与公开方式被讨论`;
+    if (focus.includes("API 调用")) return `${subject}的 API 接入与调用方式被讨论`;
+    if (focus.includes("Agent 编排")) return `${subject}的 Agent 编排方式被讨论`;
+    return `${subject}的实现与使用方式被讨论`;
+  }
   if (profile.news) return `${subject}${focus.length ? `与${focusText}` : ""}相关消息引发群内讨论`;
-  if (profile.sharing) return `${subject}${focus.length ? `与${focusText}` : ""}的资料和实践被集中分享`;
-  if (profile.debate) return `${subject}${focus.length ? `与${focusText}` : ""}引发不同观点`;
-  return `${subject}${focus.length ? `与${focusText}` : ""}成为当时段主议题`;
+  if (profile.sharing) return focus.length ? `围绕${subject}，成员分享${focusText}相关资料与实践`
+    : `围绕${subject}，成员集中分享相关资料与实践`;
+  if (profile.debate) {
+    if (focus.includes("模型能力") || focus.includes("能力评测")) return `群内比较${subject}的能力与适用场景`;
+    if (focus.includes("速度延迟")) return `群内比较${subject}的速度与延迟表现`;
+    return `群内比较${subject}${focus.length ? `在${focusText}上的差异` : "的实际表现与适用场景"}`;
+  }
+  if (focus.includes("算力硬件")) return `${subject}算力配置与部署方式被讨论`;
+  if (focus.includes("保密访问")) return `${subject}的保密与访问边界被讨论`;
+  if (focus.includes("搜索检索")) return `${subject}的搜索效果与检索方案被讨论`;
+  if (focus.includes("模型能力") || focus.includes("能力评测")) return `${subject}的能力表现成为讨论焦点`;
+  if (focus.includes("安装环境")) return `${subject}的安装环境与配置方式被讨论`;
+  if (focus.includes("前端交互")) return `${subject}的前端交互与展示方式被讨论`;
+  if (focus.includes("插件兼容") || focus.includes("开源生态")) return `${subject}的插件兼容与生态接入被讨论`;
+  if (focus.includes("仓库公开")) return `${subject}的仓库协作与公开方式被讨论`;
+  if (focus.includes("速度延迟")) return `${subject}的速度与延迟表现被讨论`;
+  if (focus.includes("额度价格")) return `${subject}的价格与额度变化引发讨论`;
+  return focus.length ? `${subject}相关的${focusText}引发讨论` : `${subject}成为一轮集中议题`;
 }
 
 function believableTitle(title, labels) {
   const subject = labels[0] ?? "相关议题";
   if (/^(?:成员集中实测|相关议题|咱们|明明是|本次|人员|组织|填写|翻天|意识|一些|有了)/u.test(title)
-    && !/[A-Za-z0-9]/u.test(subject)) return `${joinLabels(labels.slice(0, 3))}成为当时段主议题`;
+    && !/[A-Za-z0-9]/u.test(subject)) return `${joinLabels(labels.slice(0, 3))}引发集中讨论`;
   return title;
 }
 
@@ -506,7 +732,7 @@ function communityCandidate(seedTerm, episode, allRecords, terms, date) {
 
   let labels = uniqueTopicLabels(tokenKeys.map((token) => preferredSurface(terms.get(token) ?? { token, surfaces: new Map() })));
   const profile = cueProfile(related, seedTerm.token);
-  const closureSubject = profile.closure && (seedTerm.token === "pro" || seedTerm.token === "deepseek harness"
+  const closureSubject = profile.closure && (seedTerm.token === "deepseek v4 pro" || seedTerm.token === "deepseek harness"
     || /dsh|harness|内测|公测|组织|群/iu.test(labels[0] ?? ""));
   if (profile.closure && !closureSubject && terms.has("deepseek harness")) {
     labels = uniqueTopicLabels(["DeepSeek Harness", ...labels]);
@@ -515,16 +741,11 @@ function communityCandidate(seedTerm, episode, allRecords, terms, date) {
     ? "deepseek harness" : seedTerm.token;
   const title = believableTitle(narrativeTitle(labels, profile, related, titleSubjectToken), labels);
   const releaseRecord = profile.release ? releaseMilestone(related, seedTerm.token) : null;
-  const midpoint = Math.floor(related.length / 2);
-  const excluded = new Set(tokenKeys);
-  const early = dominantLabels(related.slice(0, Math.max(2, midpoint)), excluded, terms);
-  const late = dominantLabels(related.slice(midpoint), excluded, terms);
   const start = related[0];
   const end = related.at(-1);
-  const shifted = early.length && late.length && !early.some((label) => late.includes(label));
-  const summary = shifted
-    ? `${start.time.clock} 起，讨论从${joinLabels(early)}延伸到${joinLabels(late)}；核心议题是${joinLabels(labels)}，共有 ${related.length} 条直接相关发言、${relatedSpeakers.size} 位成员参与。`
-    : `${start.time.clock}–${end.time.clock}，群内围绕${joinLabels(labels)}连续交流，共有 ${related.length} 条直接相关发言、${relatedSpeakers.size} 位成员参与。`;
+  const summarySubject = labels.includes("DeepSeek V4 Pro") ? "DeepSeek V4 Pro" : titleSubject(labels[0] ?? "相关议题");
+  const summary = narrativeSummary(related, summarySubject, profile, start, end,
+    related.length, relatedSpeakers.size, title);
   const type = profile.release ? "release" : profile.incident ? "incident" : profile.testing ? "testing"
     : profile.plan ? "plan" : profile.development ? "development" : profile.news ? "news"
       : profile.sharing ? "sharing" : profile.closure ? "closure" : profile.relay ? "participation"
@@ -535,15 +756,24 @@ function communityCandidate(seedTerm, episode, allRecords, terms, date) {
     detail: releaseRecord ? sanitizeEvidence(releaseRecord.authored, 100) : `相关发言开始连续出现，重点涉及${joinLabels(labels.slice(1))}`,
   }];
   if (end.time.clock !== start.time.clock) {
-    milestones.push({ time: end.time.clock, label: "本轮讨论结束", detail: shifted ? `议题延伸到${joinLabels(late)}` : `相关交流持续至 ${end.time.clock}` });
+    milestones.push({ time: end.time.clock, label: "本轮讨论结束", detail: `相关交流持续至 ${end.time.clock}` });
   }
   const concentration = episode.length / Math.max(1, seedTerm.records.length);
   const rarity = Math.log2((allRecords.length + 1) / (seedTerm.records.length + 1));
   const topicQuality = /^[a-z][a-z0-9._ +#/-]*$/iu.test(seedTerm.token)
     ? (/[\d +#._-]/u.test(seedTerm.token) ? 1.45 : 1.1)
     : Math.min(1.35, 0.9 + Array.from(seedTerm.token).length * 0.12);
+  const specificity = CONCRETE_EVENT_TITLE.test(title) ? 20 : subjectSpecificity(seedTerm.token);
+  const concreteSubject = specificity >= 6;
   const score = Math.sqrt(episode.length) * Math.log2(relatedSpeakers.size + 1)
     * (0.8 + concentration) * Math.max(1, rarity) * topicQuality;
+  const titleQuality = Number(!LOW_INFORMATION_TITLE.test(title)) * 3
+    + Number(CONCRETE_EVENT_TITLE.test(title)) * 4
+    + Number(focusLabels(related).length > 0) * 2
+    + Number(nounFocusLabels(related).length > 0) * 2
+    + Number(DISPLAY_ALIASES.has(seedTerm.token) || SEMANTIC_SUBJECT.test(seedTerm.token)) * 2
+    + Number(profile.release || profile.incident || profile.testing || profile.plan || profile.news || profile.relay) * 2
+    + Number(relatedSpeakers.size >= 6);
   return {
     id: `group-event:${date}:topic:${stableId(`${seedTerm.token}:${start.id}:${end.id}`)}`,
     date,
@@ -560,7 +790,11 @@ function communityCandidate(seedTerm, episode, allRecords, terms, date) {
     milestones,
     quotes: quotedEvidence(related),
     evidenceBoundary: "当日全部群聊中按议题与时间聚合的直接相关发言",
-    score,
+    score: score * (0.8 + titleQuality * 0.08),
+    titleQuality,
+    concreteSubject,
+    specificity,
+    focusKeys: new Set(uniqueTopicLabels([...focusLabels(related), ...nounFocusLabels(related)])),
     seed: seedTerm.token,
     messageIds: new Set(related.map((record) => record.id)),
     tokenKeys: new Set(tokenKeys),
@@ -693,17 +927,26 @@ function timeOverlap(left, right) {
   return Math.max(0, end - start);
 }
 
-function sharesMajorEntity(left, right) {
-  return (left.tokenKeys.has("pro") && right.tokenKeys.has("pro"))
-    || (left.tokenKeys.has("deepseek harness") && right.tokenKeys.has("deepseek harness"));
+function sharesSubject(left, right) {
+  return left.seed === right.seed || recordSetSimilarity(left.tokenKeys, right.tokenKeys) >= 0.34;
+}
+
+function candidatesConflict(left, right) {
+  return conflictsWithSelected(left, [right]);
 }
 
 function conflictsWithSelected(candidate, selected) {
   for (const previous of selected) {
     const messageSimilarity = recordSetSimilarity(candidate.messageIds, previous.messageIds);
     const tokenSimilarity = recordSetSimilarity(candidate.tokenKeys, previous.tokenKeys);
+    const focusSimilarity = recordSetSimilarity(candidate.focusKeys, previous.focusKeys);
     if (messageSimilarity >= 0.34) return true;
     if (candidate.seed === previous.seed && Math.abs(Date.parse(candidate.timestamp) - Date.parse(previous.timestamp)) < 3 * 60 * 60_000) return true;
+    if (timeOverlap(candidate, previous) > 0 && messageSimilarity >= 0.12
+      && (sharesSubject(candidate, previous) || candidate.eventType === previous.eventType)) return true;
+    if (timeOverlap(candidate, previous) > 0 && focusSimilarity >= 0.5 && messageSimilarity >= 0.08) return true;
+    if (candidate.focusKeys.size && previous.focusKeys.size && focusSimilarity >= 0.5
+      && Math.abs(Date.parse(candidate.timestamp) - Date.parse(previous.timestamp)) <= 75 * 60_000) return true;
     if (timeOverlap(candidate, previous) > 0 && tokenSimilarity >= 0.5 && messageSimilarity >= 0.16) return true;
     if (candidate.title === previous.title) return true;
   }
@@ -711,17 +954,18 @@ function conflictsWithSelected(candidate, selected) {
 }
 
 function outputEvent(event) {
-  const { score, sourceMessageId, seed, messageIds, tokenKeys, ...result } = event;
+  const { score, titleQuality, concreteSubject, specificity, sourceMessageId, seed, messageIds, tokenKeys, focusKeys, ...result } = event;
   return result;
 }
 
-export function buildGroupEventTimeline(rows, { officialChronicles = [], date = null, maximum = 12 } = {}) {
+export function buildGroupEventTimeline(rows, { officialChronicles = [], date = null, maximum = 18 } = {}) {
   const records = (Array.isArray(rows) ? rows : []).map(normalizeRecord).filter(Boolean)
     .sort((left, right) => left.time.timestamp.localeCompare(right.time.timestamp) || left.id.localeCompare(right.id));
   const sourceDate = date ?? records[0]?.time.date ?? null;
   if (!sourceDate) return [];
   const dayRecords = records.filter((record) => record.time.date === sourceDate && record.tokens.size > 0);
   const terms = termStatistics(dayRecords);
+  const participants = participantKeys(dayRecords);
   const officialBySource = new Map();
   for (const [index, item] of (Array.isArray(officialChronicles) ? officialChronicles : []).entries()) {
     const event = officialEvent(item, dayRecords, sourceDate, index);
@@ -733,63 +977,37 @@ export function buildGroupEventTimeline(rows, { officialChronicles = [], date = 
   const official = [...officialBySource.values()];
 
   const candidates = [];
+  const candidateKeys = new Set();
   for (const term of terms.values()) {
-    if (!candidateAnchor(term, dayRecords.length)) continue;
+    if (!candidateAnchor(term, dayRecords.length, participants)) continue;
     for (const episode of splitTermEpisodes(term.records, dayRecords.length)) {
       const candidate = communityCandidate(term, episode, dayRecords, terms, sourceDate);
       if (!candidate) continue;
       const overlapsOfficial = official.some((event) => recordSetSimilarity(candidate.messageIds, event.messageIds) >= 0.28
         || (timeOverlap(candidate, event) > 0 && recordSetSimilarity(candidate.tokenKeys, event.tokenKeys) >= 0.34));
-      const relatedProAlreadyExists = candidates.some((previous) => sharesMajorEntity(candidate, previous)
-        && Math.abs(Date.parse(candidate.timestamp) - Date.parse(previous.timestamp)) <= 95 * 60_000);
-      if (!overlapsOfficial && !relatedProAlreadyExists
-        && !candidates.some((previous) => conflictsWithSelected(candidate, [previous]))) {
+      const key = `${candidate.title}:${candidate.timestamp}:${candidate.endTimestamp}`;
+      if (!overlapsOfficial && !candidateKeys.has(key)) {
         candidates.push(candidate);
+        candidateKeys.add(key);
       }
     }
   }
-  const proTerm = terms.get("pro");
-  const hasProEvent = candidates.some((candidate) => candidate.seed === "pro")
-    || official.some((event) => event.topics.includes("DeepSeek V4 Pro"));
-  if (proTerm && !hasProEvent) {
-    const qualifying = splitTermEpisodes(proTerm.records, dayRecords.length)
-      .map((episode) => communityCandidate(proTerm, episode, dayRecords, terms, sourceDate))
-      .filter(Boolean)
-      .filter((candidate) => candidate.relatedMessageCount >= 4 && candidate.speakerCount >= 3)
-      .sort((left, right) => right.score - left.score)[0];
-    if (qualifying) candidates.push(qualifying);
-  }
-  candidates.sort((left, right) => right.score - left.score);
-  const entityDeduped = [];
-  for (const candidate of candidates) {
-    const duplicate = entityDeduped.some((previous) => sharesMajorEntity(candidate, previous)
-      && Math.abs(Date.parse(candidate.timestamp) - Date.parse(previous.timestamp)) <= 95 * 60_000);
-    if (!duplicate) entityDeduped.push(candidate);
-  }
-  candidates.length = 0;
-  candidates.push(...entityDeduped);
-  candidates.sort((left, right) => right.score - left.score
+  candidates.sort((left, right) => right.specificity - left.specificity || right.titleQuality - left.titleQuality
+    || Number(right.concreteSubject) - Number(left.concreteSubject) || right.score - left.score
     || left.timestamp.localeCompare(right.timestamp) || left.title.localeCompare(right.title, "zh"));
   const desiredCommunity = Math.max(2, Math.ceil(dayRecords.length / 700));
   const communityLimit = Math.max(0, Math.min(desiredCommunity, maximum - official.length));
   const community = [];
   for (const candidate of candidates) {
     if (community.length >= communityLimit) break;
-    const candidateIsPro = candidate.seed === "pro" || candidate.topics.includes("DeepSeek V4 Pro");
-    const relatedProAlreadySelected = candidateIsPro && community.some((previous) =>
-      (previous.seed === "pro" || previous.topics.includes("DeepSeek V4 Pro"))
-      && Math.abs(Date.parse(candidate.timestamp) - Date.parse(previous.timestamp)) <= 95 * 60_000);
-    const relatedOfficialPro = candidateIsPro && official.some((previous) => previous.topics.includes("DeepSeek V4 Pro")
-      && Math.abs(Date.parse(candidate.timestamp) - Date.parse(previous.timestamp)) <= 95 * 60_000);
-    if (!relatedProAlreadySelected && !relatedOfficialPro && !conflictsWithSelected(candidate, community)) community.push(candidate);
-  }
-  if (proTerm && !community.some((event) => event.seed === "pro")
-    && !official.some((event) => event.topics.includes("DeepSeek V4 Pro"))) {
-    const proCandidate = candidates.find((candidate) => candidate.seed === "pro");
-    if (proCandidate) {
-      if (community.length >= communityLimit && community.length) community.pop();
-      if (!conflictsWithSelected(proCandidate, community)) community.push(proCandidate);
-    }
+    const minimumTitleQuality = dayRecords.length >= 1_000 ? 5 : 3;
+    if (candidate.titleQuality < minimumTitleQuality) continue;
+    const strongerConcreteAlternative = candidates.some((other) => other !== candidate && other.concreteSubject
+      && candidatesConflict(candidate, other)
+      && other.specificity >= candidate.specificity + 2
+      && (other.titleQuality >= candidate.titleQuality - 2 || other.score > candidate.score * 0.72));
+    if (strongerConcreteAlternative) continue;
+    if (!conflictsWithSelected(candidate, community)) community.push(candidate);
   }
   return [...official, ...community]
     .sort((left, right) => left.timestamp.localeCompare(right.timestamp) || left.title.localeCompare(right.title, "zh"))

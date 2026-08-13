@@ -54,7 +54,7 @@ describe("group event timeline", () => {
     });
     expect(result[0].topics).toContain("DeepSeek V4 Pro");
     expect(result[0].summary).toContain("DeepSeek V4 Pro");
-    expect(result[0].summary).toContain("连续交流");
+    expect(result[0].summary).toContain("讨论集中展开");
     expect(result[1].summary).toContain("最后一个内测版本");
     expect(result[1].summary).toContain("2026-08-13");
     expect(result[1].milestones).toEqual([
@@ -129,9 +129,25 @@ describe("group event timeline", () => {
       row("rumor-4", "2026-08-09T20:06:00+08:00", "成员丁", "Nova 模型貌似只是传闻。"),
     ];
     const result = buildGroupEventTimeline(rows, { date: "2026-08-09" });
-    expect(result).toHaveLength(1);
-    expect(result[0].eventType).not.toBe("release");
-    expect(result[0].title).not.toContain("发布后");
+    expect(result).toEqual([]);
+  });
+
+  it("does not promote a fixed product or participant name over a concrete daily topic", () => {
+    const rows = [
+      row("member", "2026-08-10T09:58:00+08:00", "BruceL", "我来看看插件证书链。"),
+      row("topic-1", "2026-08-10T10:00:00+08:00", "成员甲", "BruceL 提到插件证书链，Windows 安装失败。"),
+      row("topic-2", "2026-08-10T10:02:00+08:00", "成员乙", "BruceL 的插件证书链问题我也复现了，Windows 安装失败。"),
+      row("topic-3", "2026-08-10T10:04:00+08:00", "成员丙", "插件签名和证书链需要修复，Windows 安装会报错。"),
+      row("topic-4", "2026-08-10T10:06:00+08:00", "成员丁", "插件证书链修复后还要补 Windows 安装测试。"),
+      row("product-1", "2026-08-10T15:00:00+08:00", "成员戊", "听说 DeepSeek V4 Pro。"),
+      row("product-2", "2026-08-10T15:02:00+08:00", "成员己", "我也看到 DeepSeek V4 Pro。"),
+      row("product-3", "2026-08-10T15:04:00+08:00", "成员庚", "DeepSeek V4 Pro 先等等。"),
+    ];
+    const result = buildGroupEventTimeline(rows, { date: "2026-08-10" });
+    const titles = result.map((item) => item.title).join("\n");
+    expect(titles).toMatch(/插件|证书链|Windows/u);
+    expect(titles).not.toMatch(/BruceL/u);
+    expect(titles).not.toMatch(/V4 Pro/u);
   });
 
   it("keeps the stored event narrative instead of rebuilding abstract topics from selected signals", () => {
@@ -176,7 +192,7 @@ describe("group chronicle live refresh", () => {
     expect(syncScript).toContain("INSERT INTO content_active_live_group");
     expect(syncScript).toContain("DELETE FROM content_active_group_days WHERE date >=");
     expect(syncScript).toContain("buildGroupEventTimeline(rows");
-    expect(syncScript).toContain("group-day-v6-open-topic-timeline");
+    expect(syncScript).toContain("group-day-v7-readable-event-timeline");
     expect(refreshScript).toContain('--date "$TARGET_DATE" --live-date "$TODAY"');
     expect(refreshScript).toContain('：${TARGET_DATE}；纪事实时流');
     expect(siteHtml).toContain('"completed-days-plus-live"');

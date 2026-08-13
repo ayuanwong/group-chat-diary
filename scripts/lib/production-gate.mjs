@@ -1,8 +1,12 @@
 export const PRODUCTION_ORIGIN = "https://dsh.hiwangjie.com";
 
-export const PROTECTED_ENDPOINTS = [
+export const PUBLIC_ENDPOINTS = [
   { name: "home", pathname: "/", init: {} },
   { name: "content", pathname: "/api/content/manifest", init: {} },
+];
+
+export const PROTECTED_ENDPOINTS = [
+  { name: "groupChronicle", pathname: "/api/content/group-chronicle", init: {} },
   { name: "qaStatus", pathname: "/api/qa/status", init: {} },
   {
     name: "ask",
@@ -87,6 +91,15 @@ export async function auditProductionGate(
     throw new Error("production gate origin must match the canonical Pages custom domain");
   }
 
+  const publicAccess = {};
+  for (const endpoint of PUBLIC_ENDPOINTS) {
+    const response = await request(fetchImpl, `${origin}${endpoint.pathname}`, endpoint.init);
+    publicAccess[endpoint.name] = {
+      status: response.status,
+      accessible: response.status === 200,
+    };
+  }
+
   const gates = {};
   for (const endpoint of PROTECTED_ENDPOINTS) {
     const response = await request(fetchImpl, `${origin}${endpoint.pathname}`, endpoint.init);
@@ -103,12 +116,13 @@ export async function auditProductionGate(
     oauthMode = "verified-active-list-fallback";
   }
   const oauth = { mode: oauthMode, ...inspectOAuth(oauthResponse, origin) };
-  const passed = Object.values(gates).every((gate) => gate.blocked)
+  const passed = Object.values(publicAccess).every((endpoint) => endpoint.accessible)
+    && Object.values(gates).every((gate) => gate.blocked)
     && oauth.githubRedirect
     && !oauth.scopePresent
     && !oauth.organizationScope
     && oauth.statePresent
     && oauth.stateCookie;
 
-  return { origin, gates, oauth, passed };
+  return { origin, publicAccess, gates, oauth, passed };
 }

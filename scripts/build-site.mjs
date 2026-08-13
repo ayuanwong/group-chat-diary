@@ -162,7 +162,8 @@ assertPublishable(agentNotesText, "content/agent-notes.json");
 if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide"') || !siteHtml.includes("/data/manifest.json")) {
   throw new Error("站点外壳缺少日期切换或新人导引入口");
 }
-if (!siteHtml.includes('/api/content/manifest') || !siteHtml.includes('/api/content/group-history') || !siteHtml.includes('id="boardRepos"')
+if (!siteHtml.includes('/api/content/manifest') || !siteHtml.includes('/api/content/group-history')
+  || !siteHtml.includes('/api/content/group-chronicle') || !siteHtml.includes('id="boardRepos"')
   || !siteHtml.includes('id="repoList"') || !siteHtml.includes('Issue / Repo')) {
   throw new Error("站点外壳缺少实时内容 API 或 Issue/Repo Board");
 }
@@ -206,11 +207,15 @@ if (siteHtml.includes('$("snapshotMeta").textContent = `${formatDateLabel(SELECT
 if (siteHtml.includes("refreshBtn") || siteHtml.includes("检查更新")) {
   throw new Error("站点不得保留无效的手动检查更新按钮");
 }
-if (!siteHtml.includes('id="accountLogin"') || !siteHtml.includes('fetch("/api/me"') || !siteHtml.includes('action="/auth/logout"')) {
-  throw new Error("顶部导航必须显示当前 GitHub 账户并提供退出入口");
+if (!siteHtml.includes('id="accountLogin"') || !siteHtml.includes('id="accountLoginLink"')
+  || !siteHtml.includes('fetch("/api/me"') || !siteHtml.includes('action="/auth/logout"')) {
+  throw new Error("顶部导航必须区分访客与成员账户，并提供登录或退出入口");
 }
 if (!siteHtml.includes('id="qaConsole"') || !siteHtml.includes('id="qaForm"') || !siteHtml.includes('fetch("/api/ask"')) {
   throw new Error("今日最新顶部必须保留检索问答入口");
+}
+if (!siteHtml.includes('问答可能检索群聊内容') || !siteHtml.includes('群聊纪事仅对白名单成员开放')) {
+  throw new Error("访客页必须明确群聊纪事与问答的成员权限边界");
 }
 if (!siteHtml.includes('Repo 用 R') || !siteHtml.includes('repoCount')) {
   throw new Error("实时问答必须显示并支持 Repo 私有语料");

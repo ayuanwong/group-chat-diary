@@ -116,6 +116,19 @@ function sanitizedGroupSnapshot(value: unknown): unknown | null {
   };
 }
 
+function publicGroupSnapshot(value: unknown): unknown | null {
+  const snapshot = record(sanitizedGroupSnapshot(value));
+  const group = record(snapshot?.group);
+  if (!snapshot || !group) return null;
+  return {
+    ...snapshot,
+    group: {
+      ...group,
+      timeline: [],
+    },
+  };
+}
+
 export function validArchiveDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/u.test(value)) return false;
   const date = new Date(`${value}T00:00:00Z`);
@@ -220,7 +233,11 @@ export async function contentManifest(env: ContentRuntimeEnv): Promise<Record<st
   };
 }
 
-export async function contentGroupDay(env: ContentRuntimeEnv, date: string): Promise<unknown | null> {
+export async function contentGroupDay(
+  env: ContentRuntimeEnv,
+  date: string,
+  { includeGroupChronicle = true }: { includeGroupChronicle?: boolean } = {},
+): Promise<unknown | null> {
   if (!validArchiveDate(date)) return null;
   const row = await env.CONTENT_DB.prepare(`
     SELECT v.payload
@@ -229,10 +246,14 @@ export async function contentGroupDay(env: ContentRuntimeEnv, date: string): Pro
     WHERE a.date = ?1
     LIMIT 1
   `).bind(date).first<{ payload: string }>();
-  return sanitizedGroupSnapshot(parsePayload(row?.payload));
+  const payload = parsePayload(row?.payload);
+  return includeGroupChronicle ? sanitizedGroupSnapshot(payload) : publicGroupSnapshot(payload);
 }
 
-export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Record<string, unknown> | null> {
+export async function contentGroupHistory(
+  env: ContentRuntimeEnv,
+  { includeGroupChronicle = true }: { includeGroupChronicle?: boolean } = {},
+): Promise<Record<string, unknown> | null> {
   const [rows, liveVersion] = await Promise.all([
     env.CONTENT_DB.prepare(`
       SELECT v.date, v.generated_at, v.payload, a.activated_at
@@ -439,14 +460,14 @@ export async function contentGroupHistory(env: ContentRuntimeEnv): Promise<Recor
       signal_count: signalList.length,
       participant_count: memberList.length,
       chronicle_count: chronicleList.length,
-      timeline_event_count: timelineList.length,
+      timeline_event_count: includeGroupChronicle ? timelineList.length : 0,
       date_start: dateStart,
       date_end: dateEnd,
       type_breakdown: Object.fromEntries(typeBreakdown),
     },
     signals: signalList,
     chronicles: chronicleList,
-    timeline: timelineList,
+    timeline: includeGroupChronicle ? timelineList : [],
     members: memberList,
   };
 }

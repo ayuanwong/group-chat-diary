@@ -160,7 +160,12 @@ function parseCookies(request: Request): Map<string, string> {
     const separator = part.indexOf("=");
     if (separator < 1) continue;
     const name = part.slice(0, separator).trim();
-    const value = part.slice(separator + 1).trim();
+    let value = part.slice(separator + 1).trim();
+    try {
+      value = decodeURIComponent(value);
+    } catch {
+      // Invalid cookie encoding is treated as an opaque value and fails later validation.
+    }
     if (name) cookies.set(name, value);
   }
   return cookies;
@@ -173,7 +178,7 @@ function randomToken(): string {
 }
 
 function cookie(name: string, value: string, maxAge: number): string {
-  return `${name}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
+  return `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
 }
 
 function securityHeaders(headers = new Headers()): Headers {
@@ -238,7 +243,7 @@ function loginPage(
     :root{color-scheme:dark}*{box-sizing:border-box}body{min-height:100vh;margin:0;display:grid;place-items:center;padding:24px;background:#030703;color:#d6ffe0;font:15px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}.card{width:min(100%,520px);padding:32px;border:1px solid #225c2f;border-radius:18px;background:#071008;box-shadow:0 24px 80px #0008}h1{margin:0 0 12px;font-size:22px;color:#56ff7b}p{margin:10px 0;color:#a8caae}.error{padding:10px 12px;border:1px solid #8a442f;border-radius:8px;color:#ffd2c3;background:#2a110b}a{display:inline-block;margin-top:14px;padding:11px 18px;border-radius:9px;text-decoration:none;font-weight:700}.primary{background:#2ee65a;color:#001806}.secondary{margin-left:8px;border:1px solid #397846;color:#b8e8c2}.sync{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;margin-top:18px;padding:13px 14px;border:1px solid #356841;border-radius:10px;background:#0a190d;color:#b8e8c2}.sync span:last-child{grid-column:2;color:#7fa88a;font-size:12px}.sync.warn{border-color:#826927;background:#211b08;color:#ffe9a3}.sync.error{border-color:#8a442f;background:#2a110b;color:#ffd2c3}.pulse{width:9px;height:9px;border-radius:50%;background:#56ff7b;box-shadow:0 0 0 0 #56ff7b88;animation:pulse 1.2s infinite}@keyframes pulse{70%{box-shadow:0 0 0 8px #56ff7b00}100%{box-shadow:0 0 0 0 #56ff7b00}}small{display:block;margin-top:20px;color:#6f8e76}
   </style>
 </head>
-<body><main class="card"><h1>成员入口</h1><p>此页面仅向获准的 GitHub 账户开放。</p>${errorBlock}${action}<small>登录前会先同步最新访问名单。首次登录只读取公开 GitHub 身份；本站不会保存 GitHub 访问令牌。</small></main></body>
+<body><main class="card"><h1>成员入口</h1><p>群聊纪事与档案问答仅向白名单成员开放；网站其他内容可直接访问。</p>${errorBlock}${action}<small>登录前会先同步最新访问名单。首次登录只读取公开 GitHub 身份；本站不会保存 GitHub 访问令牌。</small></main></body>
 </html>`, 200, headers);
 }
 
@@ -257,6 +262,15 @@ function siteOrigin(env: WorkerEnv): string | null {
     return url.protocol === "https:" && url.pathname === "/" ? url.origin : null;
   } catch {
     return null;
+  }
+}
+
+function safeReturnTo(origin: string, value: string): string {
+  try {
+    const target = new URL(value, origin);
+    return target.origin === origin ? `${target.pathname}${target.search}${target.hash}` : "/";
+  } catch {
+    return "/";
   }
 }
 
@@ -403,7 +417,12 @@ async function handleOAuthCallback(request: Request, env: WorkerEnv, githubFetch
 
   const exp = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS;
   const session = await signSession({ version: 2, githubId, login: user.login, exp }, env.SESSION_SECRET);
-  return redirect(`${origin}/`, 303, [clearState, cookie(SESSION_COOKIE, session, SESSION_TTL_SECONDS)]);
+  const returnTo = safeReturnTo(origin, parseCookies(request).get("__Host-portal_return_to") ?? "/");
+  return redirect(`${origin}${returnTo}`, 303, [
+    clearState,
+    cookie("__Host-portal_return_to", "", 0),
+    cookie(SESSION_COOKIE, session, SESSION_TTL_SECONDS),
+  ]);
 }
 
 export function createHandler(
@@ -437,7 +456,12 @@ export function createHandler(
       } catch {
         allowlist = { status: "error" };
       }
-      return loginPage(undefined, [], allowlist);
+      const requestedReturnTo = url.searchParams.get("returnTo") ?? "";
+      const returnTo = requestedReturnTo ? safeReturnTo(origin, requestedReturnTo) : "";
+      const cookies = returnTo
+        ? [cookie("__Host-portal_return_to", returnTo, STATE_TTL_SECONDS)]
+        : [];
+      return loginPage(undefined, cookies, allowlist);
     }
 
     if (url.pathname === "/auth/login") {
@@ -470,32 +494,49 @@ export function createHandler(
       return redirect(`${origin}/login`, 303, [
         cookie(SESSION_COOKIE, "", 0),
         cookie(STATE_COOKIE, "", 0),
+        cookie("__Host-portal_return_to", "", 0),
       ]);
     }
 
     const sessionToken = parseCookies(request).get(SESSION_COOKIE);
     const session = sessionToken ? await verifySession(sessionToken, env.SESSION_SECRET) : null;
-    if (!session) return redirect(`${origin}/login`);
-
-    let allowed: boolean;
-    try {
-      allowed = await isAllowlisted(env, session.githubId);
-    } catch {
-      return htmlResponse("<h1>权限核验暂时失败</h1><p>请稍后刷新页面。</p>", 503);
+    let memberSession: SessionPayload | null = null;
+    let revokedSession = false;
+    if (session) {
+      try {
+        if (await isAllowlisted(env, session.githubId)) memberSession = session;
+        else revokedSession = true;
+      } catch {
+        const protectedPath = url.pathname === "/api/me"
+          || url.pathname === "/api/qa/status"
+          || url.pathname === "/api/ask"
+          || url.pathname === "/api/content/group-chronicle";
+        if (protectedPath) return htmlResponse("<h1>权限核验暂时失败</h1><p>请稍后刷新页面。</p>", 503);
+      }
     }
-    if (!allowed) {
-      return loginPage("当前 GitHub 账户已不在获准成员名单中。", [cookie(SESSION_COOKIE, "", 0)]);
+
+    const memberOnly = url.pathname === "/api/me"
+      || url.pathname === "/api/qa/status"
+      || url.pathname === "/api/ask"
+      || url.pathname === "/api/content/group-chronicle";
+    if (memberOnly && !memberSession) {
+      if (url.pathname === "/api/me") {
+        const response = jsonResponse({ authenticated: false }, 401);
+        if (revokedSession) response.headers.append("Set-Cookie", cookie(SESSION_COOKIE, "", 0));
+        return response;
+      }
+      return redirect(`${origin}/login`, 302, revokedSession ? [cookie(SESSION_COOKIE, "", 0)] : []);
     }
 
     if (url.pathname === "/api/me") {
       if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
-      return jsonResponse({ login: session.login });
+      return jsonResponse({ login: memberSession?.login });
     }
     if (url.pathname === "/api/qa/status") {
       if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
       return qaStatus(env);
     }
-    if (url.pathname === "/api/ask") return handleQaAsk(request, env, session.githubId, modelFetch);
+    if (url.pathname === "/api/ask") return handleQaAsk(request, env, memberSession!.githubId, modelFetch);
     if (url.pathname === "/api/content/status") {
       if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
       try {
@@ -516,7 +557,7 @@ export function createHandler(
     if (url.pathname === "/api/content/group") {
       if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
       try {
-        const payload = await contentGroupDay(env, url.searchParams.get("date") ?? "");
+        const payload = await contentGroupDay(env, url.searchParams.get("date") ?? "", { includeGroupChronicle: false });
         return payload ? jsonResponse(payload) : jsonResponse({ error: "指定日期不存在。" }, 404);
       } catch {
         return jsonResponse({ error: "群聊日数据暂时不可用。" }, 503);
@@ -525,10 +566,24 @@ export function createHandler(
     if (url.pathname === "/api/content/group-history") {
       if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
       try {
-        const payload = await contentGroupHistory(env);
+        const payload = await contentGroupHistory(env, { includeGroupChronicle: false });
         return payload ? jsonResponse(payload) : jsonResponse({ error: "群聊全量视图尚未就绪。" }, 503);
       } catch {
         return jsonResponse({ error: "群聊全量视图暂时不可用。" }, 503);
+      }
+    }
+    if (url.pathname === "/api/content/group-chronicle") {
+      if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
+      try {
+        const payload = await contentGroupHistory(env, { includeGroupChronicle: true });
+        return payload ? jsonResponse({
+          version: 1,
+          timeline: payload.timeline,
+          live: payload.live,
+          stats: payload.stats,
+        }) : jsonResponse({ error: "群聊纪事尚未就绪。" }, 503);
+      } catch {
+        return jsonResponse({ error: "群聊纪事暂时不可用。" }, 503);
       }
     }
     if (url.pathname === "/api/content/issues" || url.pathname === "/api/content/repos") {
@@ -546,8 +601,13 @@ export function createHandler(
       return new Response("Method Not Allowed", { status: 405, headers: securityHeaders() });
     }
 
+    if (/^\/data\/\d{4}-\d{2}-\d{2}\.json$/u.test(url.pathname)) {
+      return new Response("Not Found", { status: 404, headers: securityHeaders() });
+    }
+
     const assetResponse = await env.ASSETS.fetch(request);
     const headers = securityHeaders(new Headers(assetResponse.headers));
+    if (revokedSession) headers.append("Set-Cookie", cookie(SESSION_COOKIE, "", 0));
     return new Response(assetResponse.body, { status: assetResponse.status, statusText: assetResponse.statusText, headers });
   };
 }

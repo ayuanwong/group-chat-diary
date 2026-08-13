@@ -352,6 +352,8 @@ footer .mono{font-size:10px;color:var(--faint);letter-spacing:.14em}
 .guide-scope{display:inline-flex;align-items:center;gap:6px;margin-top:10px;border:1px solid rgba(255,179,71,.28);padding:4px 8px;color:var(--amber);font-size:9px;letter-spacing:.12em}
 .account-menu{display:flex;align-items:center;gap:6px;white-space:nowrap;flex-wrap:wrap}
 .account-login{max-width:116px;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-size:10.5px;letter-spacing:.03em}
+.account-login-link{font:inherit;text-decoration:none;border:1px solid var(--dim);padding:4px 8px;color:var(--gr)}
+.account-login-link:hover,.account-login-link:focus-visible{border-color:var(--gr);outline:none}
 .account-menu form{margin:0}
 .account-logout{font:inherit;font-size:10px;color:var(--faint);background:none;border:1px solid var(--dim);padding:4px 8px;cursor:pointer;letter-spacing:.06em}
 .account-logout:hover,.account-logout:focus-visible{color:var(--gr);border-color:var(--gr);outline:none}
@@ -688,9 +690,10 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
     <label class="date-switch" for="datePicker"><span class="label">数据总览日期</span><select id="datePicker" aria-label="切换数据总览的已结束自然日"></select></label>
     <label class="theme-control" for="themeSelect"><span>主题</span><select id="themeSelect" aria-label="选择页面主题"><option value="terminal">终端绿</option><option value="loserfox-light">LoserFox 浅色</option><option value="loserfox-dark">LoserFox 深色</option></select></label>
     <div class="meta" id="snapshotMeta">读取完整日归档…</div>
-    <div class="account-menu" aria-label="当前登录账户">
-      <span class="account-login" id="accountLogin">GitHub 账户</span>
-      <form method="post" action="/auth/logout"><button class="account-logout" type="submit">退出</button></form>
+    <div class="account-menu" id="accountMenu" aria-label="当前访问身份">
+      <span class="account-login" id="accountLogin">访客</span>
+      <a class="account-login account-login-link" id="accountLoginLink" href="/login" hidden>成员登录</a>
+      <form method="post" action="/auth/logout" id="accountLogout" hidden><button class="account-logout" type="submit">退出</button></form>
     </div>
   </div>
 </header>
@@ -702,13 +705,13 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
       <div class="p-head"><div class="k">00 // HOME</div><h2>DSH 档案馆</h2>
       <p class="desc">选择一个你感兴趣的区域进入。侧栏日期只影响数据总览；其余区域显示截至最近一次采集或同步的数据。</p></div>
 
-      <section class="qa-console" id="qaConsole" aria-labelledby="qaTitle">
+      <section class="qa-console" id="qaConsole" aria-labelledby="qaTitle" data-member-only="qa">
         <div class="qa-inner">
           <div class="qa-top">
             <div>
               <div class="qa-kicker">ASK DSH // RETRIEVAL ONLINE</div>
               <h3 class="qa-title" id="qaTitle"><span class="orb" aria-hidden="true"></span>直接问档案</h3>
-              <p class="qa-subtitle">不用逐个翻 Tab。问题会在完整私有群聊、Issue 与 Repo 语料中执行多路检索，再由 DeepSeek 组织带来源的回答。</p>
+              <p class="qa-subtitle" id="qaSubtitle">问答可能检索完整私有群聊，因此需要白名单成员登录。</p>
             </div>
             <div class="qa-statuses" aria-live="polite">
               <span class="qa-status" id="qaCorpusStatus" data-state="waiting">语料连接中</span>
@@ -842,7 +845,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
       <p class="desc">数据总览按已结束自然日归档；官方纪事收录正式发布的信息并区分已发布、计划与公告，群聊纪事从完整群聊还原事件、讨论与后续节点；两者随固定采集推进，今日内容明确标为“实时 · 未完结”。</p></div>
       <div class="chronicle-tabs" id="chronicleTabs" role="tablist" aria-label="纪事类型切换">
         <button type="button" class="on" role="tab" id="chronicleTabOfficial" aria-controls="chronicleOfficial" aria-selected="true" data-chronicle-view="official">官方纪事</button>
-        <button type="button" role="tab" id="chronicleTabGroup" aria-controls="chronicleGroup" aria-selected="false" data-chronicle-view="group">群聊纪事</button>
+        <button type="button" role="tab" id="chronicleTabGroup" aria-controls="chronicleGroup" aria-selected="false" data-chronicle-view="group">群聊纪事 · 成员</button>
       </div>
       <section id="chronicleOfficial" role="tabpanel" aria-labelledby="chronicleTabOfficial">
         <div class="sig-bar"><b>&gt;</b> 官方纪事 <b id="chronicleNum">0</b> 条 · 时间范围 <b id="chronicleRange">--</b><b id="chronicleFreshness"></b></div>
@@ -988,6 +991,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
 
 // 先启动页面外壳；即使 file:// 预览无法读取受保护数据，导航仍可用于主题与布局验收。
 const $ = (id) => document.getElementById(id);
+let memberAccount = null;
 initTabs();
 initChronicleTabs();
 
@@ -1063,6 +1067,7 @@ document.title = "DSH 档案馆";
 const DATA_URLS = {
   group: `/api/content/group?date=${encodeURIComponent(SELECTED_DATE)}`,
   history: "/api/content/group-history",
+  groupChronicle: "/api/content/group-chronicle",
   issues: "/api/content/issues",
   repos: "/api/content/repos",
 };
@@ -1090,12 +1095,31 @@ function qaSetStatus(id, label, ready) {
   element.dataset.state = ready ? "ready" : "waiting";
 }
 
+function memberLoginUrl(returnTo = "/") {
+  return `/login?returnTo=${encodeURIComponent(new URL(returnTo, location.origin).toString())}`;
+}
+
+function renderGuestQa() {
+  qaState.ready = false;
+  qaSetStatus("qaCorpusStatus", "成员登录后可用", false);
+  qaSetStatus("qaModelStatus", "MEMBER ONLY", false);
+  $("qaSend").disabled = true;
+  $("qaSend").textContent = "成员登录";
+  $("qaInput").disabled = true;
+  $("qaInput").placeholder = "问答可能检索群聊内容，仅对白名单成员开放";
+  $("qaNotice").innerHTML = `<a href="${memberLoginUrl("/")}">使用 GitHub 成员身份登录后提问 ↗</a>`;
+}
+
 function qaModelLabel(model, thinking = false, effort = "") {
   const base = String(model || "DeepSeek").replaceAll("-", " ").toUpperCase();
   return thinking ? `${base} · THINKING${effort ? ` ${String(effort).toUpperCase()}` : ""}` : base;
 }
 
 async function refreshQaStatus() {
+  if (!memberAccount) {
+    renderGuestQa();
+    return;
+  }
   try {
     const response = await fetch("/api/qa/status", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -1382,8 +1406,8 @@ function initQa() {
     input.value = button.dataset.question || button.textContent;
     form.requestSubmit();
   }));
-  refreshQaStatus();
-  setInterval(refreshQaStatus, 5_000);
+  renderGuestQa();
+  setInterval(() => { if (memberAccount) refreshQaStatus(); }, 5_000);
 }
 
 async function fetchJson(url) {
@@ -1475,14 +1499,28 @@ function initDatePicker() {
 async function initAccount() {
   try {
     const response = await fetch("/api/me", { cache: "no-store" });
-    if (!response.ok) return;
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const account = await response.json();
     if (typeof account?.login === "string" && account.login) {
+      memberAccount = account;
       $("accountLogin").textContent = `@${account.login}`;
       $("accountLogin").title = `GitHub 账户：${account.login}`;
+      $("accountLoginLink").hidden = true;
+      $("accountLogout").hidden = false;
+      $("qaSubtitle").textContent = "不用逐个翻 Tab。问题会在完整私有群聊、Issue 与 Repo 语料中执行多路检索，再由 DeepSeek 组织带来源的回答。";
+      $("qaInput").disabled = false;
+      $("qaInput").placeholder = "输入你想了解的 DSH 问题…";
+      await refreshQaStatus();
+      showRequestedGroupChronicle();
     }
   } catch {
-    // 账户标签不影响档案主体读取。
+    memberAccount = null;
+    $("accountLogin").textContent = "访客";
+    $("accountLogin").title = "当前为免登录访客";
+    $("accountLoginLink").href = memberLoginUrl("/");
+    $("accountLoginLink").hidden = false;
+    $("accountLogout").hidden = true;
+    renderGuestQa();
   }
 }
 
@@ -1763,6 +1801,10 @@ function initAgentNotes() {
 
 function setChronicleView(view, { updateUrl = true, focus = false } = {}) {
   const nextView = view === "group" ? "group" : "official";
+  if (nextView === "group" && !memberAccount) {
+    location.href = memberLoginUrl("/?tab=chronicle&chronicle=group");
+    return;
+  }
   const tabs = [...document.querySelectorAll("#chronicleTabs [data-chronicle-view]")];
   for (const button of tabs) {
     const selected = button.dataset.chronicleView === nextView;
@@ -1773,6 +1815,7 @@ function setChronicleView(view, { updateUrl = true, focus = false } = {}) {
   }
   $("chronicleOfficial").hidden = nextView !== "official";
   $("chronicleGroup").hidden = nextView !== "group";
+  if (nextView === "group" && memberAccount && !(state.history?.timeline?.length)) loadGroupChronicle();
   if (!updateUrl) return;
   const next = new URL(location.href);
   if (nextView === "group") next.searchParams.set("chronicle", "group");
@@ -1780,11 +1823,43 @@ function setChronicleView(view, { updateUrl = true, focus = false } = {}) {
   history.replaceState({}, "", next);
 }
 
+function showRequestedGroupChronicle() {
+  const url = new URL(location.href);
+  if (memberAccount && url.searchParams.get("chronicle") === "group") {
+    switchTab("chronicle");
+    setChronicleView("group", { updateUrl: false });
+  }
+}
+
+let groupChronicleLoading = null;
+async function loadGroupChronicle() {
+  if (!memberAccount) return false;
+  if (groupChronicleLoading) return groupChronicleLoading;
+  groupChronicleLoading = (async () => {
+    const response = await fetchLiveContent(`${DATA_URLS.groupChronicle}?t=${Date.now()}`);
+    const payload = await response.json();
+    if (!Array.isArray(payload?.timeline)) throw new Error("群聊纪事数据格式不匹配");
+    state.history = {
+      ...(state.history ?? {}),
+      timeline: payload.timeline,
+      live: payload.live ?? state.history?.live ?? null,
+      stats: { ...(state.history?.stats ?? {}), ...(payload.stats ?? {}) },
+    };
+    renderGroupChronicle();
+    renderHome();
+    return true;
+  })().catch((error) => {
+    $("groupChronicle").innerHTML = emptyBlock(`群聊纪事加载失败：${String(error.message || error).slice(0, 80)}`);
+    return false;
+  }).finally(() => { groupChronicleLoading = null; });
+  return groupChronicleLoading;
+}
+
 function initChronicleTabs() {
   const tabs = $("chronicleTabs");
   if (!tabs) return;
   const requested = new URL(location.href).searchParams.get("chronicle");
-  setChronicleView(requested === "group" ? "group" : "official", { updateUrl: false });
+  setChronicleView("official", { updateUrl: false });
   tabs.querySelectorAll("[data-chronicle-view]").forEach((button) => {
     button.addEventListener("click", () => setChronicleView(button.dataset.chronicleView));
   });
@@ -1844,8 +1919,8 @@ function renderHome() {
     { key: "guide", k: "02 // GUIDE", title: "🔥 新人导引", desc: "《DSH 内测安装指南》等固定入门内容，不随日期切换。", stats: "固定内容 · 随时可读", hot: true },
     { key: "cards", k: "03 // CARDS", title: "成员星卡", desc: "跨全部自然日累计的成员发言与精选表现，不推断真实身份。", stats: `${fmt(history.members?.length)} 位成员` },
     { key: "signals", k: "04 // SIGNALS", title: "信号收录", desc: "可行动的问题、建议、实测与明确完成态事件，按类别筛选。", stats: `${fmt(history.signals?.length)} 条精选信号` },
-    { key: "chronicle", k: "05 // CHRONICLE", title: "事件纪事", desc: "官方正式发布的信息（区分完成、计划与公告），以及从完整群聊还原的事件时间线。",
-      stats: `${fmt(history.chronicles?.length)} 条官方纪事 · ${fmt(groupChronicleCount)} 件群聊事件` },
+    { key: "chronicle", k: "05 // CHRONICLE", title: "事件纪事", desc: "官方正式发布的信息可直接阅读；群聊事件时间线仅对白名单成员开放。",
+      stats: memberAccount ? `${fmt(history.chronicles?.length)} 条官方纪事 · ${fmt(groupChronicleCount)} 件群聊事件` : `${fmt(history.chronicles?.length)} 条官方纪事 · 群聊纪事需登录` },
     { key: "agentnotes", k: "06 // AGENT NOTES", title: "Agent Notes", desc: "dsh 仓库决策记录全量清单，含摘要详情、TODO 与变更追踪。",
       stats: SITE_MANIFEST?.agentNotes ? `${fmt(SITE_MANIFEST.agentNotes.total)} 篇 · ${fmt(SITE_MANIFEST.agentNotes.proposed)} 计划中` : "" },
   ];
@@ -1898,6 +1973,13 @@ function renderOfficialChronicle() {
 }
 
 function renderGroupChronicle() {
+  if (!memberAccount) {
+    $("groupChronicleNum").textContent = "--";
+    $("groupChronicleRange").textContent = "成员可见";
+    $("groupChronicleFreshness").textContent = "";
+    $("groupChronicle").innerHTML = emptyBlock("群聊纪事仅对白名单成员开放；登录后才会从服务端读取数据。");
+    return;
+  }
   const items = buildGroupChronicle(state.history?.timeline ?? []);
   const box = $("groupChronicle");
   box.innerHTML = "";
@@ -2718,8 +2800,8 @@ async function checkForContentUpdate() {
   }
 }
 
-initAccount();
 initQa();
+initAccount();
 initDatePicker();
 renderGuide();
 initBoardTabs();

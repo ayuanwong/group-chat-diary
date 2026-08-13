@@ -454,11 +454,18 @@ describe("signed sessions", () => {
 });
 
 describe("archive gate", () => {
-  it("never invokes the asset binding for an anonymous request", async () => {
+  it("serves the site shell to an anonymous visitor", async () => {
+    const env = makeEnv();
+    const response = await createHandler()(new Request(`${env.SITE_ORIGIN}/`), env);
+    expect(response.status).toBe(200);
+    await expect(response.text()).resolves.toBe("SECRET ARCHIVE");
+    expect(env.ASSETS.fetch).toHaveBeenCalledOnce();
+  });
+
+  it("does not expose legacy static group snapshots to visitors", async () => {
     const env = makeEnv();
     const response = await createHandler()(new Request(`${env.SITE_ORIGIN}/data/2026-08-05.json`), env);
-    expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe(`${env.SITE_ORIGIN}/login`);
+    expect(response.status).toBe(404);
     expect(env.ASSETS.fetch).not.toHaveBeenCalled();
   });
 
@@ -493,6 +500,13 @@ describe("archive gate", () => {
     expect(env.ASSETS.fetch).not.toHaveBeenCalled();
   });
 
+  it("reports guest identity without redirecting the public page", async () => {
+    const env = makeEnv();
+    const response = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/me`), env);
+    expect(response.status).toBe(401);
+    await expect(response.json()).resolves.toEqual({ authenticated: false });
+  });
+
   it("keeps the Q&A routes behind the same signed member session", async () => {
     const modelFetch = vi.fn();
     const env = makeEnv();
@@ -505,13 +519,21 @@ describe("archive gate", () => {
     expect(modelFetch).not.toHaveBeenCalled();
   });
 
-  it("keeps the live content APIs behind the member gate", async () => {
+  it("exposes public content APIs but withholds the group chronicle timeline", async () => {
     const env = makeEnv();
     const anonymous = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/repos`), env);
-    expect(anonymous.status).toBe(302);
-    expect(anonymous.headers.get("Location")).toBe(`${env.SITE_ORIGIN}/login`);
+    expect(anonymous.status).toBe(200);
     const anonymousHistory = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/group-history`), env);
-    expect(anonymousHistory.status).toBe(302);
+    expect(anonymousHistory.status).toBe(200);
+    const anonymousHistoryBody = await anonymousHistory.json() as { chronicles: Array<{ message_id: string }>; timeline: unknown[]; stats: { timeline_event_count: number } };
+    expect(anonymousHistoryBody).toMatchObject({
+      timeline: [],
+      stats: { timeline_event_count: 0 },
+    });
+    expect(anonymousHistoryBody.chronicles.map((item) => item.message_id)).toContain("message-live");
+    const anonymousChronicle = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/group-chronicle`), env);
+    expect(anonymousChronicle.status).toBe(302);
+    expect(anonymousChronicle.headers.get("Location")).toBe(`${env.SITE_ORIGIN}/login`);
 
     const token = await signSession(
       { version: 2, githubId: 123, login: "member", exp: Math.floor(Date.now() / 1000) + 300 },
@@ -535,12 +557,10 @@ describe("archive gate", () => {
       groups: [{ count: 1 }],
       highlights: [80],
     });
-    const history = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/group-history`, { headers }), env);
+    const history = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/group-chronicle`, { headers }), env);
     expect(history.status).toBe(200);
     await expect(history.json()).resolves.toMatchObject({
       version: 1,
-      scope: "completed-days-plus-live",
-      dates: ["2026-08-05", "2026-08-06", "2026-08-07"],
       live: {
         date: "2026-08-07",
         dataThrough: "2026-08-07T09:08:00+08:00",
@@ -557,30 +577,15 @@ describe("archive gate", () => {
         chronicle_count: 4,
         timeline_event_count: 3,
       },
-      signals: [{ message_id: "signal-3" }, { message_id: "signal-2" }, { message_id: "signal-1" }],
-      chronicles: [
-        {
-          message_id: "message-live",
-          quote: "Changelog 2026-08-07",
-          basis: "官方账号结构化更新原话 + 消息自然日",
-        },
-        { message_id: "message-same-day" },
-        { message_id: "event-2" },
-        { message_id: "event-1" },
-      ],
       timeline: [
         { id: "timeline-3", title: "实时事件" },
         { id: "timeline-2", title: "第二天事件" },
         { id: "timeline-1", title: "第一天事件" },
       ],
-      members: [
-        { name: "成员甲", count: 6, signals: 2, activeDays: 3 },
-        { name: "成员乙", count: 1, signals: 1, activeDays: 1 },
-      ],
     });
     const day = await createHandler()(new Request(`${env.SITE_ORIGIN}/api/content/group?date=2026-08-06`, { headers }), env);
     await expect(day.json()).resolves.toMatchObject({
-      group: { chronicles: [{ message_id: "event-2" }] },
+      group: { chronicles: [{ message_id: "event-2" }], timeline: [] },
     });
   });
 
@@ -596,8 +601,9 @@ describe("archive gate", () => {
     );
     expect(response.status).toBe(200);
     expect(response.headers.get("Set-Cookie")).toContain("Max-Age=0");
-    expect(env.ASSETS.fetch).not.toHaveBeenCalled();
+    expect(env.ASSETS.fetch).toHaveBeenCalledOnce();
   });
+
 });
 
 describe("protected DeepSeek Q&A", () => {
@@ -1022,7 +1028,28 @@ describe("GitHub OAuth", () => {
     const setCookie = response.headers.get("Set-Cookie") ?? "";
     expect(setCookie).toContain("__Host-portal_session=");
     expect(setCookie).toContain("__Host-portal_oauth_state=");
-    expect(setCookie.match(/Max-Age=0/gu)).toHaveLength(2);
+    expect(setCookie).toContain("__Host-portal_return_to=");
+    expect(setCookie.match(/Max-Age=0/gu)).toHaveLength(3);
+  });
+
+  it("returns to the requested same-origin page after member login", async () => {
+    const githubFetch = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("access_token")) return Response.json({ access_token: "temporary-token" });
+      return Response.json({ id: 123, login: "member" });
+    });
+    const env = makeEnv();
+    const destination = `${env.SITE_ORIGIN}/?tab=chronicle&chronicle=group`;
+    const login = await createHandler()(new Request(`${env.SITE_ORIGIN}/login?returnTo=${encodeURIComponent(destination)}`), env);
+    expect(login.headers.get("Set-Cookie")).toContain("__Host-portal_return_to=%2F%3Ftab%3Dchronicle%26chronicle%3Dgroup");
+    const response = await createHandler(githubFetch)(
+      new Request(`${env.SITE_ORIGIN}/auth/callback?code=code&state=expected`, {
+        headers: { Cookie: "__Host-portal_oauth_state=expected; __Host-portal_return_to=%2F%3Ftab%3Dchronicle%26chronicle%3Dgroup" },
+      }),
+      env,
+    );
+    expect(response.status).toBe(303);
+    expect(response.headers.get("Location")).toBe(destination);
   });
 
   it("does not allow a GET request to trigger logout", async () => {

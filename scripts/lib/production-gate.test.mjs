@@ -24,9 +24,12 @@ describe("production gate audit", () => {
     expect(isLoginRedirect(new Response("login", { status: 200 }))).toBe(false);
   });
 
-  it("validates all anonymous gates and zero-scope OAuth fallback", async () => {
+  it("validates public visitor access, protected member features, and zero-scope OAuth fallback", async () => {
     const fetchImpl = vi.fn(async (input) => {
       const url = new URL(String(input));
+      if (url.pathname === "/" || url.pathname === "/api/content/manifest") {
+        return new Response("public", { status: 200 });
+      }
       if (url.pathname === "/auth/login" && url.searchParams.get("fallback") === "1") {
         return redirect(
           "https://github.com/login/oauth/authorize?client_id=test&state=opaque&allow_signup=false",
@@ -40,6 +43,7 @@ describe("production gate audit", () => {
     const result = await auditProductionGate(fetchImpl, { request });
 
     expect(result.passed).toBe(true);
+    expect(Object.values(result.publicAccess).every((endpoint) => endpoint.accessible)).toBe(true);
     expect(Object.values(result.gates).every((gate) => gate.blocked)).toBe(true);
     expect(result.oauth).toMatchObject({
       mode: "verified-active-list-fallback",
@@ -54,6 +58,9 @@ describe("production gate audit", () => {
   it("rejects OAuth requests that include an organization scope", async () => {
     const fetchImpl = vi.fn(async (input) => {
       const url = new URL(String(input));
+      if (url.pathname === "/" || url.pathname === "/api/content/manifest") {
+        return new Response("public", { status: 200 });
+      }
       if (url.pathname === "/auth/login" && url.searchParams.get("fallback") === "1") {
         return redirect(
           "https://github.com/login/oauth/authorize?client_id=test&state=opaque&scope=read%3Aorg",
@@ -68,6 +75,22 @@ describe("production gate audit", () => {
 
     expect(result.passed).toBe(false);
     expect(result.oauth.organizationScope).toBe(true);
+  });
+
+  it("fails when public visitor content is redirected to login", async () => {
+    const fetchImpl = vi.fn(async (input) => {
+      const url = new URL(String(input));
+      if (url.pathname === "/auth/login" && url.searchParams.get("fallback") === "1") {
+        return redirect(
+          "https://github.com/login/oauth/authorize?client_id=test&state=opaque",
+          { "set-cookie": "__Host-portal_oauth_state=opaque; HttpOnly; Secure; SameSite=Lax" },
+        );
+      }
+      return redirect(`${PRODUCTION_ORIGIN}/login`);
+    });
+    const result = await auditProductionGate(fetchImpl, { request: (impl, input, init) => impl(input, init) });
+    expect(result.passed).toBe(false);
+    expect(result.publicAccess.home.accessible).toBe(false);
   });
 
   it("retries transient errors at the configured boundaries", async () => {

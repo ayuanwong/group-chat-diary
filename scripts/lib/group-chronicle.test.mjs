@@ -74,6 +74,32 @@ describe("group event timeline", () => {
       .toBe("[微信消息元数据已脱敏]");
   });
 
+  it("keeps one richer event when legacy and generated official entries share a source message", () => {
+    const rows = [row("official", "2026-08-01T21:13:43+08:00", "Baymax", "DSH 新版本已发布并推送。")];
+    const result = buildGroupEventTimeline(rows, {
+      date: "2026-08-01",
+      officialChronicles: [{
+        message_id: "official",
+        title: "内测版本更新",
+        timestamp: rows[0].timestamp,
+        sender: "Baymax",
+        quote: "DSH 新版本已发布并推送。",
+      }, {
+        message_id: "official",
+        event_key: "official:2026-08-01:release:test",
+        event_type: "release",
+        status: "completed",
+        title: "版本与产品发布",
+        timestamp: rows[0].timestamp,
+        sender: "Baymax",
+        quote: "DSH 新版本已发布并推送。",
+      }],
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ title: "DSH 版本发布", eventType: "release" });
+  });
+
   it("keeps the stored event narrative instead of rebuilding abstract topics from selected signals", () => {
     const events = [{
       id: "event-1",

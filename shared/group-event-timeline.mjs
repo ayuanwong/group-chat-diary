@@ -281,6 +281,7 @@ function officialEvent(item, records, date, index) {
   }
   return {
     id: `group-event:${date}:official:${stableId(item?.event_key ?? item?.message_id ?? `${time.timestamp}:${index}`)}`,
+    sourceMessageId: oneLine(item?.message_id),
     date,
     timestamp: time.timestamp,
     endTimestamp: related.at(-1)?.time.timestamp ?? time.timestamp,
@@ -301,6 +302,18 @@ function officialEvent(item, records, date, index) {
 
 function eventSort(left, right) {
   return left.timestamp.localeCompare(right.timestamp) || left.title.localeCompare(right.title, "zh");
+}
+
+function officialSourceKey(event) {
+  return event.sourceMessageId || event.id.match(/^group-event:[^:]+:official:(.+)$/u)?.[1] || null;
+}
+
+function richerOfficialEvent(left, right) {
+  const score = (event) => Number(event.title !== "内测版本更新") * 8
+    + Number(event.title !== "官方信息发布") * 4
+    + Number(event.eventType !== "announcement") * 2
+    + event.milestones.length;
+  return score(right) > score(left) ? right : left;
 }
 
 export function buildGroupEventTimeline(rows, { officialChronicles = [], date = null, maximum = 8 } = {}) {
@@ -325,7 +338,14 @@ export function buildGroupEventTimeline(rows, { officialChronicles = [], date = 
   }
 
   const deduped = new Map();
+  const officialSources = new Map();
   for (const event of events) {
+    const sourceKey = officialSourceKey(event);
+    if (sourceKey) {
+      const previous = officialSources.get(sourceKey);
+      officialSources.set(sourceKey, previous ? richerOfficialEvent(previous, event) : event);
+      continue;
+    }
     const key = `${event.timestamp}:${event.title}`;
     const previous = deduped.get(key);
     if (!previous || event.score > previous.score
@@ -333,12 +353,13 @@ export function buildGroupEventTimeline(rows, { officialChronicles = [], date = 
       deduped.set(key, event);
     }
   }
+  for (const event of officialSources.values()) deduped.set(`${event.timestamp}:${event.title}`, event);
   const uniqueEvents = [...deduped.values()];
   const official = uniqueEvents.filter((event) => event.score >= 100);
   const community = uniqueEvents.filter((event) => event.score < 100)
     .sort((left, right) => right.score - left.score || eventSort(left, right))
     .slice(0, Math.max(0, maximum - official.length));
-  return [...official, ...community].sort(eventSort).map(({ score, ...event }) => event);
+  return [...official, ...community].sort(eventSort).map(({ score, sourceMessageId, ...event }) => event);
 }
 
 export { sanitizeEvidence };

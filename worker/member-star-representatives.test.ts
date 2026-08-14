@@ -3,6 +3,7 @@ import {
   FROZEN_MEMBER_REPRESENTATIVES,
   FROZEN_STAR_CARD_SOURCE,
 } from "./member-star-representatives";
+import { isFrozenStarCardSource } from "./content";
 
 describe("frozen member star cards", () => {
   it("covers every reviewed member from the complete fixed corpus", () => {
@@ -33,5 +34,10 @@ describe("frozen member star cards", () => {
     expect(representatives.every((value) =>
       !/file:\/\/\/|\/Users\/|github_pat_|gh[pousr]_|<msg\b|<appmsg\b|aeskey\s*=|local_id=/iu.test(value.excerpt))).toBe(true);
     expect(new Set(representatives.map((value) => value.excerpt)).size).toBe(representatives.length);
+  });
+
+  it("matches the full source count rather than the smaller accepted-message count", () => {
+    expect(isFrozenStarCardSource(66_187, "2026-08-13")).toBe(true);
+    expect(isFrozenStarCardSource(64_828, "2026-08-13")).toBe(false);
   });
 });

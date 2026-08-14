@@ -142,6 +142,11 @@ export function validArchiveDate(value: string): boolean {
   return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value;
 }
 
+export function isFrozenStarCardSource(sourceMessages: number, latestDate: string): boolean {
+  return sourceMessages === FROZEN_STAR_CARD_SOURCE.sourceMessageCount
+    && latestDate === FROZEN_STAR_CARD_SOURCE.latestGroupDate;
+}
+
 async function activeSource(db: D1Database, source: "issues" | "repos", includePayload: boolean): Promise<SourceVersionRow | null> {
   const payloadColumn = includePayload ? ", v.payload" : "";
   return db.prepare(`
@@ -440,8 +445,7 @@ export async function contentGroupHistory(
     };
   }).sort((left, right) => right.count - left.count || right.signals - left.signals || left.name.localeCompare(right.name, "zh"));
 
-  const fixedArchiveMatches = acceptedMessages === FROZEN_STAR_CARD_SOURCE.sourceMessageCount
-    && latestVisibleDate === FROZEN_STAR_CARD_SOURCE.latestGroupDate;
+  const fixedArchiveMatches = isFrozenStarCardSource(sourceMessages, latestVisibleDate);
   if (fixedArchiveMatches && (memberList.length !== FROZEN_STAR_CARD_SOURCE.memberCount
     || FROZEN_STAR_CARD_SOURCE.reviewedMemberCount !== FROZEN_STAR_CARD_SOURCE.memberCount
     || memberList.some((member) => !member.representative))) {

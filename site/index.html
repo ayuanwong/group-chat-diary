@@ -915,6 +915,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
   <section class="panel" id="panel-agentnotes" hidden>
     <div class="wrap">
       <div class="p-head"><div class="k">06 // AGENT NOTES</div><h2>Agent Notes 全量清单</h2>
+      <p class="desc">作者：<b>@LoserFox</b></p>
       <p class="desc" id="anDesc">加载中…</p></div>
       <div class="an-card an-stats-card">
         <h3>📊 统计</h3>
@@ -980,7 +981,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
 <div id="refreshBar"><div class="line" id="refreshLine"></div><div class="bar"><i id="refreshFill"></i></div></div>
 <footer>
   <div class="wrap f-in">
-    <div class="closing" id="footerClosing">旧群聊档案已撤下；等待 <b>【官方】DSH内测群</b> 的新证据数据。有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>。</div>
+    <div class="closing" id="footerClosing">有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>，项目贡献者@LoserFox 、@inschrift-spruch-raum</div>
     <div class="mono" id="footerMeta">&gt; 群消息 0 条 · Issue 0 条 · EOF</div>
   </div>
 </footer>
@@ -2690,9 +2691,7 @@ function renderFooter() {
   const messageCount = state.history?.stats?.accepted_messages ?? 0;
   const issueCount = state.issues?.issues?.length ?? 0;
   const repoCount = state.repos?.repositories?.length ?? 0;
-  if ($("footerClosing")) $("footerClosing").innerHTML = messageCount
-    ? `本页只展示来自 <b>【官方】DSH内测群</b>、且发言归属可由本机微信数据库验证的聚合与精选记录。有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>。`
-    : `旧群聊档案已撤下；等待 <b>【官方】DSH内测群</b> 的新证据数据。有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>。`;
+  if ($("footerClosing")) $("footerClosing").innerHTML = `有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>，项目贡献者@LoserFox 、@inschrift-spruch-raum`;
   if ($("footerMeta")) $("footerMeta").textContent = `> 群消息 ${messageCount} 条 · Issue ${issueCount} 条 · Repo ${repoCount} 个 · EOF`;
 }
 

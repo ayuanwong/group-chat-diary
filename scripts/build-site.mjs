@@ -226,8 +226,12 @@ if (!siteHtml.includes('[...(state.history?.chronicles ?? [])].sort((left, right
   || !siteHtml.includes('state.history?.signals ?? []') || !siteHtml.includes('state.history?.members ?? []')) {
   throw new Error("纪事、信号与星卡必须从全量群聊视图读取，纪事按时间倒序渲染");
 }
-if (!siteHtml.includes("@少女阿原")) {
-  throw new Error("页脚必须保留内容疑问联系人");
+const footerCredit = "有疑问或发现需要修正的内容，欢迎联系 <b>@少女阿原</b>，项目贡献者@LoserFox 、@inschrift-spruch-raum";
+if ((siteHtml.match(new RegExp(footerCredit, "g")) ?? []).length < 2) {
+  throw new Error("页脚必须完整显示联系人及项目贡献者");
+}
+if (!siteHtml.includes('<h2>Agent Notes 全量清单</h2>\n      <p class="desc">作者：<b>@LoserFox</b></p>')) {
+  throw new Error("Agent Notes 全量清单必须显示作者 @LoserFox");
 }
 let guide;
 try {

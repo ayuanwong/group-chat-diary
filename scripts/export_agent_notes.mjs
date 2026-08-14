@@ -11,7 +11,8 @@
  *
  * Usage:
  *   node scripts/export_agent_notes.mjs --notes-root <dsh-checkout>/.agents/notes \
- *     [-o content/agent-notes.json] [--source-label <label>]
+ *     [-o content/agent-notes.json] [--source-label <label>] \
+ *     [--history-repo <dsh-checkout-with-snapshot-refs>]
  */
 
 import { readdirSync, readFileSync, writeFileSync, existsSync, statSync } from 'node:fs'
@@ -147,7 +148,9 @@ function walk(root) {
 // ── history tracking ─────────────────────────────────────────────────
 // Snapshot refs (e.g. refs/remotes/origin/snapshots/20260803T142347Z-…) carry
 // the notes tree at different dates; consecutive inventories give per-day
-// added / removed / archived (implemented→archived) / moved diffs.
+// added / removed / archived (implemented→archived) / moved diffs. Repositories
+// without snapshot branches fall back to the newest notes-changing commit per
+// day so migrated repositories still retain a useful change history.
 
 function git(repo, args) {
   return execFileSync('git', ['-C', repo, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
@@ -194,6 +197,20 @@ function discoverSnapshotRefs(repo, notesRel) {
   return unique.slice(-14) // bounded history depth
 }
 
+function discoverDailyCommits(repo, notesRel) {
+  let rows = []
+  try {
+    rows = git(repo, ['log', '--format=%H|%cI', '--', notesRel]).split('\n').filter(Boolean)
+  } catch { return [] }
+  const newestByDate = new Map()
+  for (const row of rows) {
+    const [name, timestamp] = row.split('|')
+    const date = timestamp?.match(/^\d{4}-\d{2}-\d{2}/)?.[0]
+    if (name && date && !newestByDate.has(date)) newestByDate.set(date, { name, date })
+  }
+  return [...newestByDate.values()].sort((a, b) => a.date.localeCompare(b.date)).slice(-14)
+}
+
 function inventoryFromRef(repo, ref, notesRel) {
   const items = []
   try {
@@ -207,18 +224,15 @@ function inventoryFromRef(repo, ref, notesRel) {
       if (!file.endsWith('.md') || file.endsWith('.zh.md')) continue
       const m = file.match(NOTE_FILE)
       if (!m) continue
-      items.push({ p: rel, d: m[1], l: lc, c: cls, t: null })
-    }
-    const titles = new Map()
-    for (const line of git(repo, ['grep', '-e', '^# ', ref, '--', notesRel]).split('\n')) {
-      const rest = line.slice(line.indexOf(':') + 1) // drop "<ref>:"
-      const ci = rest.indexOf(':')
-      if (ci < 0) continue
-      const path = rest.slice(0, ci)
-      if (!titles.has(path)) titles.set(path, rest.slice(ci + 1).replace(/^#\s+/, '').trim())
-    }
-    for (const item of items) {
-      item.t = titles.get(`${notesRel}/${item.p}`) ?? item.p.split('/').pop().replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.md$/, '').replace(/-/g, ' ')
+      items.push({
+        p: rel,
+        d: m[1],
+        l: lc,
+        c: cls,
+        // Snapshot branches may be partial clones; deriving the history label
+        // from the stable filename avoids fetching hundreds of old note blobs.
+        t: file.replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.md$/, '').replace(/-/g, ' '),
+      })
     }
   } catch { /* treat ref as empty */ }
   return items
@@ -247,10 +261,23 @@ function diffSnapshots(prev, cur) {
   return { added, removed, archived, moved }
 }
 
-function buildHistory(repo, notesRel) {
-  const refs = discoverSnapshotRefs(repo, notesRel)
+function buildHistory(repo, notesRel, current) {
+  const snapshots = discoverSnapshotRefs(repo, notesRel)
+  let refs = snapshots.length
+    ? snapshots.map(r => ({ ...r, date: refDate(r.name) }))
+    : discoverDailyCommits(repo, notesRel)
+  if (current) {
+    refs = refs.filter(r => r.date !== current.date)
+    refs.push(current)
+    refs.sort((a, b) => a.date.localeCompare(b.date))
+    refs = refs.slice(-14)
+  }
   if (!refs.length) return []
-  const inventories = refs.map(r => ({ ref: r.name, date: refDate(r.name), notes: inventoryFromRef(repo, r.name, notesRel) }))
+  const inventories = refs.map(r => ({
+    ref: r.name,
+    date: r.date,
+    notes: inventoryFromRef(r.repo ?? repo, r.name, r.notesRel ?? notesRel),
+  }))
   const history = []
   let previous = null
   for (const inv of inventories) {
@@ -275,8 +302,9 @@ function main() {
   const rootArg = argValue('--notes-root')
   const outArg = argValue('-o') ?? argValue('--output')
   const sourceLabel = argValue('--source-label') ?? 'deepseek-harness'
+  const historyRepoArg = argValue('--history-repo')
   if (!rootArg) {
-    console.error('usage: node scripts/export_agent_notes.mjs --notes-root <dsh-checkout>/.agents/notes [-o content/agent-notes.json] [--source-label <label>]')
+    console.error('usage: node scripts/export_agent_notes.mjs --notes-root <dsh-checkout>/.agents/notes [-o content/agent-notes.json] [--source-label <label>] [--history-repo <repo>]')
     process.exit(2)
   }
   const root = resolve(rootArg)
@@ -295,12 +323,26 @@ function main() {
   // History from git snapshot refs of the notes' repository (empty when unavailable).
   const repoRoot = resolve(root, '../..')
   const hasGit = existsSync(join(repoRoot, '.git'))
-  const history = hasGit ? buildHistory(repoRoot, '.agents/notes') : []
+  const historyRepo = historyRepoArg ? resolve(historyRepoArg) : repoRoot
+  const hasHistoryGit = existsSync(join(historyRepo, '.git'))
+  if (historyRepoArg && !hasHistoryGit) {
+    console.error(`error: history repo is not a git checkout: ${historyRepo}`)
+    process.exit(2)
+  }
+  const sourceRevision = hasGit ? git(repoRoot, ['rev-parse', 'HEAD']) : null
+  const sourceDate = hasGit ? git(repoRoot, ['show', '-s', '--format=%cI', sourceRevision]).slice(0, 10) : null
+  const history = hasHistoryGit ? buildHistory(historyRepo, '.agents/notes', hasGit ? {
+    name: sourceRevision,
+    date: sourceDate,
+    repo: repoRoot,
+    notesRel: '.agents/notes',
+  } : null) : []
   if (history.length) console.log(`history: ${history.length} snapshots (${history[0].date} → ${history[history.length - 1].date})`)
   const payload = {
     generatedAt: new Date().toISOString(),
     source: sourceLabel,
-    notesRoot: root,
+    notesRoot: '.agents/notes',
+    sourceRevision,
     counts,
     notes,
     history,

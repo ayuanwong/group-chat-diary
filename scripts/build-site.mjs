@@ -159,6 +159,22 @@ assertPublishable(siteHtml, "site/index.html");
 assertPublishable(groupChronicleModule, "site/group-chronicle.mjs");
 assertPublishable(guideText, "content/newcomer-guide.json");
 assertPublishable(agentNotesText, "content/agent-notes.json");
+let agentNotes;
+try {
+  agentNotes = JSON.parse(agentNotesText);
+} catch {
+  throw new Error("agent-notes.json 不是合法 JSON");
+}
+const agentNoteCounts = { total: agentNotes?.notes?.length ?? 0 };
+for (const note of agentNotes?.notes ?? []) {
+  agentNoteCounts[note.l] = (agentNoteCounts[note.l] ?? 0) + 1;
+}
+const latestAgentNotesHistory = agentNotes?.history?.at(-1);
+if (agentNotes?.notesRoot !== ".agents/notes" || !/^[0-9a-f]{40}$/.test(agentNotes?.sourceRevision ?? "")
+  || agentNoteCounts.total === 0 || Object.entries(agentNoteCounts).some(([key, value]) => agentNotes?.counts?.[key] !== value)
+  || latestAgentNotesHistory?.counts?.total !== agentNoteCounts.total) {
+  throw new Error("Agent Notes 数据来源、版本或状态计数不完整");
+}
 if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide"') || !siteHtml.includes("/data/manifest.json")) {
   throw new Error("站点外壳缺少日期切换或新人导引入口");
 }
@@ -270,7 +286,7 @@ await writeFile(path.join(dataOutput, "manifest.json"), `${JSON.stringify({
   latest: latestMatch[1],
   dates: entries.map((entry) => entry.date),
   entries,
-  agentNotes: JSON.parse(agentNotesText)?.counts ?? null,
+  agentNotes: agentNotes.counts ?? null,
 })}\n`, "utf8");
 
 await writeFile(path.join(output, "robots.txt"), "User-agent: *\nDisallow: /\n", "utf8");

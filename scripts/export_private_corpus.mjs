@@ -2,6 +2,9 @@ import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { enforceFixedArchive } from "./lib/frozen-archive-policy.mjs";
+
+enforceFixedArchive("旧式私有语料导出");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const corpusRoot = path.join(root, "corpus");

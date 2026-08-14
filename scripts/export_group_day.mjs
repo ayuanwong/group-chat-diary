@@ -1,6 +1,9 @@
 import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { assertPrivateContent, projectRoot, sanitizeText } from "./lib/data-sync.mjs";
+import { enforceFixedArchive } from "./lib/frozen-archive-policy.mjs";
+
+enforceFixedArchive("群聊自然日导出");
 
 function argValue(name) {
   const index = process.argv.indexOf(name);

@@ -6,6 +6,7 @@ import { tokenize } from "../qa/retrieval.mjs";
 import { buildGroupEventTimeline } from "../shared/group-event-timeline.mjs";
 import { isOfficialInformationRecord } from "../shared/official-chronicle.mjs";
 import { mergeOfficialChronicles, withoutRepeatedChronicles } from "./lib/chronicle-policy.mjs";
+import { enforceFixedArchive } from "./lib/frozen-archive-policy.mjs";
 import {
   assertPrivateContent,
   d1Target,
@@ -20,6 +21,8 @@ import {
   splitSqlText,
   trimText,
 } from "./lib/data-sync.mjs";
+
+enforceFixedArchive("群聊");
 
 const CONTENT_DB = "CONTENT_DB";
 const QA_DB = "QA_DB";

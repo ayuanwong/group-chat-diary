@@ -564,7 +564,7 @@ describe("archive gate", () => {
       live: {
         date: "2026-08-07",
         dataThrough: "2026-08-07T09:08:00+08:00",
-        status: "live",
+        status: "fixed-final",
       },
       stats: {
         days: 3,

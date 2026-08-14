@@ -2,6 +2,10 @@
 set -euo pipefail
 
 SITE_REPO="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+node "$SITE_REPO/scripts/frozen_source_guard.mjs" "旧式网站快照" >/dev/null 2>&1 || {
+  echo "DSH 数据已固定封存；旧式网站快照生成已停用。" >&2
+  exit 78
+}
 SOURCE_REPO="$SITE_REPO/../dsh-archive"
 RAW_MESSAGES="$SOURCE_REPO/evidence/wechat/raw-messages.local.json"
 WECHAT_CONFIG="$SOURCE_REPO/.local/wechat-automation/config.local.json"

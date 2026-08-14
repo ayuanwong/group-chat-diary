@@ -703,7 +703,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
   <section class="panel" id="panel-home">
     <div class="wrap">
       <div class="p-head"><div class="k">00 // HOME</div><h2>DSH 档案馆</h2>
-      <p class="desc">选择一个你感兴趣的区域进入。侧栏日期只影响数据总览；其余区域显示截至最近一次采集或同步的数据。</p></div>
+      <p class="desc">选择一个你感兴趣的区域进入。侧栏日期只影响数据总览；其余区域显示最终固定档案。</p></div>
 
       <section class="qa-console" id="qaConsole" aria-labelledby="qaTitle" data-member-only="qa">
         <div class="qa-inner">
@@ -727,7 +727,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
           <div class="qa-prompts" aria-label="推荐问题">
             <button type="button" class="qa-prompt" data-question="最近群里最关心的三个问题是什么？">最近大家关心什么？</button>
             <button type="button" class="qa-prompt" data-question="目前有哪些高优先级 Bug Issue 值得关注？">高优先级 Bug</button>
-            <button type="button" class="qa-prompt" data-question="组织目前有哪些 Repo，最近哪些仓库有更新？">Repo 动态</button>
+            <button type="button" class="qa-prompt" data-question="固定档案中有哪些 Repo，哪些仓库最值得了解？">Repo 档案</button>
             <button type="button" class="qa-prompt" data-question="内测版本最近有哪些明确完成的更新？">最近版本更新</button>
           </div>
 
@@ -753,7 +753,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
       <div class="p-head"><div class="k">00 // NEWCOMER GUIDE</div><h2>新人导引</h2>
       <p class="desc">给第一次进入 DSH 内测群的成员准备的起步信息。</p><span class="guide-scope">固定内容 · 不随日期切换</span></div>
       <div class="guide-empty" id="guideContent">
-        <div><div class="icon" aria-hidden="true">🔥</div><h3>新人导引正在整理</h3><p>这里已经预留为独立内容入口。后续资料上传到私有 GitHub 仓库后，会自动同步到这个位置。</p><span class="status">COMING SOON</span></div>
+        <div><div class="icon" aria-hidden="true">🔥</div><h3>新人导引正在整理</h3><p>这里已经预留为独立内容入口；后续资料只有在人工发布代码时才会进入页面。</p><span class="status">COMING SOON</span></div>
       </div>
     </div>
   </section>
@@ -842,7 +842,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
   <section class="panel" id="panel-chronicle" hidden>
     <div class="wrap">
       <div class="p-head"><div class="k">01 // CHRONICLE</div><h2>纪事</h2>
-      <p class="desc">数据总览按已结束自然日归档；官方纪事收录正式发布的信息并区分已发布、计划与公告，群聊纪事从完整群聊还原事件、讨论与后续节点；两者随固定采集推进，今日内容明确标为“实时 · 未完结”。</p></div>
+      <p class="desc">档案数据已固定：官方纪事收录正式发布的信息并区分已发布、计划与公告；群聊纪事从完整群聊还原事件、讨论与后续节点。页面按最终固定语料呈现，不再自动采集或刷新。</p></div>
       <div class="chronicle-tabs" id="chronicleTabs" role="tablist" aria-label="纪事类型切换">
         <button type="button" class="on" role="tab" id="chronicleTabOfficial" aria-controls="chronicleOfficial" aria-selected="true" data-chronicle-view="official">官方纪事</button>
         <button type="button" role="tab" id="chronicleTabGroup" aria-controls="chronicleGroup" aria-selected="false" data-chronicle-view="group">群聊纪事 · 成员</button>
@@ -871,7 +871,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
   <section class="panel" id="panel-cards">
     <div class="wrap">
       <div class="p-head"><div class="k">03 // PERSONA</div><h2>成员星卡</h2>
-      <p class="desc" id="personaDesc">没有本机数据库证据的成员不会生成星卡。</p></div>
+      <p class="desc" id="personaDesc">全部星卡均从最终固定群聊语料重新逐卡复核，旧代表句不保留优先级。</p></div>
       <div class="toolbar">
         <div id="rarFilters" style="display:flex;gap:6px;flex-wrap:wrap"></div>
         <div id="sortBtns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
@@ -886,13 +886,13 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
   <section class="panel" id="panel-issues" hidden>
     <div class="wrap">
       <div class="p-head"><div class="k">04 // GITHUB BOARD</div><h2>Issue / Repo</h2>
-      <p class="desc">GitHub 数据独立更新，不跟随群聊日期。页面始终读取最近一次校验成功的版本。</p></div>
+      <p class="desc">GitHub 数据已冻结为档案版本：Issue 保留最终版本，Repo 保留成员迁移前的完整集合，不再跟随 GitHub 变化。</p></div>
       <div class="board-tabs" id="boardTabs" aria-label="Issue 与 Repo 切换">
         <button type="button" class="on" data-board="issues">Issue</button>
         <button type="button" data-board="repos">Repo</button>
       </div>
       <section id="boardIssues">
-        <div class="sig-bar"><b>&gt;</b> 共 <b id="issTotal">0</b> 条 · <b id="issOpen">0</b> 条开放中 · 归纳为 <b id="issCount">0</b> 组 · 同步于 <b id="issUpdated">--</b></div>
+        <div class="sig-bar"><b>&gt;</b> 共 <b id="issTotal">0</b> 条 · <b id="issOpen">0</b> 条开放中 · 归纳为 <b id="issCount">0</b> 组 · 固定于 <b id="issUpdated">--</b></div>
         <div class="issue-controls">
           <span class="label">排序</span><div id="issSortBtns" class="filters"></div>
           <span class="label">分类</span><div class="filters" id="issCatFilters"></div>
@@ -900,7 +900,7 @@ html[data-theme^="loserfox-"] .qa-send:focus-visible:not(:disabled){box-shadow:n
         <div id="issList"></div>
       </section>
       <section id="boardRepos" hidden>
-        <div class="sig-bar"><b>&gt;</b> 共 <b id="repoTotal">0</b> 个 Repo · 活跃 <b id="repoActive">0</b> · 归档 <b id="repoArchived">0</b> · 同步于 <b id="repoUpdated">--</b></div>
+        <div class="sig-bar"><b>&gt;</b> 共 <b id="repoTotal">0</b> 个 Repo · 活跃 <b id="repoActive">0</b> · 归档 <b id="repoArchived">0</b> · 固定于 <b id="repoUpdated">--</b></div>
         <div class="issue-controls">
           <span class="label">排序</span><div id="repoSortBtns" class="filters"></div>
           <span class="label">方向</span><div id="repoCatFilters" class="filters"></div>
@@ -1011,7 +1011,7 @@ async function fetchLiveContent(url, attempts = 3) {
     }
     if (attempt + 1 < attempts) await waitForContentRetry(300 * (2 ** attempt));
   }
-  throw lastError || new Error(`${url}: 实时内容暂时不可用`);
+  throw lastError || new Error(`${url}: 固定档案暂时不可用`);
 }
 
 let manifestResponse;
@@ -1022,7 +1022,7 @@ try {
   if (!ALLOW_STATIC_CONTENT) {
     $("refreshBar").classList.add("on");
     $("refreshFill").style.width = "100%";
-    $("refreshLine").textContent = "> 实时内容暂时不可用；为避免显示旧数据，未启用静态快照。请稍后刷新。";
+    $("refreshLine").textContent = "> 固定档案暂时不可用；为避免显示错误版本，未启用静态快照。请稍后刷新。";
     throw error;
   }
   manifestResponse = await fetch("/data/manifest.json", { cache: "no-store" });
@@ -1032,19 +1032,6 @@ let SITE_MANIFEST = await manifestResponse.json();
 if (!Array.isArray(SITE_MANIFEST.dates) || !SITE_MANIFEST.dates.length || !SITE_MANIFEST.latest) {
   throw new Error("站点日期清单无效");
 }
-const manifestRevision = (manifest) => JSON.stringify([
-  manifest.latest,
-  manifest.entries?.[0]?.activatedAt ?? null,
-  manifest.liveChronicle?.date ?? null,
-  manifest.liveChronicle?.activatedAt ?? null,
-  manifest.github?.syncId ?? null,
-  manifest.github?.generatedAt ?? null,
-  manifest.liveGroup?.latestDate ?? null,
-  manifest.liveGroup?.syncedAt ?? null,
-]);
-const activeGroupDayRevision = (manifest, date) =>
-  manifest.entries?.find((entry) => entry.date === date)?.activatedAt ?? null;
-let activeContentRevision = manifestRevision(SITE_MANIFEST);
 const requestedDate = new URL(location.href).searchParams.get("date");
 const SELECTED_DATE = SITE_MANIFEST.dates.includes(requestedDate) ? requestedDate : SITE_MANIFEST.latest;
 const snapshotResponse = liveContent
@@ -1128,7 +1115,7 @@ async function refreshQaStatus() {
     const issues = Number(status.corpus?.issueCount || 0).toLocaleString("zh-CN");
     const repos = Number(status.corpus?.repoCount || 0).toLocaleString("zh-CN");
     const latest = String(status.corpus?.latestGroupDate || "").slice(5) || "--";
-    qaSetStatus("qaCorpusStatus", `实时至 ${latest} · 群聊 ${messages} · Issue ${issues} · Repo ${repos}`, Boolean(status.corpus?.messageCount && status.corpus?.issueCount));
+    qaSetStatus("qaCorpusStatus", `固定至 ${latest} · 群聊 ${messages} · Issue ${issues} · Repo ${repos}`, Boolean(status.corpus?.messageCount && status.corpus?.issueCount));
     qaSetStatus("qaModelStatus", status.deepseekReady ? qaModelLabel(status.model, status.thinking) : "等待 DEEPSEEK KEY", Boolean(status.deepseekReady));
     qaState.ready = Boolean(status.deepseekReady);
     $("qaSend").disabled = !qaState.ready || qaState.busy;
@@ -1453,7 +1440,7 @@ function validGroup(data) {
 }
 
 function validGroupHistory(data) {
-  return data && data.version === 1 && ["completed-days-plus-live", "all-active-group-days", "static-latest-snapshot"].includes(data.scope) &&
+  return data && data.version === 1 && ["fixed-full-archive", "all-active-group-days", "static-latest-snapshot"].includes(data.scope) &&
     data.group === "【官方】DSH内测群" && Array.isArray(data.dates) && data.dates.length > 0 &&
     Number.isInteger(data.stats?.accepted_messages) && Number.isInteger(data.stats?.days) &&
     Array.isArray(data.signals) && Array.isArray(data.chronicles) && Array.isArray(data.members);
@@ -1603,7 +1590,7 @@ function initSnapshotDiffs() {
         `<div class="sd-sec"><h4>新增精选信号（${delta.newSignals.length}）</h4>${signals ? `<ul>${signals}</ul>` : '<p class="sd-none">无</p>'}</div>` +
         `<div class="sd-sec"><h4>主题增量 TOP</h4>${topics ? `<ul>${topics}</ul>` : '<p class="sd-none">无</p>'}</div>`;
     } else {
-      detail = `<div class="sd-sec"><p class="sd-none">首份快照作为后续对比的基线；「今日最新」tab 展示最新一日的增量。</p></div>`;
+      detail = `<div class="sd-sec"><p class="sd-none">首份快照作为后续对比的基线；所选日期展示该自然日的固定增量。</p></div>`;
     }
     return `<details class="sd-day" data-base="${base ? 1 : 0}">
       <summary><span class="sd-date">${escapeHtml(d.date)}</span><span class="sd-stats">消息 <b>${fmt(s.messages)}</b> · 信号 <b>${s.signals}</b> · 成员 <b>${s.members}</b> · Issue <b>${s.issues}</b> · 纪事 <b>${s.chronicles}</b></span><span class="sd-deltas">${escapeHtml(deltas)}</span></summary>
@@ -1958,7 +1945,7 @@ function renderOfficialChronicle() {
   const historyEnd = String(historyStats.date_end || state.history?.dates?.at(-1) || "").slice(0, 10);
   $("chronicleRange").textContent = historyStart && historyEnd ? `${historyStart} → ${historyEnd}` : "--";
   const liveThrough = state.history?.live?.dataThrough ? compactTime(state.history.live.dataThrough) : "";
-  $("chronicleFreshness").textContent = liveThrough ? ` · 最新采集至 ${liveThrough}（实时，未完结）` : "";
+  $("chronicleFreshness").textContent = liveThrough ? ` · 固定至 ${liveThrough}` : "";
   if (!items.length) {
     box.innerHTML = emptyBlock("全部已归档日期中没有来源可归属的正式官方信息。");
     return;
@@ -1989,15 +1976,11 @@ function renderGroupChronicle() {
   $("groupChronicleNum").textContent = items.length.toLocaleString("zh-CN");
   const earliest = String(items.at(-1)?.timestamp || "").slice(0, 10);
   const latest = String(items[0]?.timestamp || "").slice(0, 10);
-  const today = beijingDate(new Date());
-  const hasPartialToday = state.history?.live?.date === today;
   $("groupChronicleRange").textContent = earliest && latest ? `${earliest} → ${latest}` : "--";
   const liveThrough = state.history?.live?.dataThrough ? compactTime(state.history.live.dataThrough) : "";
-  $("groupChronicleFreshness").textContent = hasPartialToday
-    ? ` · 最新采集至 ${liveThrough || today}（实时，未完结）`
-    : "";
+  $("groupChronicleFreshness").textContent = liveThrough ? ` · 固定至 ${liveThrough}` : "";
   if (!items.length) {
-    box.innerHTML = emptyBlock("当前 active 数据还没有从完整群聊生成事件时间线；下一次群聊同步会补齐。");
+    box.innerHTML = emptyBlock("固定档案中没有可组成事件时间线的群聊记录。");
     return;
   }
   for (const event of items) {
@@ -2011,9 +1994,7 @@ function renderGroupChronicle() {
         <div class="meta"><b>${escapeHtml(quote.sender)}</b><span>${escapeHtml(quote.time)}</span></div>
         <blockquote>「${escapeHtml(quote.quote)}」</blockquote>
       </div>`).join("");
-    const eventDate = String(event.timestamp || "").slice(0, 10);
-    const liveLabel = eventDate === today ? `<span class="gc-live">今日实时 · 未完结</span>` : "";
-    element.innerHTML = `<div class="gc-when">${escapeHtml(event.timeRange)}${liveLabel}</div>` +
+    element.innerHTML = `<div class="gc-when">${escapeHtml(event.timeRange)}</div>` +
       `<div class="gc-card"><div class="gc-title">${escapeHtml(event.title)}<span class="count">${event.relatedMessageCount} 条相关消息 · ${event.speakerCount} 位成员</span></div>` +
       `<p class="gc-explanation">${escapeHtml(event.summary)}</p>` +
       `${milestones ? `<ol class="gc-milestones" aria-label="事件节点">${milestones}</ol>` : ""}` +
@@ -2286,7 +2267,7 @@ function renderSignals() {
   $("sigNum").textContent = items.length;
   $("sigTotal").textContent = acceptedCount;
   if ($("signalDesc")) $("signalDesc").innerHTML = items.length
-    ? `汇总 <b>${dayCount}</b> 个日期（${escapeHtml(rangeStart)} → ${escapeHtml(rangeEnd)}）：从 <b>${sourceCount}</b> 条本机原始记录中确认 <b>${acceptedCount}</b> 条有效发言，收录 <b>${items.length}</b> 条高质量信号。${liveThrough ? `最新采集至 <b>${escapeHtml(liveThrough)}</b>；` : ""}侧栏总览日期不会改变本页。`
+    ? `固定档案覆盖 <b>${dayCount}</b> 个日期（${escapeHtml(rangeStart)} → ${escapeHtml(rangeEnd)}）：从 <b>${sourceCount}</b> 条本机原始记录中确认 <b>${acceptedCount}</b> 条有效发言，收录 <b>${items.length}</b> 条高质量信号。${liveThrough ? `语料固定至 <b>${escapeHtml(liveThrough)}</b>；` : ""}侧栏总览日期不会改变本页。`
     : "全部已归档日期中没有通过来源、归属、相关性与信息量门槛的信号。";
 
   const filters = $("sigFilters");
@@ -2349,8 +2330,12 @@ function renderCards() {
   const rangeStart = String(state.history?.stats?.date_start || state.history?.dates?.[0] || "").slice(0, 10);
   const rangeEnd = String(state.history?.stats?.date_end || state.history?.dates?.at(-1) || "").slice(0, 10);
   const liveThrough = state.history?.live?.dataThrough ? compactTime(state.history.live.dataThrough) : "";
+  const reviewed = Number(state.history?.stats?.star_card_reviewed_members ?? 0);
+  const representatives = Number(state.history?.stats?.star_card_representatives ?? 0);
+  const sampleNotes = Number(state.history?.stats?.star_card_sample_notes ?? 0);
+  const candidateSentences = Number(state.history?.stats?.star_card_candidate_sentences ?? 0);
   if ($("personaDesc")) $("personaDesc").innerHTML = original.length
-    ? `汇总 <b>${dayCount}</b> 个日期（${escapeHtml(rangeStart)} → ${escapeHtml(rangeEnd)}），基于微信发送者 ID 与联系人表确认 <b>${original.length}</b> 位实际发言成员。${liveThrough ? `最新采集至 <b>${escapeHtml(liveThrough)}</b>；` : ""}侧栏总览日期不会改变本页。`
+    ? `固定语料覆盖 <b>${dayCount}</b> 个日期（${escapeHtml(rangeStart)} → ${escapeHtml(rangeEnd)}），共 <b>${original.length}</b> 位实际发言成员。已从 <b>${candidateSentences.toLocaleString("zh-CN")}</b> 个候选句中逐卡复核 <b>${reviewed}</b> 张：<b>${representatives}</b> 张选出代表句，<b>${sampleNotes}</b> 张明确标为样本有限。${liveThrough ? `语料固定至 <b>${escapeHtml(liveThrough)}</b>；` : ""}旧代表句没有保留优先级。`
     : "旧成员画像已全部撤下；没有新证据的成员不会生成星卡。";
   if (!original.length) {
     $("cardCount").textContent = "收录 0 张";
@@ -2376,8 +2361,9 @@ function renderCards() {
       const first = escapeHtml(Array.from(member.name.trim())[0] || "?");
       const traits = (member.traits ?? []).map((trait) => `<i>${escapeHtml(trait)}</i>`).join("");
       const evidence = member.representative;
+      const sampleOnly = evidence?.category === "样本说明";
       const back = evidence
-        ? `<div class="b-label">代表表现</div><div class="b-title">${escapeHtml(evidence.headline)}</div>` +
+        ? `<div class="b-label">${sampleOnly ? "样本说明" : "代表表现"}</div><div class="b-title">${escapeHtml(evidence.headline)}</div>` +
           `<div class="b-quote">${escapeHtml(evidence.excerpt)}</div>` +
           `<div class="b-meta">${escapeHtml(evidence.category)} · ${escapeHtml(evidence.time || "--")}</div>`
         : `<div class="b-label">样本说明</div><div class="b-title">尚未形成稳定画像</div>` +
@@ -2389,7 +2375,7 @@ function renderCards() {
         `<div class="tags">${traits}</div>` +
         `<div class="bars"><div class="bar"><span>发言</span><b>${member.count}</b></div>` +
         `<div class="bar"><span>精选</span><b>${member.signals}</b></div></div>` +
-        `<div class="hint">[ 看代表表现 ]</div></div>` +
+        `<div class="hint">[ ${sampleOnly ? "看样本说明" : "看代表表现"} ]</div></div>` +
         `<div class="face back">${back}<div class="b-foot">画像只基于本群已验证发言，不推断真实身份</div><div class="hint">[ 返回画像 ]</div></div>`;
       card.addEventListener("click", () => {
         card.classList.toggle("flip");
@@ -2553,7 +2539,7 @@ function renderRepos() {
     categoryName: repo.categoryName || "全部仓库",
     summary: repo.summary || repo.description || "GitHub 暂未填写仓库说明。",
     activity: repo.activity || `最近推送：${compactTime(repo.pushedAt) || "暂无时间"}`,
-    why: repo.why || "当前仅有 GitHub 元数据，进一步解读将在下一次同步后补齐。",
+    why: repo.why || "固定档案仅保留可核验的 GitHub 元数据，不补写无法确认的能力判断。",
     attention: repo.attention || { score: 0, label: repo.archived ? "历史参考" : "持续维护", reasons: [] },
   }));
   const stats = state.repos?.stats ?? {};
@@ -2579,8 +2565,8 @@ function renderRepos() {
   const groups = payloadGroups.length ? payloadGroups : [{
     id: "legacy",
     name: "全部仓库",
-    summary: "当前数据仍是兼容版本，下一次 GitHub 同步后会按方向归类。",
-    why: "先按最近推送顺序阅读。",
+    summary: "固定档案保留迁移前的完整仓库集合。",
+    why: "可按档案中的最后提交时间与用途分组阅读。",
     count: repositories.length,
     repositories: repositories.map((repo) => repo.id),
   }];
@@ -2695,7 +2681,7 @@ function renderData() {
     const stats = state.group?.stats;
     const selectedDayLabel = "所选完整自然日";
     $("dataNote").textContent = state.group?.status === "ready"
-      ? `${selectedDayLabel}本地源记录 ${stats.source_messages} 条；确认发言 ${stats.accepted_messages} 条；排除系统通知或无效记录 ${stats.excluded_messages} 条。GitHub Issue/Repo 使用独立实时版本，不跟随群聊日期。`
+      ? `${selectedDayLabel}本地源记录 ${stats.source_messages} 条；确认发言 ${stats.accepted_messages} 条；排除系统通知或无效记录 ${stats.excluded_messages} 条。GitHub Issue/Repo 使用独立固定档案，不跟随群聊日期。`
       : "旧群聊数据已撤下；没有本机证据时页面保持空白。";
   }
 }
@@ -2731,7 +2717,7 @@ async function refreshAll({ initial = false } = {}) {
   state.busy = true;
   $("refreshBar").classList.add("on");
   $("refreshFill").style.width = "20%";
-  refreshStatus("正在载入群聊自然日与最新 GitHub Issue/Repo 数据…");
+  refreshStatus("正在载入固定群聊、Issue 与 Repo 档案…");
   try {
     const [group, history, issues, repos] = await Promise.all([
       fetchJson(DATA_URLS.group),
@@ -2751,12 +2737,12 @@ async function refreshAll({ initial = false } = {}) {
     renderAll();
     $("refreshFill").style.width = "100%";
     const groupCount = group.stats.accepted_messages;
-    refreshStatus(`已载入：所选日群消息 ${groupCount} 条 / 全量信号 ${history.signals.length} 条 / 全量成员 ${history.members.length} 位 / Issue ${issues.issues.length} 条 / Repo ${repos.repositories.length} 个。` +
-      `群聊生成于 ${EMBEDDED_SNAPSHOT.generatedAt || "--"}；GitHub 同步于 ${repos.updatedAt || issues.updated_at || "--"}。`);
+    refreshStatus(`固定档案已载入：所选日群消息 ${groupCount} 条 / 全量信号 ${history.signals.length} 条 / 全量成员 ${history.members.length} 位 / Issue ${issues.issues.length} 条 / Repo ${repos.repositories.length} 个。` +
+      `群聊固定于 ${history.live?.dataThrough || EMBEDDED_SNAPSHOT.generatedAt || "--"}；GitHub 固定于 ${repos.updatedAt || issues.updated_at || "--"}。`);
     return true;
   } catch (error) {
     $("refreshFill").style.width = "100%";
-    refreshStatus(`更新失败：${String(error.message || error).slice(0, 100)}`);
+    refreshStatus(`载入失败：${String(error.message || error).slice(0, 100)}`);
     return false;
   } finally {
     state.busy = false;
@@ -2764,42 +2750,6 @@ async function refreshAll({ initial = false } = {}) {
       $("refreshBar").classList.remove("on");
       $("refreshFill").style.width = "0";
     }, initial ? 1200 : 3200);
-  }
-}
-
-let checkingContentRevision = false;
-async function checkForContentUpdate() {
-  // QA 状态每 5 秒轮询；内容刷新不能被它阻塞，否则整 5 分钟的回调可能持续相撞并跳过。
-  if (!liveContent || document.hidden || state.busy || checkingContentRevision) return;
-  checkingContentRevision = true;
-  try {
-    const response = await fetchLiveContent(`/api/content/manifest?t=${Date.now()}`, 2);
-    const nextManifest = await response.json();
-    if (!Array.isArray(nextManifest.dates) || !nextManifest.dates.length || !nextManifest.latest) {
-      throw new Error("实时内容日期清单无效");
-    }
-    const nextRevision = manifestRevision(nextManifest);
-    if (nextRevision === activeContentRevision) return;
-    const datesChanged = nextManifest.latest !== SITE_MANIFEST.latest
-      || nextManifest.dates.join("|") !== SITE_MANIFEST.dates.join("|");
-    // 同一自然日会从 partial 原子替换为 complete。此时日期不变，但页面内嵌的所选日数据已过期，必须重载。
-    const selectedDayChanged = activeGroupDayRevision(nextManifest, SELECTED_DATE)
-      !== activeGroupDayRevision(SITE_MANIFEST, SELECTED_DATE);
-    if (datesChanged || selectedDayChanged) {
-      location.reload();
-      return;
-    }
-    const refreshed = await refreshAll();
-    if (refreshed) {
-      SITE_MANIFEST = nextManifest;
-      activeContentRevision = nextRevision;
-    }
-  } catch (error) {
-    $("refreshBar").classList.add("on");
-    $("refreshFill").style.width = "100%";
-    refreshStatus(`实时内容检查失败：${String(error.message || error).slice(0, 100)}；当前页面不会回退到旧快照。`);
-  } finally {
-    checkingContentRevision = false;
   }
 }
 
@@ -2815,11 +2765,6 @@ if (document.body.dataset.panel === "agentnotes") window.loadAgentNotes?.();
 if (document.body.dataset.panel === "overview") window.loadSnapshotDiffs?.();
 initWarp();
 refreshAll({ initial: true });
-setInterval(checkForContentUpdate, 60 * 1000);
-window.addEventListener("focus", checkForContentUpdate);
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) checkForContentUpdate();
-});
 </script>
 <script>
 // ── 侧边栏折叠（localStorage 持久化）──

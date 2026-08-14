@@ -6,6 +6,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { tokenize } from "../qa/retrieval.mjs";
 import { isOfficialInformationRecord } from "../shared/official-chronicle.mjs";
+import { enforceFixedArchive } from "./lib/frozen-archive-policy.mjs";
+
+enforceFixedArchive("旧式 QA 语料");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const corpusRoot = path.join(root, "corpus");

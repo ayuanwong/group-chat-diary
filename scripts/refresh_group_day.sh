@@ -2,6 +2,10 @@
 set -euo pipefail
 
 SITE_REPO="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+node "$SITE_REPO/scripts/frozen_source_guard.mjs" "群聊" >/dev/null 2>&1 || {
+  echo "DSH 群聊数据已固定封存；自然日采集与同步已停用。" >&2
+  exit 78
+}
 SOURCE_REPO="$SITE_REPO/../dsh-archive"
 WECHAT_CONFIG="$SOURCE_REPO/.local/wechat-automation/config.local.json"
 WECHAT_RUNTIME="$SOURCE_REPO/.local/wechat-cli"

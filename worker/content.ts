@@ -4,6 +4,10 @@ import {
   officialChronicleItems,
   officialChronicleKey,
 } from "../shared/official-chronicle.mjs";
+import {
+  FROZEN_MEMBER_REPRESENTATIVES,
+  FROZEN_STAR_CARD_SOURCE,
+} from "./member-star-representatives";
 
 export interface ContentRuntimeEnv {
   CONTENT_DB: D1Database;
@@ -53,6 +57,9 @@ interface QaMetaRow {
 }
 
 type JsonRecord = Record<string, unknown>;
+
+const EXCLUDED_CARD_SENDERS = new Set(["【内测】DSH官方内测群", "【官方】DSH内测群"]);
+const frozenRepresentatives = FROZEN_MEMBER_REPRESENTATIVES as unknown as Record<string, JsonRecord>;
 
 function parsePayload(value: string | undefined): unknown | null {
   if (!value) return null;
@@ -289,7 +296,7 @@ export async function contentGroupHistory(
       messages: Number(visibleLive.accepted_message_count),
       signals: Number(visibleLive.signal_count),
       chronicles: Number(visibleLive.chronicle_count),
-      status: "live",
+      status: "fixed-final",
     };
   }
 
@@ -304,8 +311,6 @@ export async function contentGroupHistory(
     traits: Map<string, number>;
     role: string;
     roleScore: number;
-    representative: JsonRecord | null;
-    representativeTime: string;
     self: boolean;
   }>();
   const typeBreakdown = new Map<string, number>();
@@ -361,6 +366,7 @@ export async function contentGroupHistory(
       const member = record(value);
       const name = String(member?.name ?? "").trim();
       if (!member || !name) throw new Error(`${row.date} 成员画像缺少名称。`);
+      if (EXCLUDED_CARD_SENDERS.has(name)) return;
       const count = nonnegativeInteger(member.count, `${row.date} ${name} count`);
       const signalCount = nonnegativeInteger(member.signals, `${row.date} ${name} signals`);
       const current = members.get(name) ?? {
@@ -371,8 +377,6 @@ export async function contentGroupHistory(
         traits: new Map<string, number>(),
         role: "讨论参与者",
         roleScore: -1,
-        representative: null,
-        representativeTime: "",
         self: false,
       };
       current.count += count;
@@ -387,12 +391,6 @@ export async function contentGroupHistory(
       if (typeof member.role === "string" && member.role && roleScore > current.roleScore) {
         current.role = member.role;
         current.roleScore = roleScore;
-      }
-      const representative = record(member.representative);
-      const representativeTime = String(representative?.time ?? "");
-      if (representative && representativeTime >= current.representativeTime) {
-        current.representative = representative;
-        current.representativeTime = representativeTime;
       }
       members.set(name, current);
     });
@@ -436,15 +434,23 @@ export async function contentGroupHistory(
       role: member.role,
       persona: `累计 ${member.activeDates.size} 个自然日发言 ${member.count} 条，${member.signals} 条进入精选；主要关注 ${focus}。`,
       traits,
-      representative: member.representative,
+      representative: frozenRepresentatives[member.name] ?? null,
       self: member.self,
       activeDays: member.activeDates.size,
     };
   }).sort((left, right) => right.count - left.count || right.signals - left.signals || left.name.localeCompare(right.name, "zh"));
 
+  const fixedArchiveMatches = acceptedMessages === FROZEN_STAR_CARD_SOURCE.sourceMessageCount
+    && latestVisibleDate === FROZEN_STAR_CARD_SOURCE.latestGroupDate;
+  if (fixedArchiveMatches && (memberList.length !== FROZEN_STAR_CARD_SOURCE.memberCount
+    || FROZEN_STAR_CARD_SOURCE.reviewedMemberCount !== FROZEN_STAR_CARD_SOURCE.memberCount
+    || memberList.some((member) => !member.representative))) {
+    throw new Error("固定成员星卡未完成 100% 逐卡复核，拒绝返回不完整画像。");
+  }
+
   return {
     version: 1,
-    scope: "completed-days-plus-live",
+    scope: "fixed-full-archive",
     group: "【官方】DSH内测群",
     timeZone: "Asia/Shanghai",
     dates: [...active.map((row) => row.date), ...liveDates].filter((date, index, dates) => dates.indexOf(date) === index),
@@ -459,6 +465,11 @@ export async function contentGroupHistory(
       excluded_messages: excludedMessages,
       signal_count: signalList.length,
       participant_count: memberList.length,
+      star_card_source_messages: FROZEN_STAR_CARD_SOURCE.sourceMessageCount,
+      star_card_candidate_sentences: FROZEN_STAR_CARD_SOURCE.candidateSentenceCount,
+      star_card_reviewed_members: fixedArchiveMatches ? FROZEN_STAR_CARD_SOURCE.reviewedMemberCount : 0,
+      star_card_representatives: fixedArchiveMatches ? FROZEN_STAR_CARD_SOURCE.representativeCount : 0,
+      star_card_sample_notes: fixedArchiveMatches ? FROZEN_STAR_CARD_SOURCE.sampleNoteCount : 0,
       chronicle_count: chronicleList.length,
       timeline_event_count: includeGroupChronicle ? timelineList.length : 0,
       date_start: dateStart,

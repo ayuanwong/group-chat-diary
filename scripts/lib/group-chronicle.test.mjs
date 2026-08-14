@@ -185,8 +185,8 @@ describe("group event timeline", () => {
   });
 });
 
-describe("group chronicle live refresh", () => {
-  it("keeps completed overview days separate from the latest Chronicle collection", () => {
+describe("group chronicle fixed archive", () => {
+  it("keeps the final collected day in the fixed full-history archive", () => {
     expect(liveMigration).toContain("content_active_live_group");
     expect(syncScript).toContain('const liveDate = argValue("--live-date")');
     expect(syncScript).toContain("INSERT INTO content_active_live_group");
@@ -195,21 +195,18 @@ describe("group chronicle live refresh", () => {
     expect(syncScript).toContain("group-day-v7-readable-event-timeline");
     expect(refreshScript).toContain('--date "$TARGET_DATE" --live-date "$TODAY"');
     expect(refreshScript).toContain('：${TARGET_DATE}；纪事实时流');
-    expect(siteHtml).toContain('"completed-days-plus-live"');
+    expect(siteHtml).toContain('"fixed-full-archive"');
     expect(siteHtml).toContain('id="chronicleFreshness"');
-    expect(siteHtml).toContain("最新采集至");
+    expect(siteHtml).toContain("固定至");
     expect(siteHtml).toContain("数据总览日期");
     expect(siteHtml).toContain("侧栏日期只影响数据总览");
     expect(siteHtml).toContain("const messageCount = state.history?.stats?.accepted_messages ?? 0;");
   });
 
-  it("reloads a selected day when its active revision changes without coupling content polls to QA polls", () => {
-    expect(siteHtml).toContain("const activeGroupDayRevision = (manifest, date) =>");
-    expect(siteHtml).toContain("const selectedDayChanged = activeGroupDayRevision(nextManifest, SELECTED_DATE)");
-    expect(siteHtml).toContain("if (datesChanged || selectedDayChanged)");
-    expect(siteHtml).toContain("if (!liveContent || document.hidden || state.busy || checkingContentRevision) return;");
-    expect(siteHtml).not.toContain("state.busy || qaState.busy || checkingContentRevision");
-    expect(siteHtml).toContain("manifest.liveChronicle?.activatedAt ?? null");
-    expect(siteHtml).toContain("setInterval(checkForContentUpdate, 60 * 1000);");
+  it("loads the fixed archive without content polling or focus-triggered refreshes", () => {
+    expect(siteHtml).toContain("固定档案已载入");
+    expect(siteHtml).not.toContain("checkForContentUpdate");
+    expect(siteHtml).not.toContain("setInterval(checkForContentUpdate");
+    expect(siteHtml).not.toContain('window.addEventListener("focus", checkForContentUpdate)');
   });
 });

@@ -4,6 +4,7 @@ import path from "node:path";
 import { tokenize } from "../qa/retrieval.mjs";
 import { attachIssueReactions } from "./lib/issue-reactions.mjs";
 import { buildRepositoryDigest } from "./lib/repo-digest.mjs";
+import { enforceFixedArchive } from "./lib/frozen-archive-policy.mjs";
 import {
   assertPrivateContent,
   d1Target,
@@ -20,6 +21,8 @@ import {
   sqlString,
   trimText,
 } from "./lib/data-sync.mjs";
+
+enforceFixedArchive("GitHub Issue / Repo");
 
 const ORGANIZATION = "dsh-external";
 const ISSUE_REPOSITORY = "dsh-external/issues";

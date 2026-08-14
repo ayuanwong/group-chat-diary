@@ -165,7 +165,7 @@ if (!siteHtml.includes('id="datePicker"') || !siteHtml.includes('id="panel-guide
 if (!siteHtml.includes('/api/content/manifest') || !siteHtml.includes('/api/content/group-history')
   || !siteHtml.includes('/api/content/group-chronicle') || !siteHtml.includes('id="boardRepos"')
   || !siteHtml.includes('id="repoList"') || !siteHtml.includes('Issue / Repo')) {
-  throw new Error("站点外壳缺少实时内容 API 或 Issue/Repo Board");
+  throw new Error("站点外壳缺少 D1 内容 API 或 Issue/Repo Board");
 }
 if (!siteHtml.includes('import { buildGroupChronicle } from "./group-chronicle.mjs"')
   || !siteHtml.includes('id="chronicleTabs"') || !siteHtml.includes('id="chronicleOfficial"')
@@ -173,13 +173,15 @@ if (!siteHtml.includes('import { buildGroupChronicle } from "./group-chronicle.m
   throw new Error("纪事页必须包含官方纪事与群聊纪事双 Tab，并加载群聊时间线聚合模块");
 }
 if (!siteHtml.includes("ALLOW_STATIC_CONTENT") || !siteHtml.includes("未启用静态快照")
-  || !siteHtml.includes("checkForContentUpdate") || !siteHtml.includes("manifest.liveGroup?.syncedAt")
-  || !siteHtml.includes("manifest.liveChronicle?.activatedAt")) {
-  throw new Error("生产站必须使用 D1 实时内容、禁止静默回退旧快照，并自动检查数据版本");
+  || !siteHtml.includes('"fixed-full-archive"') || !siteHtml.includes("固定档案已载入")) {
+  throw new Error("生产站必须使用 D1 固定档案，并禁止静默回退旧快照");
 }
-if (!siteHtml.includes('id="chronicleFreshness"') || !siteHtml.includes("最新采集至")
-  || !siteHtml.includes('"completed-days-plus-live"')) {
-  throw new Error("纪事视图必须显示独立实时采集点，数据总览继续使用完成自然日");
+if (siteHtml.includes("checkForContentUpdate") || siteHtml.includes("setInterval(checkForContentUpdate")
+  || siteHtml.includes('window.addEventListener("focus", checkForContentUpdate)')) {
+  throw new Error("固定档案站点不得继续轮询内容更新");
+}
+if (!siteHtml.includes('id="chronicleFreshness"') || !siteHtml.includes("固定至")) {
+  throw new Error("纪事视图必须明确显示固定档案的截止点");
 }
 if (!siteHtml.includes("它是什么") || !siteHtml.includes("最近发生") || !siteHtml.includes("为什么看")) {
   throw new Error("Repo Board 必须逐仓库提供用途、动态与价值解释");
@@ -218,7 +220,7 @@ if (!siteHtml.includes('问答可能检索群聊内容') || !siteHtml.includes('
   throw new Error("访客页必须明确群聊纪事与问答的成员权限边界");
 }
 if (!siteHtml.includes('Repo 用 R') || !siteHtml.includes('repoCount')) {
-  throw new Error("实时问答必须显示并支持 Repo 私有语料");
+  throw new Error("问答必须显示并支持 Repo 私有语料");
 }
 if (!siteHtml.includes('[...(state.history?.chronicles ?? [])].sort((left, right) =>')
   || !siteHtml.includes('state.history?.signals ?? []') || !siteHtml.includes('state.history?.members ?? []')) {

@@ -12,7 +12,7 @@ function redirect(location, headers = {}) {
 
 describe("production gate audit", () => {
   it("locks the audit to the Pages custom production domain", async () => {
-    expect(PRODUCTION_ORIGIN).toBe("https://dsh.hiwangjie.com");
+    expect(PRODUCTION_ORIGIN).toBe("https://dshmemory.com");
     await expect(auditProductionGate(vi.fn(), { origin: "https://legacy.example.com" }))
       .rejects.toThrow("canonical Pages custom domain");
   });

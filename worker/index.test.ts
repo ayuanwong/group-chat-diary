@@ -421,7 +421,7 @@ function makeEnv(
     GITHUB_WEBHOOK_SECRET: "test-webhook-secret",
     GITHUB_ORG: "dsh-external",
     SESSION_SECRET: "a-test-session-secret-that-is-long-enough",
-    SITE_ORIGIN: "https://dsh.hiwangjie.com",
+    SITE_ORIGIN: "https://dshmemory.com",
   };
 }
 

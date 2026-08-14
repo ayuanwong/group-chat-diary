@@ -1,4 +1,4 @@
-export const PRODUCTION_ORIGIN = "https://dsh.hiwangjie.com";
+export const PRODUCTION_ORIGIN = "https://dshmemory.com";
 
 export const PUBLIC_ENDPOINTS = [
   { name: "home", pathname: "/", init: {} },

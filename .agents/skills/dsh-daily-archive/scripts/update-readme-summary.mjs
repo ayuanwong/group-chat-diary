@@ -93,7 +93,7 @@ function main() {
 
   const section = `### ${currentDate}
 
-网站日期：[DSH 内测群每日档案 · ${currentDate}](https://dsh.hiwangjie.com/?date=${currentDate})
+网站日期：[DSH 内测群每日档案 · ${currentDate}](https://dshmemory.com/?date=${currentDate})
 
 数据截止：${cutoffText}（北京时间）
 
